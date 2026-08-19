@@ -638,6 +638,34 @@ position: absolute; top: .65rem; left: .65rem;
     .info-status-pill strong { color:#0b5264 !important; }
     @media (max-width:760px) { .info-sec { padding:1.2rem .75rem 8rem !important; } .info-hero { min-height:230px; padding:2rem 1.35rem 1.8rem !important; } .info-layout-grid { grid-template-columns:1fr !important; } .info-glass-card { min-height:0; } .trust-grid { grid-template-columns:1fr !important; } }
 
+    /* INFO FINAL POLISH — paleta padrão Buy Club US e layout profissional */
+    .info-sec { background: var(--bg) !important; color: var(--text) !important; padding: 2.5rem 1.25rem 9rem !important; }
+    .info-hero { min-height: 250px; padding: 3rem 2.5rem 2.7rem !important; border: 1px solid rgba(255,255,255,.12) !important; border-radius: 1.5rem !important; background: linear-gradient(145deg, #09090b 0%, #1e293b 62%, #475569 135%) !important; box-shadow: 0 20px 46px rgba(9,9,11,.18) !important; }
+    .info-hero::before { border-color: rgba(255,255,255,.10) !important; box-shadow: 0 0 0 32px rgba(255,255,255,.025), 0 0 0 66px rgba(255,255,255,.018) !important; }
+    .info-hero::after { border-color: rgba(255,255,255,.16) !important; box-shadow: 0 0 0 22px rgba(255,255,255,.035), 0 0 0 44px rgba(255,255,255,.02) !important; }
+    .info-hero-badge { color: #e2e4e9 !important; background: rgba(255,255,255,.09) !important; border-color: rgba(255,255,255,.18) !important; }
+    .info-title { color: #fff !important; letter-spacing: .02em !important; }
+    .info-lead { color: rgba(255,255,255,.72) !important; }
+    .info-layout-grid { gap: 1.15rem !important; }
+    .info-trust-banner { background: var(--bg-card) !important; border: 1px solid var(--border) !important; border-radius: 1.35rem !important; box-shadow: 0 14px 34px rgba(9,9,11,.06) !important; }
+    .info-trust-banner::after { border-color: rgba(71,85,105,.12) !important; }
+    .trust-kicker { color: var(--muted) !important; }
+    .info-trust-banner h3 { color: var(--text) !important; letter-spacing: .025em; }
+    .info-trust-banner p { color: var(--muted) !important; }
+    .trust-grid > div { background: rgba(226,228,233,.55) !important; border: 1px solid var(--border) !important; }
+    .trust-grid strong { color: var(--text) !important; }
+    .trust-grid span { color: var(--muted) !important; }
+    .info-glass-card { background: var(--bg-card) !important; border: 1px solid var(--border) !important; border-radius: 1.25rem !important; box-shadow: 0 12px 30px rgba(9,9,11,.055) !important; }
+    .info-glass-card:nth-child(2), .info-glass-card:nth-child(3) { border-top: 1px solid var(--border) !important; }
+    .info-icon-wrapper, .info-glass-card:nth-child(3) .info-icon-wrapper { color: var(--text) !important; background: #eef0f3 !important; border-color: var(--border) !important; }
+    .info-card-tag, .info-glass-card:nth-child(3) .info-card-tag { color: var(--muted) !important; }
+    .info-card-heading { color: var(--text) !important; }
+    .info-feature-item, .info-feature-item span { color: #334155 !important; }
+    .info-feature-item svg, .info-glass-card:nth-child(3) .info-feature-item svg { stroke: var(--text) !important; }
+    .info-status-pill { background: #f1f2f4 !important; border-color: var(--border) !important; color: var(--muted) !important; }
+    .info-status-pill strong { color: var(--text) !important; }
+    @media (max-width:760px) { .info-sec { padding: 1.25rem .75rem 8rem !important; } .info-hero { min-height: 230px; padding: 2.25rem 1.35rem 2rem !important; border-radius: 1.25rem !important; } .info-trust-banner { padding: 1.15rem !important; } }
+
     /* CONTACT BRAND + ROTATING 3D GLOBE */
     .contact-brand-lockup { display:flex; align-items:center; justify-content:center; gap:.35rem; margin-bottom:.85rem; color:#10253d; font-family:var(--font-display); font-weight:900; letter-spacing:.08em; font-size:1.35rem; }
     .contact-brand-lockup .contact-us { color:#10253d; border:1px solid #24a6d3; border-radius:.25rem; padding:.03rem .2rem; font-size:.8em; letter-spacing:.04em; }
@@ -730,7 +758,7 @@ position: absolute; top: .65rem; left: .65rem;
 
     <section class="products-wrap">
       <div class="section-top">
-        <h2 class="section-title" id="section-title">New Life</h2>
+        <h2 class="section-title" id="section-title">New Life American</h2>
         <span class="section-count" id="section-count">0</span>
       </div>
       <div class="product-grid" id="product-grid"></div>
@@ -1990,11 +2018,11 @@ productData.es = productData.pt.map(p => ({...p}));
 
 function getCategories(){
   return [
-    {id:"newlife",     icon:"sparkles", name:"New Life",     desc:"Linha exclusiva New Life",         nameKey:"catNewLife",     descKey:"catNewLifeDesc"},
-    {id:"synedica",    icon:"syringe",  name:"Synedica",     desc:"Linha de peptídeos Synedica",      nameKey:"catSynedica",    descKey:"catSynedicaDesc"},
-    {id:"usapeptides", icon:"flask",    name:"Usa Peptides", desc:"Linha de peptídeos Usa Peptides",  nameKey:"catUsaPeptides", descKey:"catUsaPeptidesDesc"},
-    {id:"zphc",        icon:"flask",    name:"ZPHC",        desc:"Linha de produtos ZPHC",        nameKey:"catZphc",        descKey:"catZphcDesc"},
-    {id:"tg",          icon:"syringe",  name:"TG",          desc:"Linha de produtos TG",          nameKey:"catTg",          descKey:"catTgDesc"},
+    {id:"newlife",     icon:"sparkles", name:"New Life",     title:"New Life American",     desc:"Linha exclusiva New Life",         nameKey:"catNewLife",     descKey:"catNewLifeDesc"},
+    {id:"synedica",    icon:"syringe",  name:"Synedica",     title:"Synedica England",     desc:"Linha de peptídeos Synedica",      nameKey:"catSynedica",    descKey:"catSynedicaDesc"},
+    {id:"usapeptides", icon:"flask",    name:"Usa Peptides", title:"Usa Peptides American", desc:"Linha de peptídeos Usa Peptides",  nameKey:"catUsaPeptides", descKey:"catUsaPeptidesDesc"},
+    {id:"zphc",        icon:"flask",    name:"ZPHC",        title:"ZPHC Chinese",        desc:"Linha de produtos ZPHC",        nameKey:"catZphc",        descKey:"catZphcDesc"},
+    {id:"tg",          icon:"syringe",  name:"TG",          title:"TG Paraguayan",          desc:"Linha de produtos TG",          nameKey:"catTg",          descKey:"catTgDesc"},
   ];
 }
 
@@ -2205,7 +2233,7 @@ function submitCheckout(event) {
 function renderCatBar(){
   const cats = getCategories();
   catListEl.innerHTML = cats.map(c => {
-    return `<button class="cat-btn${currentCat===c.id?' active':''}" data-category="${c.id}">${t(c.nameKey)}</button>`;
+    return `<button class="cat-btn${currentCat===c.id?' active':''}" data-category="${c.id}">${c.name}</button>`;
   }).join('');
   catListEl.querySelectorAll('.cat-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{ currentCat=btn.dataset.category; renderCatBar(); renderProducts(); });
@@ -2216,7 +2244,7 @@ function renderProducts(){
   const filtered = products.filter(p=>p.category===currentCat);
   const cats = getCategories();
   const cat = cats.find(c=>c.id===currentCat);
-  secTitle.textContent = cat ? t(cat.nameKey) : '';
+  secTitle.textContent = cat ? cat.title : '';
   const suf = filtered.length===1 ? t('productCountSuffix') : t('productCountSuffixPlural');
   secCount.textContent = `${filtered.length} ${suf}`;
 
@@ -2344,7 +2372,7 @@ function renderCatsView(){
       <button class="cat-card animate-up" data-category="${c.id}" style="animation-delay:${i*60}ms">
         <div class="cat-icon-box">${ICONS[c.icon]||''}</div>
         <div class="cat-info">
-          <div class="cat-name">${t(c.nameKey)}</div>
+          <div class="cat-name">${c.name}</div>
           <div class="cat-desc">${t(c.descKey)}</div>
         </div>
       </button>`;
