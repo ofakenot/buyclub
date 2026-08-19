@@ -90,9 +90,9 @@
     .lang-btn:hover:not(.active) { color: var(--text); }
 
     /* HERO */
-    .hero { min-height:clamp(430px,58vw,680px); padding:7rem 1.5rem 6.5rem; text-align:center; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; border-bottom:1px solid var(--border); isolation:isolate; background:#07111c; }
-    .hero-video { position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:cover; object-position:center; display:block; pointer-events:none; background:#07111c; }
-    .hero::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(4,12,20,.22),rgba(4,12,20,.58)); pointer-events:none; }
+    .hero { min-height:clamp(430px,58vw,680px); padding:7rem 1.5rem 6.5rem; text-align:center; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; border-bottom:1px solid var(--border); background:#07111c; isolation:isolate; }
+    .hero-video { position:absolute !important; inset:0 !important; z-index:0 !important; display:block !important; width:100% !important; height:100% !important; min-width:100%; min-height:100%; object-fit:cover; object-position:center center; border:0; pointer-events:none; background:#07111c; filter:brightness(1.3) saturate(1.08); }
+    .hero::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(4,12,20,.06),rgba(4,12,20,.14)); pointer-events:none; }
 
     .hero-water-bg {
       position: absolute; inset: -40%; z-index: 1; pointer-events: none; opacity: 0.65;
@@ -107,26 +107,26 @@
       animation: waterWave2 20s ease-in-out infinite alternate;
     }
     
-    .hero-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+    .hero-content { position:relative; z-index:3; display:flex; flex-direction:column; align-items:center; color:#fff; text-shadow:0 2px 16px rgba(0,0,0,.72); }
 
     .hero-tag {
       display: inline-flex; align-items: center; gap: .8rem;
       background: transparent; border: none; padding: 0;
-      color: #09090b;
+      color: #fff;
       font-size: .68rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
       margin-bottom: 1rem; box-shadow: none; backdrop-filter: none;
     }
     .hero-tag-text {
-      background: linear-gradient(180deg, #334155 0%, #09090b 80%);
+      background:linear-gradient(180deg,#ffffff 0%,#dbeafe 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero-tag-line {
       display: inline-block; width: 32px; height: 1px;
-      background: linear-gradient(90deg, transparent, #09090b);
+      background:linear-gradient(90deg,transparent,#ffffff);
     }
     .hero-tag-line:last-child {
-      background: linear-gradient(90deg, #09090b, transparent);
+      background:linear-gradient(90deg,#ffffff,transparent);
     }
 
     .hero-title {
@@ -139,7 +139,7 @@
     }
 
     .hero-title-text {
-      background: linear-gradient(180deg, #475569 0%, #09090b 65%, #1e293b 100%);
+      background:linear-gradient(180deg,#ffffff 0%,#e2e8f0 65%,#cbd5e1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 1px 1px rgba(255,255,255,0.8));
@@ -174,7 +174,7 @@
     }
 
     .us-flip-front {
-      background: linear-gradient(180deg, #475569 0%, #09090b 65%, #1e293b 100%);
+      background:linear-gradient(180deg,#ffffff 0%,#e2e8f0 65%,#cbd5e1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: 800;
@@ -680,7 +680,7 @@ position: absolute; top: .65rem; left: .65rem;
 
     <section class="hero">
       <video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true">
-        <source src="images/hero.mp4" type="video/mp4">
+        <source src="/images/molecula.mp4" type="video/mp4">
       </video>
 
       <div class="hero-content">
@@ -2549,6 +2549,25 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   window.__drawContactMap=()=>requestAnimationFrame(()=>requestAnimationFrame(draw));
   document.addEventListener('DOMContentLoaded',window.__drawContactMap);
   addEventListener('resize',()=>{clearTimeout(timer);timer=setTimeout(()=>{draw();resize();},120);});
+})();
+</script>
+<script>
+(function(){
+  function startHeroVideo(){
+    var video=document.querySelector('.hero-video');
+    if(!video)return;
+    video.muted=true;
+    video.defaultMuted=true;
+    video.setAttribute('muted','');
+    video.setAttribute('playsinline','');
+    video.setAttribute('webkit-playsinline','');
+    var attempt=video.play();
+    if(attempt && typeof attempt.catch==='function') attempt.catch(function(){ });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startHeroVideo);
+  else startHeroVideo();
+  window.addEventListener('pageshow',startHeroVideo);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)startHeroVideo();});
 })();
 </script>
 </body>
