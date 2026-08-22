@@ -91,8 +91,11 @@
 
     /* HERO */
     .hero { min-height:clamp(430px,58vw,680px); padding:7rem 1.5rem 6.5rem; text-align:center; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; border-bottom:0; isolation:isolate; background:#07111c; }
-    .hero-video { position:absolute; inset:-1px 0 0; z-index:0; width:100%; height:calc(100% + 2px); object-fit:cover; object-position:center; display:block; pointer-events:none; background:#07111c; filter: brightness(1.05) contrast(1.12) saturate(1.14); }
-    .hero::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(4,12,20,.025),rgba(4,12,20,.10)); pointer-events:none; }
+    .hero-media { position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:#07111c; }
+    .hero-video { position:absolute; inset:-1px 0 0; z-index:0; width:100%; height:calc(100% + 2px); object-fit:cover; object-position:center; display:block; pointer-events:none; background:#07111c; opacity:.5; filter: brightness(1.05) contrast(1.12) saturate(1.14); transition: opacity 1s ease; }
+    .hero-video.is-playing { opacity:1; }
+    .hero-media-overlay { position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(to top, #07111c 0%, rgba(7,17,28,.18) 50%, #07111c 100%); }
+    .hero::after { content:""; position:absolute; inset:0; z-index:1; background:transparent; pointer-events:none; }
 
     .hero-water-bg {
       position: absolute; inset: -40%; z-index: 1; pointer-events: none; opacity: 0.10;
@@ -238,7 +241,7 @@
       background: rgba(255, 255, 255, 0.42); border: 1px solid var(--border);
       padding: .25rem .65rem; border-radius: 999px; letter-spacing: .02em; white-space: nowrap;
     }
-    @media (max-width: 620px) { .section-top { flex-wrap: wrap; gap: .45rem; } .section-origin { margin-left: auto; } }
+    @media (max-width: 620px) { .section-top { flex-direction: column; align-items: center; justify-content: center; gap: .45rem; text-align: center; } .section-title, .section-count, .section-origin { margin-left: auto; margin-right: auto; text-align: center; } }
     .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .65rem; }
     @media (min-width: 600px)  { .product-grid { grid-template-columns: repeat(3,1fr); gap: .9rem; } .products-wrap { padding: 1.75rem 1rem 8rem; } }
     @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(4,1fr); } .products-wrap { padding: 2rem 2rem 8rem; } }
@@ -713,9 +716,12 @@ position: absolute; top: .65rem; left: .65rem;
     </header>
 
     <section class="hero">
-      <video id="hero-video" class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true">
-        <source src="images/hero.mp4" type="video/mp4">
-      </video>
+      <div class="hero-media">
+        <video id="hero-video" class="hero-video" autoplay loop muted playsinline webkit-playsinline preload="auto" aria-hidden="true">
+          <source src="images/hero.mp4" type="video/mp4">
+        </video>
+        <div class="hero-media-overlay"></div>
+      </div>
 
       <div class="hero-content">
         <div class="hero-tag">
@@ -1024,9 +1030,15 @@ function startHeroVideo() {
   heroVideo.setAttribute('muted', '');
   heroVideo.setAttribute('playsinline', '');
   heroVideo.setAttribute('webkit-playsinline', '');
+  if (heroVideo.readyState === 0) heroVideo.load();
   const playPromise = heroVideo.play();
-  if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
+  if (playPromise && typeof playPromise.then === 'function') {
+    playPromise.then(() => heroVideo.classList.add('is-playing')).catch(() => {});
+  } else {
+    heroVideo.classList.add('is-playing');
+  }
 }
+heroVideo && heroVideo.addEventListener('canplay', startHeroVideo, { once: true });
 startHeroVideo();
 window.addEventListener('load', startHeroVideo, { once: true });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) startHeroVideo(); });
@@ -1891,10 +1903,10 @@ const productData = {
       113, 
       "Tirzepatide 120mg", 
       DESC_NL_TIRZEPATIDE_120, 
-      "New Life", 
+      "NEW", 
       "newlife", 
       ["images/tirze120.png", "images/tirze120-ampola.png"], 
-      705, 505, 0,
+      0, 0, 0,
       "https://newlifelabs.us/pdfs/TIRZEPATIDE%20120MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
       "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20TIRZEPATIDE%20120%20mg%20-%20New%20Life%20Labs.pdf"
     ),
@@ -2063,7 +2075,7 @@ let products = productData.pt;
 let selectedProduct = null;
 let modalPriceType = 'varejo';
 function isConsultProduct(product) {
-  return product && (product.category === 'usapeptides' || (product.category === 'zphc' && !(Number(product.priceVarejo) > 0)));
+  return product && (product.id === 113 || product.category === 'usapeptides' || (product.category === 'zphc' && !(Number(product.priceVarejo) > 0)));
 }
 function getWaMessage(product, type, order = null) {
   const productLabel = `${product.badge} — ${product.name}`;
@@ -2320,7 +2332,7 @@ function renderProducts(){
             </div>
           ` : `
             <div class="price-display-box" style="min-height: 28px;">
-              <span class="price-consult-tag">${p.category === 'zphc' ? 'valores a combinar' : t('priceConsult')}</span>
+              <span class="price-consult-tag">${p.id === 113 ? (currentLang === 'en' ? 'Price on request' : currentLang === 'es' ? 'Precio bajo consulta' : 'Valor sob consulta') : (p.category === 'zphc' ? 'valores a combinar' : t('priceConsult'))}</span>
             </div>
           `}
           <button class="card-cta" data-wa="${getWaMessage(p, 'varejo')}">${t('accessBtn')}</button>
@@ -2475,7 +2487,7 @@ function updateModalUI() {
         </div>
       ` : `
         <div class="price-display-box">
-          <span class="price-consult-tag" style="font-size: .9rem;">${selectedProduct.category === 'zphc' ? 'valores a combinar' : t('directConsult')}</span>
+          <span class="price-consult-tag" style="font-size: .9rem;">${selectedProduct.id === 113 ? (currentLang === 'en' ? 'Price on request' : currentLang === 'es' ? 'Precio bajo consulta' : 'Valor sob consulta') : (selectedProduct.category === 'zphc' ? 'valores a combinar' : t('directConsult'))}</span>
         </div>
       `}
     </div>
