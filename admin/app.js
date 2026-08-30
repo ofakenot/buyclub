@@ -31,9 +31,9 @@ const icons = {
 };
 
 const supervisors = [
-  { user: 'fernando', password: 'fernandoadm2026@', name: 'Fernando', initials: 'FE', role: 'SUPERVISOR' },
-  { user: 'kmr', password: 'kmradm2026@', name: 'KMR', initials: 'KM', role: 'SUPERVISOR' },
-  { user: 'charles', password: 'charlesadm2026@', name: 'Charles', initials: 'CH', role: 'SUPERVISOR' }
+  { user: 'CW', password: 'cwhacker2026@', name: 'Charles', initials: 'CH', role: 'SUPERVISOR' },
+  { user: 'KMR', password: 'kmradm2026@', name: 'KMR', initials: 'KM', role: 'SUPERVISOR' },
+  { user: 'FR', password: 'fradm2026@', name: 'Fernando', initials: 'FE', role: 'SUPERVISOR' }
 ];
 
 const catalog = [
@@ -55,17 +55,8 @@ const catalog = [
   ['Retatrutida ZPHC 60mg', 'ZPHC'], ['Tirzepatida TG 15mg — 4 ampola', 'TG']
 ];
 
-const states = {
-  AC: ['Rio Branco'], AL: ['Maceió'], AP: ['Macapá'], AM: ['Manaus'],
-  BA: ['Salvador', 'Feira de Santana', 'Vitória da Conquista'], CE: ['Fortaleza', 'Juazeiro do Norte'],
-  DF: ['Brasília'], ES: ['Vitória', 'Vila Velha'], GO: ['Goiânia', 'Anápolis'], MA: ['São Luís'],
-  MT: ['Cuiabá'], MS: ['Campo Grande'], MG: ['Belo Horizonte', 'Uberlândia', 'Juiz de Fora'],
-  PA: ['Belém', 'Santarém'], PB: ['João Pessoa', 'Campina Grande'], PR: ['Curitiba', 'Londrina', 'Maringá', 'Foz do Iguaçu'],
-  PE: ['Recife', 'Caruaru', 'Petrolina'], PI: ['Teresina'], RJ: ['Rio de Janeiro', 'Niterói', 'Petropolis'],
-  RN: ['Natal'], RS: ['Porto Alegre', 'Caxias do Sul', 'Pelotas'], RO: ['Porto Velho'], RR: ['Boa Vista'],
-  SC: ['Florianópolis', 'Joinville', 'Blumenau', 'Chapecó'], SP: ['São Paulo', 'Campinas', 'Santos', 'Ribeirão Preto', 'Sorocaba'],
-  SE: ['Aracaju'], TO: ['Palmas']
-};
+// Lista de Estados do Brasil
+const brazilStatesList = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
 const paraguay = {
   ASU: ['Asunción'], ALTO_PARANA: ['Ciudad del Este', 'Presidente Franco', 'Hernandarias'],
@@ -79,6 +70,9 @@ const paraguay = {
 
 const countryNames = { BR: 'Brasil', PY: 'Paraguai' };
 const generalAdmin = { user: 'adm', password: 'acessdenied', name: 'Administrador geral', initials: 'AD', role: 'ADMIN' };
+
+// Cache para evitar requisições repetidas à API do IBGE
+const ibgeCitiesCache = {};
 
 let currentUser = null;
 let activeTab = 'summary';
@@ -96,9 +90,9 @@ const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': 
 function storedSupervisors() { return read('atlasSupervisorAccounts'); }
 function allSupervisors() {
   const overrides = read('atlasSupervisorProfiles');
-  return [...supervisors, ...storedSupervisors()].map(x => ({ ...x, ...(overrides.find(o => o.user === x.user) || {}) }));
+  return [...supervisors, ...storedSupervisors()].map(x => ({ ...x, ...(overrides.find(o => o.user.toLowerCase() === x.user.toLowerCase()) || {}) }));
 }
-function sellers() { return read('atlasSellers').filter(s => s.supervisor === currentUser?.user); }
+function sellers() { return read('atlasSellers').filter(s => s.supervisor.toLowerCase() === currentUser?.user.toLowerCase()); }
 function allSellers() { return read('atlasSellers'); }
 function products() { return read('atlasProducts'); }
 function sales() { return read('atlasSales'); }
@@ -122,7 +116,7 @@ function periodSales(sid, period) {
 function sellerRevenue(id, period = 'day') { return periodSales(id, period).reduce((a, x) => a + x.total, 0); }
 
 function supervisorRevenue(supUser, period = 'day') {
-  const supSellers = allSellers().filter(s => s.supervisor === supUser);
+  const supSellers = allSellers().filter(s => s.supervisor.toLowerCase() === supUser.toLowerCase());
   const sellerIds = supSellers.map(s => s.id);
   return periodSales(null, period).filter(x => sellerIds.includes(x.sellerId)).reduce((a, x) => a + x.total, 0);
 }
@@ -131,8 +125,39 @@ function stock(sid) { return products().filter(p => p.sellerId === sid).reduce((
 function phoneLink(v) { const d = String(v || '').replace(/\D/g, ''); return d ? `https://wa.me/${d.startsWith('55') ? d : '55' + d}` : '#'; }
 function avatarFor(u) { return u?.initials || String(u?.name || '').split(/\s+/).filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase() || 'US'; }
 
-function locationData(country) { return country === 'PY' ? paraguay : states; }
 function locationLabel(country) { return country === 'PY' ? 'Departamento' : 'Estado/UF'; }
+
+// Carregamento de Cidades Oficiais (API do IBGE para o Brasil)
+async function fetchCitiesForRegion(country, uf, citySelect, targetCity = '') {
+  citySelect.innerHTML = '<option value="">Carregando lista de cidades...</option>';
+  citySelect.disabled = true;
+
+  if (!uf) {
+    citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
+    citySelect.disabled = false;
+    return;
+  }
+
+  if (country === 'BR') {
+    try {
+      if (!ibgeCitiesCache[uf]) {
+        const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?ordenacao=nome`);
+        const data = await res.json();
+        ibgeCitiesCache[uf] = data.map(m => m.nome);
+      }
+      const cities = ibgeCitiesCache[uf];
+      citySelect.innerHTML = `<option value="">Selecione a cidade (${cities.length} disponíveis)</option>` +
+        cities.map(c => `<option value="${esc(c)}" ${targetCity === c ? 'selected' : ''}>${esc(c)}</option>`).join('');
+    } catch (e) {
+      citySelect.innerHTML = '<option value="">Erro ao carregar cidades via IBGE</option>';
+    }
+  } else if (country === 'PY') {
+    const list = paraguay[uf] || [];
+    citySelect.innerHTML = `<option value="">Selecione a cidade</option>` +
+      list.map(x => `<option value="${esc(x)}" ${targetCity === x ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  }
+  citySelect.disabled = false;
+}
 
 async function geocodePublic(city, region, country) {
   try {
@@ -180,7 +205,6 @@ function exportUniversalPDF({ title, subtitle, headers = [], rows = [], fileName
   const doc = new window.jspdf.jsPDF('p', 'mm', 'a4');
   const nowStr = new Date().toLocaleString('pt-BR');
 
-  // Cabeçalho PDF
   doc.setFillColor(15, 23, 42);
   doc.rect(0, 0, 210, 28, 'F');
   
@@ -202,7 +226,6 @@ function exportUniversalPDF({ title, subtitle, headers = [], rows = [], fileName
     startY += 8;
   }
 
-  // Tabela Simples
   doc.setFontSize(8);
   doc.setFont('helvetica', 'bold');
   doc.setFillColor(241, 245, 249);
@@ -269,7 +292,6 @@ function appFooter() {
   `;
 }
 
-/* Sidebar e Nav Unificados */
 function navContent() {
   const admin = currentUser.role === 'ADMIN';
   return `
@@ -347,12 +369,7 @@ function appFrame(title, sub, body) {
   const container = document.querySelector('.app-layout') || document.querySelector('main');
   container.innerHTML = `
     <div class="app-layout w-full min-h-screen flex">
-      <!-- Sidebar Desktop -->
-      <aside class="app-sidebar desktop-only">
-        ${navContent()}
-      </aside>
-
-      <!-- Drawer Mobile -->
+      <aside class="app-sidebar desktop-only">${navContent()}</aside>
       <div id="appDrawerOverlay" class="drawer-overlay ${drawerOpen ? 'open' : ''}"></div>
       <aside id="appDrawer" class="app-sidebar drawer-sidebar ${drawerOpen ? 'open' : ''}">
         <div class="flex justify-end p-2 sm:hidden">
@@ -361,14 +378,11 @@ function appFrame(title, sub, body) {
         ${navContent()}
       </aside>
 
-      <!-- Conteúdo Principal -->
       <section class="app-content flex-1 min-w-0 flex flex-col justify-between">
         <div>
           <header class="app-header glass-panel flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <button id="hamburgerBtn" class="hamburger-btn" title="Abrir Menu">
-                ${icons.menu}
-              </button>
+              <button id="hamburgerBtn" class="hamburger-btn" title="Abrir Menu">${icons.menu}</button>
               <div>
                 <div class="eyebrow">BUYCLUB.US SYSTEM · ${new Date().toLocaleDateString('pt-BR')}</div>
                 <h1>${title}</h1>
@@ -468,7 +482,7 @@ function renderAdmin() {
   renderAdminHome();
 }
 
-/* TELA INICIAL: RESUMO DA EQUIPE */
+/* RESUMO DA EQUIPE */
 function renderSummary() {
   const ss = sellers();
   const rows = ss.map(s => ({ s, xs: periodSales(s.id, 'day') }));
@@ -699,11 +713,171 @@ function renderSellersPage() {
   };
 }
 
+/* MODAL DE CADASTRO DE VENDEDOR COM API DO IBGE INTEGRADAS */
+function sellerModal(existing) {
+  const c = existing?.country || 'BR';
+  const m = modal(`
+    <h2>${existing ? 'Editar' : 'Cadastrar'} vendedor</h2>
+    <p>O vendedor ficará vinculado a ${esc(currentUser.name)}.</p>
+    <form id="entityForm" class="seller-form">
+      <label>Nome completo<input name="name" class="control" value="${esc(existing?.name)}" required></label>
+      <label>Login<input name="user" class="control" value="${esc(existing?.user)}" ${existing ? 'readonly' : ''} required></label>
+      <label>Senha ${existing ? '<small>(opcional)</small>' : ''}
+        <div class="password-wrap">
+          <input id="sellerPassword" class="control" name="password" type="password" ${existing ? '' : 'required'}>
+          <button type="button" class="field-toggle" data-target="sellerPassword">Mostrar</button>
+        </div>
+      </label>
+      <label>Confirmar senha
+        <div class="password-wrap">
+          <input id="sellerPasswordConfirm" class="control" name="passwordConfirm" type="password" ${existing ? '' : 'required'}>
+          <button type="button" class="field-toggle" data-target="sellerPasswordConfirm">Mostrar</button>
+        </div>
+      </label>
+      <label>WhatsApp<input name="whatsapp" class="control" value="${esc(existing?.whatsapp)}" placeholder="5541999999999" required></label>
+      <div class="form-grid">
+        <label>País
+          <select name="country" id="countrySelect" class="control">
+            <option value="BR" ${c === 'BR' ? 'selected' : ''}>Brasil</option>
+            <option value="PY" ${c === 'PY' ? 'selected' : ''}>Paraguai</option>
+          </select>
+        </label>
+        <label id="regionLabel">${locationLabel(c)}
+          <select name="uf" id="ufSelect" class="control" required>
+            <option value="">Selecione</option>
+          </select>
+        </label>
+      </div>
+      <label>Cidade
+        <select name="city" id="citySelect" class="control" required>
+          <option value="">Selecione o estado primeiro</option>
+        </select>
+      </label>
+      <div id="entityError" class="login-error"></div>
+      
+      <div class="p-4 bg-sky-50 rounded-xl border border-sky-100 mt-2">
+        <span class="text-xs font-bold text-slate-700 block">Botão de confirmação de cadastro:</span>
+        <button type="button" id="triggerSaveSeller" class="primary-btn w-full mt-2">${icons.check} Salvar Vendedor</button>
+      </div>
+    </form>
+  `);
+
+  const countrySelect = m.querySelector('#countrySelect');
+  const ufSelect = m.querySelector('#ufSelect');
+  const citySelect = m.querySelector('#citySelect');
+
+  const populateStates = () => {
+    const selectedCountry = countrySelect.value;
+    if (selectedCountry === 'BR') {
+      ufSelect.innerHTML = `<option value="">Selecione o Estado</option>` +
+        brazilStatesList.map(u => `<option value="${u}" ${existing?.uf === u ? 'selected' : ''}>${u}</option>`).join('');
+    } else {
+      ufSelect.innerHTML = `<option value="">Selecione o Departamento</option>` +
+        Object.keys(paraguay).map(u => `<option value="${u}" ${existing?.uf === u ? 'selected' : ''}>${u.replaceAll('_', ' ')}</option>`).join('');
+    }
+  };
+
+  populateStates();
+
+  if (existing?.uf) {
+    fetchCitiesForRegion(c, existing.uf, citySelect, existing.city);
+  }
+
+  countrySelect.onchange = () => {
+    populateStates();
+    citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
+  };
+
+  ufSelect.onchange = () => {
+    fetchCitiesForRegion(countrySelect.value, ufSelect.value, citySelect);
+  };
+
+  m.querySelectorAll('.field-toggle').forEach(b => b.onclick = () => {
+    const i = m.querySelector('#' + b.dataset.target);
+    i.type = i.type === 'password' ? 'text' : 'password';
+    b.textContent = i.type === 'password' ? 'Mostrar' : 'Ocultar';
+  });
+
+  const saveSellerHandler = async () => {
+    const form = m.querySelector('#entityForm');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const f = new FormData(form);
+    const list = read('atlasSellers');
+    const user = String(f.get('user')).trim();
+
+    if (!existing && [...supervisors, ...read('atlasSellerAccounts')].some(x => x.user.toLowerCase() === user.toLowerCase())) {
+      m.querySelector('#entityError').textContent = 'Este login já está em uso.';
+      return;
+    }
+    if (f.get('password') !== f.get('passwordConfirm')) {
+      m.querySelector('#entityError').textContent = 'As senhas não conferem.';
+      return;
+    }
+
+    confirmActionModal({
+      title: existing ? 'Salvar Alterações do Vendedor' : 'Cadastrar Novo Vendedor',
+      subtitle: `Vendedor: ${f.get('name')}`,
+      warningText: 'Confirma as informações cadastrais e vinculação ao supervisor?',
+      confirmText: 'Salvar Cadastro',
+      onConfirm: async () => {
+        let geo = await geocodePublic(f.get('city'), f.get('uf'), f.get('country'));
+        let s = existing || { id: uid(), supervisor: currentUser.user };
+        s.name = f.get('name');
+        s.user = user;
+        s.country = f.get('country');
+        s.whatsapp = String(f.get('whatsapp')).replace(/\D/g, '');
+        s.uf = f.get('uf');
+        s.city = f.get('city');
+        s.lat = geo?.lat || null;
+        s.lng = geo?.lng || null;
+        if (f.get('password')) s.password = f.get('password');
+
+        const pos = list.findIndex(x => x.id === s.id);
+        pos >= 0 ? list[pos] = s : list.push(s);
+        write('atlasSellers', list);
+
+        const ac = read('atlasSellerAccounts');
+        const ai = ac.findIndex(x => x.id === s.id);
+        ai >= 0 ? ac[ai] = s : ac.push(s);
+        write('atlasSellerAccounts', ac);
+
+        m.remove();
+        renderSellersPage();
+        showToast('Vendedor salvo com sucesso');
+      }
+    });
+  };
+
+  m.querySelector('#triggerSaveSeller').onclick = saveSellerHandler;
+}
+
+function deleteSeller(id) {
+  const s = sellers().find(x => x.id === id) || allSellers().find(x => x.id === id);
+  confirmActionModal({
+    title: `Excluir Vendedor: ${s.name}`,
+    subtitle: 'Exclusão de conta e vínculos',
+    warningText: 'ATENÇÃO: Todas as vendas registradas e produtos atribuídos a este vendedor também serão permanentemente removidos.',
+    confirmText: 'Confirmar Exclusão',
+    onConfirm: () => {
+      write('atlasSellers', read('atlasSellers').filter(x => x.id !== id));
+      write('atlasSellerAccounts', read('atlasSellerAccounts').filter(x => x.id !== id));
+      write('atlasProducts', products().filter(x => x.sellerId !== id));
+      write('atlasSales', sales().filter(x => x.sellerId !== id));
+      renderSellersPage();
+      showToast('Vendedor removido');
+    }
+  });
+}
+
 /* PEDIDOS EM REPOSIÇÃO (SUPERVISOR) */
 function renderSupervisorOrdersPage() {
   const teamSellers = sellers();
   const teamSellerIds = teamSellers.map(s => s.id);
-  const activeOrders = orders().filter(o => (teamSellerIds.includes(o.sellerId) || o.supervisor === currentUser.user) && o.status !== 'Entregue');
+  const activeOrders = orders().filter(o => (teamSellerIds.includes(o.sellerId) || o.supervisor.toLowerCase() === currentUser.user.toLowerCase()) && o.status !== 'Entregue');
 
   const pendingCount = activeOrders.filter(o => o.status === 'Em análise' || o.status === 'Pendente').length;
   const onTheWayCount = activeOrders.filter(o => o.status === 'A caminho').length;
@@ -904,11 +1078,11 @@ function deleteOrder(orderId) {
   });
 }
 
-/* ABA ARQUIVADOS (SUPERVISOR + PDF) */
+/* ABA ARQUIVADOS */
 function renderArchivedPage() {
   const teamSellers = sellers();
   const teamSellerIds = teamSellers.map(s => s.id);
-  const archivedOrders = orders().filter(o => (teamSellerIds.includes(o.sellerId) || o.supervisor === currentUser.user) && o.status === 'Entregue');
+  const archivedOrders = orders().filter(o => (teamSellerIds.includes(o.sellerId) || o.supervisor.toLowerCase() === currentUser.user.toLowerCase()) && o.status === 'Entregue');
   const teamSales = sales().filter(x => teamSellerIds.includes(x.sellerId));
 
   appFrame('Arquivados / Histórico', 'Histórico completo de pedidos entregues e saídas de estoque (baixas) da sua equipe.', `
@@ -1037,165 +1211,6 @@ function renderArchivedPage() {
       fileName: 'buyclub-historico-arquivados.pdf'
     });
   };
-}
-
-function sellerModal(existing) {
-  const c = existing?.country || 'BR';
-  const m = modal(`
-    <h2>${existing ? 'Editar' : 'Cadastrar'} vendedor</h2>
-    <p>O vendedor ficará vinculado a ${esc(currentUser.name)}.</p>
-    <form id="entityForm" class="seller-form">
-      <label>Nome completo<input name="name" class="control" value="${esc(existing?.name)}" required></label>
-      <label>Login<input name="user" class="control" value="${esc(existing?.user)}" ${existing ? 'readonly' : ''} required></label>
-      <label>Senha ${existing ? '<small>(opcional)</small>' : ''}
-        <div class="password-wrap">
-          <input id="sellerPassword" class="control" name="password" type="password" ${existing ? '' : 'required'}>
-          <button type="button" class="field-toggle" data-target="sellerPassword">Mostrar</button>
-        </div>
-      </label>
-      <label>Confirmar senha
-        <div class="password-wrap">
-          <input id="sellerPasswordConfirm" class="control" name="passwordConfirm" type="password" ${existing ? '' : 'required'}>
-          <button type="button" class="field-toggle" data-target="sellerPasswordConfirm">Mostrar</button>
-        </div>
-      </label>
-      <label>WhatsApp<input name="whatsapp" class="control" value="${esc(existing?.whatsapp)}" placeholder="5541999999999" required></label>
-      <div class="form-grid">
-        <label>País
-          <select name="country" id="countrySelect" class="control">
-            <option value="BR" ${c === 'BR' ? 'selected' : ''}>Brasil</option>
-            <option value="PY" ${c === 'PY' ? 'selected' : ''}>Paraguai</option>
-          </select>
-        </label>
-        <label id="regionLabel">${locationLabel(c)}
-          <select name="uf" id="ufSelect" class="control" required>
-            <option value="">Selecione</option>
-            ${Object.keys(locationData(c)).map(u => `<option value="${u}" ${existing?.uf === u ? 'selected' : ''}>${u.replaceAll('_', ' ')}</option>`).join('')}
-          </select>
-        </label>
-      </div>
-      <label>Cidade
-        <select name="city" id="citySelect" class="control" required>
-          <option value="">Selecione o estado primeiro</option>
-        </select>
-      </label>
-      <div id="entityError" class="login-error"></div>
-      
-      <div class="p-4 bg-sky-50 rounded-xl border border-sky-100 mt-2">
-        <span class="text-xs font-bold text-slate-700 block">Botão de confirmação de cadastro:</span>
-        <button type="button" id="triggerSaveSeller" class="primary-btn w-full mt-2">${icons.check} Salvar Vendedor</button>
-      </div>
-    </form>
-  `);
-
-  const country = m.querySelector('#countrySelect');
-  let uf = m.querySelector('#ufSelect');
-  let city = m.querySelector('#citySelect');
-  let label = m.querySelector('#regionLabel');
-
-  const fillCities = () => {
-    const list = locationData(country.value)[uf.value] || [];
-    city.innerHTML = `<option value="">Selecione a cidade</option>${list.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('')}`;
-    if (existing?.city && list.includes(existing.city)) city.value = existing.city;
-  };
-
-  const fillRegions = () => {
-    const data = locationData(country.value);
-    label.innerHTML = `${locationLabel(country.value)}
-      <select name="uf" id="ufSelect" class="control" required>
-        <option value="">Selecione</option>
-        ${Object.keys(data).map(u => `<option value="${u}">${u.replaceAll('_', ' ')}</option>`).join('')}
-      </select>`;
-    const n = label.querySelector('select');
-    if (existing?.uf && country.value === c) n.value = existing.uf;
-    n.onchange = fillCities;
-    fillCities();
-    return n;
-  };
-
-  country.onchange = () => { existing = null; uf = fillRegions(); };
-  uf.onchange = fillCities;
-  fillCities();
-
-  m.querySelectorAll('.field-toggle').forEach(b => b.onclick = () => {
-    const i = m.querySelector('#' + b.dataset.target);
-    i.type = i.type === 'password' ? 'text' : 'password';
-    b.textContent = i.type === 'password' ? 'Mostrar' : 'Ocultar';
-  });
-
-  const saveSellerHandler = async () => {
-    const form = m.querySelector('#entityForm');
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
-
-    const f = new FormData(form);
-    const list = read('atlasSellers');
-    const user = String(f.get('user')).trim().toLowerCase();
-
-    if (!existing && [...supervisors, ...read('atlasSellerAccounts')].some(x => x.user === user)) {
-      m.querySelector('#entityError').textContent = 'Este login já está em uso.';
-      return;
-    }
-    if (f.get('password') !== f.get('passwordConfirm')) {
-      m.querySelector('#entityError').textContent = 'As senhas não conferem.';
-      return;
-    }
-
-    confirmActionModal({
-      title: existing ? 'Salvar Alterações do Vendedor' : 'Cadastrar Novo Vendedor',
-      subtitle: `Vendedor: ${f.get('name')}`,
-      warningText: 'Confirma as informações cadastrais e vinculação ao supervisor?',
-      confirmText: 'Salvar Cadastro',
-      onConfirm: async () => {
-        let geo = await geocodePublic(f.get('city'), f.get('uf'), f.get('country'));
-        let s = existing || { id: uid(), supervisor: currentUser.user };
-        s.name = f.get('name');
-        s.user = user;
-        s.country = f.get('country');
-        s.whatsapp = String(f.get('whatsapp')).replace(/\D/g, '');
-        s.uf = f.get('uf');
-        s.city = f.get('city');
-        s.lat = geo?.lat || null;
-        s.lng = geo?.lng || null;
-        if (f.get('password')) s.password = f.get('password');
-
-        const pos = list.findIndex(x => x.id === s.id);
-        pos >= 0 ? list[pos] = s : list.push(s);
-        write('atlasSellers', list);
-
-        const ac = read('atlasSellerAccounts');
-        const ai = ac.findIndex(x => x.id === s.id);
-        ai >= 0 ? ac[ai] = s : ac.push(s);
-        write('atlasSellerAccounts', ac);
-
-        m.remove();
-        renderSellersPage();
-        showToast('Vendedor salvo com sucesso');
-      }
-    });
-  };
-
-  m.querySelector('#triggerSaveSeller').onclick = saveSellerHandler;
-}
-
-function deleteSeller(id) {
-  const s = sellers().find(x => x.id === id) || allSellers().find(x => x.id === id);
-  confirmActionModal({
-    title: `Excluir Vendedor: ${s.name}`,
-    subtitle: 'Exclusão de conta e vínculos',
-    warningText: 'ATENÇÃO: Todas as vendas registradas e produtos atribuídos a este vendedor também serão permanentemente removidos.',
-    confirmText: 'Confirmar Exclusão',
-    onConfirm: () => {
-      write('atlasSellers', read('atlasSellers').filter(x => x.id !== id));
-      write('atlasSellerAccounts', read('atlasSellerAccounts').filter(x => x.id !== id));
-      write('atlasProducts', products().filter(x => x.sellerId !== id));
-      write('atlasSales', sales().filter(x => x.sellerId !== id));
-      renderSellersPage();
-      showToast('Vendedor removido');
-    }
-  });
 }
 
 function renderCatalogPage() {
@@ -1384,7 +1399,6 @@ function renderProductsPage() {
 
 function viewSellerProductsModal(sellerId) {
   const seller = sellers().find(s => s.id === sellerId) || allSellers().find(s => s.id === sellerId);
-  // MOSTRAR APENAS PRODUTOS COM ESTOQUE MAIOR QUE ZERO NO PAINEL DO VENDEDOR
   const sellerProds = products().filter(p => p.sellerId === sellerId && p.stock > 0);
   const totalVal = sellerProds.reduce((a, p) => a + (p.price * p.stock), 0);
 
@@ -1504,7 +1518,6 @@ function productModal(existing, preselectedSellerId) {
         const c = all[i];
         const selId = f.get('sellerId');
 
-        // REUSAR REGISTRO CASO O VENDEDOR JÁ TENHA ESSA ITEM CADASTRADO (MESMO QUE ZERADO)
         let p = existing || list.find(x => x.sellerId === selId && (x.catalogIndex === i || x.name === c[0])) || { id: uid(), catalogIndex: i, sellerId: selId };
         
         p.name = c[0];
@@ -1662,9 +1675,8 @@ function renderMapPage() {
   }, 50);
 }
 
-/* TELA DO VENDEDOR (APENAS PRODUTOS COM ESTOQUE MAIOR QUE ZERO APARECEM) */
+/* PAINEL DO VENDEDOR */
 function renderSeller() {
-  // FILTRO OBRIGATÓRIO: APENAS EXIBE PRODUTOS COM ESTOQUE MAIOR QUE ZERO (stock > 0)
   const sellerProducts = products().filter(p => p.sellerId === currentUser.id && Number(p.stock) > 0);
   
   const totalStockValue = sellerProducts.reduce((a, p) => a + (p.price * p.stock), 0);
@@ -1684,12 +1696,7 @@ function renderSeller() {
 
   container.innerHTML = `
     <div class="app-layout w-full min-h-screen flex">
-      <!-- Sidebar Desktop para Vendedor -->
-      <aside class="app-sidebar desktop-only">
-        ${sellerNavContent()}
-      </aside>
-
-      <!-- Drawer Mobile para Vendedor -->
+      <aside class="app-sidebar desktop-only">${sellerNavContent()}</aside>
       <div id="sellerDrawerOverlay" class="drawer-overlay ${drawerOpen ? 'open' : ''}"></div>
       <aside id="sellerDrawer" class="app-sidebar drawer-sidebar ${drawerOpen ? 'open' : ''}">
         <div class="flex justify-end p-2 sm:hidden">
@@ -1698,14 +1705,11 @@ function renderSeller() {
         ${sellerNavContent()}
       </aside>
 
-      <!-- Conteúdo Principal do Vendedor -->
       <section class="app-content flex-1 min-w-0 flex flex-col justify-between">
         <div>
           <header class="app-header glass-panel flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <button id="sellerHamburgerBtn" class="hamburger-btn" title="Abrir Menu">
-                ${icons.menu}
-              </button>
+              <button id="sellerHamburgerBtn" class="hamburger-btn" title="Abrir Menu">${icons.menu}</button>
               <div>
                 <div class="eyebrow">BUYCLUB.US SYSTEM · PAINEL DO VENDEDOR</div>
                 <h1 class="text-xl font-black text-slate-900">${screenTitle}</h1>
@@ -2057,7 +2061,6 @@ function setupNewOrderTabEvents(fullSysCatalog) {
   };
 }
 
-/* VENDEDOR: ACOMPANHAR MEUS PEDIDOS */
 function renderSellerMyOrdersTab(myOrders) {
   const activeOrders = myOrders.filter(o => o.status !== 'Entregue');
 
@@ -2127,7 +2130,6 @@ function renderSellerMyOrdersTab(myOrders) {
   }, 50);
 }
 
-/* VENDEDOR: ARQUIVADOS / HISTÓRICO */
 function renderSellerArchivedTab(myOrders) {
   const deliveredOrders = myOrders.filter(o => o.status === 'Entregue');
   const mySalesHistory = sales().filter(s => s.sellerId === currentUser.id);
@@ -2164,7 +2166,7 @@ function renderSellerArchivedTab(myOrders) {
             `;
           }).join('')}
         </div>
-      ` : '<div class="empty-state compact-empty"><strong>Nenhum pedido entregue no seu histórico.</strong></div>'}
+      ` : '<div class="empty-state compact-empty"><strong>Nenhum pedido delivered no seu histórico.</strong></div>'}
     </div>
 
     <div class="panel glass-panel">
@@ -2309,14 +2311,13 @@ function renderAdminHome() {
       </div>
     `;
 
-    // Incluir o ADM Geral como uma das opções no ranking se ele possuir vendedores ou vendas
     const allSupervisingEntities = [
       { user: currentUser.user, name: `${currentUser.name} (ADM Geral)`, initials: currentUser.initials, role: 'ADMIN' },
       ...supers
     ];
 
     const rankingData = allSupervisingEntities.map(s => {
-      const supSellers = ss.filter(v => v.supervisor === s.user);
+      const supSellers = ss.filter(v => v.supervisor.toLowerCase() === s.user.toLowerCase());
       const supSellerIds = supSellers.map(v => v.id);
       const sSales = filteredSales.filter(x => supSellerIds.includes(x.sellerId));
       const sRev = sSales.reduce((a, x) => a + x.total, 0);
@@ -2384,7 +2385,7 @@ function renderAdminHome() {
         { user: currentUser.user, name: `${currentUser.name} (ADM Geral)` },
         ...supers
       ].map(s => {
-        const supSellers = ss.filter(v => v.supervisor === s.user);
+        const supSellers = ss.filter(v => v.supervisor.toLowerCase() === s.user.toLowerCase());
         const supSellerIds = supSellers.map(v => v.id);
         const sSales = filteredSales.filter(x => supSellerIds.includes(x.sellerId));
         return [
@@ -2401,7 +2402,6 @@ function renderAdminHome() {
   updateDashboard();
 }
 
-/* RELATÓRIOS GLOBAIS DO ADM GERAL */
 function renderAdminReportsPage() {
   const supers = allSupervisors();
   const allSupList = [{ user: currentUser.user, name: `${currentUser.name} (ADM Geral)` }, ...supers];
@@ -2437,7 +2437,7 @@ function renderAdminReportsPage() {
 
     let targetSellers = allSellers();
     if (selectedSup !== 'ALL') {
-      targetSellers = targetSellers.filter(s => s.supervisor === selectedSup);
+      targetSellers = targetSellers.filter(s => s.supervisor.toLowerCase() === selectedSup.toLowerCase());
     }
 
     const rows = targetSellers.map(s => {
@@ -2474,7 +2474,7 @@ function renderAdminReportsPage() {
               <span>Vendedor</span><span>Supervisor</span><span>Itens Vendidos</span><span>Faturamento Total</span><span>Estoque Atual</span>
             </div>
             ${rows.map(r => {
-              const supObj = allSupList.find(x => x.user === r.s.supervisor);
+              const supObj = allSupList.find(x => x.user.toLowerCase() === r.s.supervisor.toLowerCase());
               return `
                 <div class="table-row" style="grid-template-columns: 1.8fr 1.5fr 1fr 1.2fr 1fr;">
                   <span data-label="Vendedor"><b>${esc(r.s.name)}</b><small>${esc(r.s.city)} / ${esc(r.s.uf)}</small></span>
@@ -2497,7 +2497,7 @@ function renderAdminReportsPage() {
     const period = document.getElementById('adminReportPeriod').value;
     const selectedSup = document.getElementById('adminReportSupervisor').value;
     let targetSellers = allSellers();
-    if (selectedSup !== 'ALL') targetSellers = targetSellers.filter(s => s.supervisor === selectedSup);
+    if (selectedSup !== 'ALL') targetSellers = targetSellers.filter(s => s.supervisor.toLowerCase() === selectedSup.toLowerCase());
 
     exportUniversalPDF({
       title: 'Relatório Global de Vendas ADM',
@@ -2505,7 +2505,7 @@ function renderAdminReportsPage() {
       headers: ['Vendedor', 'Supervisor', 'Cidade/UF', 'Itens Vendidos', 'Faturamento Total'],
       rows: targetSellers.map(s => {
         const xs = periodSales(s.id, period);
-        const supObj = allSupList.find(x => x.user === s.supervisor);
+        const supObj = allSupList.find(x => x.user.toLowerCase() === s.supervisor.toLowerCase());
         return [
           s.name,
           supObj?.name || s.supervisor,
@@ -2545,7 +2545,7 @@ function renderAdminUsers() {
           <div class="table-row admin-row">
             <span data-label="Supervisor"><b>${esc(s.name)}</b></span>
             <span data-label="Login">@${esc(s.user)}</span>
-            <span data-label="Vendedores">${ss.filter(v => v.supervisor === s.user).length} membros</span>
+            <span data-label="Vendedores">${ss.filter(v => v.supervisor.toLowerCase() === s.user.toLowerCase()).length} membros</span>
             <span data-label="Status"><span class="status-pill">Ativo</span></span>
           </div>
         `).join('')}
@@ -2574,10 +2574,10 @@ function accountModal(type) {
     const form = m.querySelector('form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
     const f = new FormData(form);
-    const u = String(f.get('user')).trim().toLowerCase();
+    const u = String(f.get('user')).trim();
 
     if (f.get('password') !== f.get('confirm')) return m.querySelector('#entityError').textContent = 'As senhas não conferem.';
-    if (allSupervisors().some(x => x.user === u) || allSellers().some(x => x.user === u)) return m.querySelector('#entityError').textContent = 'Login já cadastrado.';
+    if (allSupervisors().some(x => x.user.toLowerCase() === u.toLowerCase()) || allSellers().some(x => x.user.toLowerCase() === u.toLowerCase())) return m.querySelector('#entityError').textContent = 'Login já cadastrado.';
 
     confirmActionModal({
       title: 'Criar Novo Supervisor',
@@ -2617,8 +2617,17 @@ function adminSellerModal() {
         </select>
       </label>
       <div class="form-grid">
-        <label>Estado<input name="uf" class="control" required></label>
-        <label>Cidade<input name="city" class="control" required></label>
+        <label>Estado
+          <select name="uf" id="adminUfSelect" class="control" required>
+            <option value="">Selecione o Estado</option>
+            ${brazilStatesList.map(u => `<option value="${u}">${u}</option>`).join('')}
+          </select>
+        </label>
+        <label>Cidade
+          <select name="city" id="adminCitySelect" class="control" required>
+            <option value="">Selecione o estado primeiro</option>
+          </select>
+        </label>
       </div>
       <label>WhatsApp<input name="whatsapp" class="control" placeholder="5541999999999"></label>
       <div id="entityError" class="login-error"></div>
@@ -2626,14 +2635,21 @@ function adminSellerModal() {
     </form>
   `);
 
+  const adminUfSelect = m.querySelector('#adminUfSelect');
+  const adminCitySelect = m.querySelector('#adminCitySelect');
+
+  adminUfSelect.onchange = () => {
+    fetchCitiesForRegion('BR', adminUfSelect.value, adminCitySelect);
+  };
+
   m.querySelector('#triggerAdminSaveSeller').onclick = () => {
     const form = m.querySelector('form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
     const f = new FormData(form);
-    const u = String(f.get('user')).trim().toLowerCase();
+    const u = String(f.get('user')).trim();
 
     if (f.get('password') !== f.get('confirm')) return m.querySelector('#entityError').textContent = 'As senhas não conferem.';
-    if (allSupervisors().some(x => x.user === u) || allSellers().some(x => x.user === u)) return m.querySelector('#entityError').textContent = 'Login já cadastrado.';
+    if (allSupervisors().some(x => x.user.toLowerCase() === u.toLowerCase()) || allSellers().some(x => x.user.toLowerCase() === u.toLowerCase())) return m.querySelector('#entityError').textContent = 'Login já cadastrado.';
 
     confirmActionModal({
       title: 'Criar Novo Vendedor',
@@ -2666,8 +2682,8 @@ function adminSellerModal() {
 
 function renderProfile() {
   const isSeller = currentUser.role === 'SELLER';
-  const isGeneral = currentUser.user === 'adm';
-  const supervisor = isSeller ? allSupervisors().find(s => s.user === currentUser.supervisor) : null;
+  const isGeneral = currentUser.user.toLowerCase() === 'adm';
+  const supervisor = isSeller ? allSupervisors().find(s => s.user.toLowerCase() === currentUser.supervisor.toLowerCase()) : null;
 
   appFrame('Meus Dados', 'Atualize suas credenciais e dados cadastrais.', `
     <div class="profile-layout">
@@ -2712,24 +2728,24 @@ function renderProfile() {
           write('atlasGeneralAdmin', [currentUser]);
         } else if (isSeller) {
           const list = read('atlasSellerAccounts');
-          const i = list.findIndex(x => x.user === currentUser.user);
+          const i = list.findIndex(x => x.user.toLowerCase() === currentUser.user.toLowerCase());
           if (i >= 0) list[i] = currentUser;
           write('atlasSellerAccounts', list);
 
           const ss = allSellers();
-          const si = ss.findIndex(x => x.user === currentUser.user);
+          const si = ss.findIndex(x => x.user.toLowerCase() === currentUser.user.toLowerCase());
           if (si >= 0) {
             ss[si] = { ...ss[si], name: currentUser.name, whatsapp: currentUser.whatsapp, password: currentUser.password };
             write('atlasSellers', ss);
           }
         } else {
           const list = read('atlasSupervisorProfiles');
-          const i = list.findIndex(x => x.user === currentUser.user);
+          const i = list.findIndex(x => x.user.toLowerCase() === currentUser.user.toLowerCase());
           i >= 0 ? list[i] = currentUser : list.push(currentUser);
           write('atlasSupervisorProfiles', list);
 
           const stored = storedSupervisors();
-          const si = stored.findIndex(x => x.user === currentUser.user);
+          const si = stored.findIndex(x => x.user.toLowerCase() === currentUser.user.toLowerCase());
           if (si >= 0) {
             stored[si] = { ...stored[si], ...currentUser };
             write('atlasSupervisorAccounts', stored);
@@ -2789,11 +2805,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (loginForm) {
     loginForm.onsubmit = e => {
       e.preventDefault();
-      const u = document.getElementById('loginUser').value.trim().toLowerCase();
+      const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPassword').value;
       const adminGeneral = (read('atlasGeneralAdmin', [generalAdmin])[0] || generalAdmin);
       const allUsers = [adminGeneral, ...allSupervisors(), ...read('atlasSellerAccounts')];
-      const account = allUsers.find(x => x.user === u && x.password === p);
+      
+      const account = allUsers.find(x => x.user.toLowerCase() === u.toLowerCase() && x.password === p);
 
       if (!account) {
         document.getElementById('loginError').textContent = 'Usuário ou senha inválidos.';
