@@ -2086,6 +2086,9 @@ let modalPriceType = 'varejo';
 function isWholesaleConsultProduct(product) {
   return product && (['tirzec', 'lipoless', 'zphc', 'usapeptides', 'tg', 'dysport'].includes(product.category) || [33, 17, 34].includes(product.id));
 }
+function isRetailConsultProduct(product) {
+  return product && product.category === 'usapeptides' && ![4, 2, 1].includes(product.id);
+}
 function isConsultProduct(product) {
   return product && (product.id === 113 || (product.category === 'zphc' && !(Number(product.priceVarejo) > 0)));
 }
@@ -2106,6 +2109,9 @@ function getWaMessage(product, type, order = null) {
       : product.priceAtacado5 > 0
       ? `R$ ${formatBRL(product.priceAtacado5)} por unidade — total mínimo: R$ ${formatBRL(product.priceAtacado5 * 5)}`
       : 'Valor a combinar';
+  } else if (isRetailConsultProduct(product)) {
+    modalityLine = 'VAREJO';
+    priceLine = 'Valor a consultar';
   } else if (isWholesaleConsultProduct(product)) {
     modalityLine = 'CONSULTA DE VALORES';
     priceLine = 'Valores a combinar';
@@ -2144,6 +2150,7 @@ function waLink(msg, phone = WA_PHONE){
 }
 
 function getCheckoutPriceLabel(product, type) {
+  if (isRetailConsultProduct(product) && type === 'varejo') return 'valores a consultar';
   if (isConsultProduct(product) && type !== 'varejo') return 'valores a combinar';
   if (isWholesaleConsultProduct(product) && (type === 'atacado5' || type === 'atacado10')) return 'valores a consultar';
   if (type === 'atacado10') return typeof product.priceAtacado10 === 'number' ? `Atacado 10+: R$ ${formatBRL(product.priceAtacado10)}/un` : 'Atacado 10+: valor sob consulta';
@@ -2338,7 +2345,7 @@ function renderProducts(){
             <div class="price-display-box">
               <div class="price-row-main">
                 <span class="price-currency">R$</span>
-                <span class="price-amount" data-price-val>${formatBRL(p.priceVarejo)}</span>
+                <span class="price-amount" data-price-val>${isRetailConsultProduct(p) ? t('priceConsult') : formatBRL(p.priceVarejo)}</span>
                 <span class="price-unit-label" data-price-unit>${t('unitSuffix')}</span>
               </div>
               <div class="price-wholesale-info" data-wholesale-info style="display:none;">
@@ -2392,7 +2399,7 @@ function bindCards(parent){
 
       if(type === 'varejo') {
         if(btnVarejo) btnVarejo.classList.add('active');
-        if(priceValEl) priceValEl.textContent = formatBRL(p.priceVarejo);
+        if(priceValEl) priceValEl.textContent = isRetailConsultProduct(p) ? t('priceConsult') : formatBRL(p.priceVarejo);
         if(wholesaleInfoEl) wholesaleInfoEl.style.display = 'none';
         ctaBtn.dataset.wa = getWaMessage(p, 'varejo');
       } else if(type === 'atacado5') {
@@ -2459,7 +2466,7 @@ function openModal(id, initialType = 'varejo'){
 function updateModalUI() {
   if(!selectedProduct) return;
   const wholesaleConsult = isWholesaleConsultProduct(selectedProduct);
-  let currentPrice = selectedProduct.priceVarejo;
+  let currentPrice = isRetailConsultProduct(selectedProduct) ? t('priceConsult') : selectedProduct.priceVarejo;
   let wholesaleLabelText = '';
   if(modalPriceType === 'atacado5') {
     currentPrice = wholesaleConsult ? t('priceConsult') : selectedProduct.priceAtacado5;
