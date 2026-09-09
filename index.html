@@ -2301,9 +2301,9 @@ function renderCatBar(){
 }
 
 const ORIGIN_LABELS = {
-  pt: { newlife: 'Fabricado nos EUA', synedica: 'Fabricado na Alemanha', usapeptides: 'Fabricado nos EUA', zphc: 'Fabricado na China', tg: 'Fabricado no Paraguai', tirzec: 'Fabricado no Paraguai', lipoless: 'Fabricado no Paraguai', dysport: 'Origem informada pelo fornecedor' },
-  en: { newlife: 'Made in the USA', synedica: 'Made in Germany', usapeptides: 'Made in the USA', zphc: 'Made in China', tg: 'Made in Paraguay', tirzec: 'Made in Paraguay', lipoless: 'Made in Paraguay', dysport: 'Origin informed by supplier' },
-  es: { newlife: 'Fabricado en EE. UU.', synedica: 'Fabricado en Alemania', usapeptides: 'Fabricado en EE. UU.', zphc: 'Fabricado en China', tg: 'Fabricado en Paraguay', tirzec: 'Fabricado en Paraguay', lipoless: 'Fabricado en Paraguay', dysport: 'Origen informado por el proveedor' }
+  pt: { newlife: 'Fabricado nos EUA', synedica: 'Fabricado na Alemanha', usapeptides: 'Fabricado nos EUA', zphc: 'Fabricado na China', tg: 'Fabricado no Paraguai', tirzec: 'Fabricado no Paraguai', lipoless: 'Fabricado no Paraguai', dysport: 'Fabricado na França' },
+  en: { newlife: 'Made in the USA', synedica: 'Made in Germany', usapeptides: 'Made in the USA', zphc: 'Made in China', tg: 'Made in Paraguay', tirzec: 'Made in Paraguay', lipoless: 'Made in Paraguay', dysport: 'Made in France' },
+  es: { newlife: 'Fabricado en EE. UU.', synedica: 'Fabricado en Alemania', usapeptides: 'Fabricado en EE. UU.', zphc: 'Fabricado en China', tg: 'Fabricado en Paraguay', tirzec: 'Fabricado en Paraguay', lipoless: 'Fabricado en Paraguay', dysport: 'Fabricado en Francia' }
 };
 function getOriginLabel(categoryId) {
   return (ORIGIN_LABELS[currentLang] || ORIGIN_LABELS.pt)[categoryId] || '';
