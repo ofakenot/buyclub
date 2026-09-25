@@ -2096,13 +2096,13 @@ let products = productData.pt;
 let selectedProduct = null;
 let modalPriceType = 'varejo';
 function isWholesaleConsultProduct(product) {
-  return product && (['tirzec', 'lipoless', 'zphc', 'usapeptides', 'tg', 'dysport'].includes(product.category) || [33, 17, 34].includes(product.id));
+  return product && (['tirzec', 'lipoless', 'zphc', 'usapeptides', 'tg', 'dysport'].includes(product.category) || [33, 17, 34, 113].includes(product.id));
 }
 function isRetailConsultProduct(product) {
   return product && product.category === 'usapeptides' && ![4, 2, 1].includes(product.id);
 }
 function isConsultProduct(product) {
-  return product && (product.id === 113 || (product.category === 'zphc' && !(Number(product.priceVarejo) > 0)));
+  return product && (product.category === 'zphc' && !(Number(product.priceVarejo) > 0));
 }
 function getWaMessage(product, type, order = null) {
   const productLabel = `${product.badge} — ${product.name}`;
@@ -2124,7 +2124,7 @@ function getWaMessage(product, type, order = null) {
   } else if (isRetailConsultProduct(product)) {
     modalityLine = 'VAREJO';
     priceLine = 'Valor a consultar';
-  } else if (isWholesaleConsultProduct(product)) {
+  } else if (isConsultProduct(product)) {
     modalityLine = 'CONSULTA DE VALORES';
     priceLine = 'Valores a combinar';
   } else {
