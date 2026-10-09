@@ -711,7 +711,7 @@ position: absolute; top: .65rem; left: .65rem;
     .pre-page-overlay.is-closed { opacity: 0; visibility: hidden; pointer-events: none; }
     .pre-page-card {
       position: relative; box-sizing: border-box; width: min(100%, 1120px); min-height: calc(100dvh - 2rem); max-height: calc(100dvh - 2rem);
-      display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: clamp(1.5rem, 5vh, 3.5rem);
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: clamp(1rem, 2.5vh, 1.8rem);
       margin: auto; padding: clamp(1.5rem, 5vw, 3.25rem) clamp(1rem, 5vw, 3.5rem); border: 0; border-radius: 1.5rem; background: transparent; box-shadow: none;
       text-align: center; font-family: Arial, Helvetica, sans-serif;
     }
@@ -720,7 +720,7 @@ position: absolute; top: .65rem; left: .65rem;
     .pre-page-logo .contact-check { width: 16px; height: 16px; color: #0798cb; }
     .pre-page-badge { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 999px; background: rgba(15,23,42,.06); color: #475569; font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
     .pre-page-badge svg { width: .8rem; height: .8rem; }
-    .pre-page-hero-main { display: flex; flex: 1 1 auto; width: min(100%, 820px); min-height: clamp(230px, 42vh, 430px); flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; }
+    .pre-page-hero-main { display: flex; flex: 0 1 auto; width: min(100%, 820px); min-height: clamp(210px, 30vh, 360px); flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; }
     .pre-page-hero-kicker { margin-bottom: .85rem; color: #64748b; font-size: .62rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
     .pre-page-title { max-width: 760px; margin: 0 auto .9rem; color: #0f172a; font-family: Arial, Helvetica, sans-serif; font-size: clamp(1.65rem, 4vw, 2.7rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; }
     .pre-page-lead { max-width: 620px; margin: 0 auto .55rem; color: #334155; font-size: clamp(.9rem, 1.6vw, 1.15rem); font-weight: 700; line-height: 1.45; }
@@ -755,8 +755,8 @@ position: absolute; top: .65rem; left: .65rem;
     .info-wa-link:hover { background: #000; transform: translateY(-1px); }
     @media (max-width: 760px) {
       .pre-page-overlay { padding: .4rem; align-items: flex-start; }
-      .pre-page-card { min-height: calc(100dvh - .8rem); max-height: none; gap: 1rem; padding: 1rem .6rem 1.2rem; }
-      .pre-page-hero-main { min-height: 240px; }
+      .pre-page-card { min-height: calc(100dvh - .8rem); max-height: none; gap: .85rem; padding: 1rem .6rem 1.2rem; justify-content: center; }
+      .pre-page-hero-main { min-height: 190px; flex: 0 1 auto; }
       .pre-page-title { font-size: clamp(1.45rem, 6vw, 2.1rem); }
       .pre-page-lead { font-size: .85rem; }
       .pre-page-hero-bottom { grid-template-columns: 1fr; width: min(100%, 560px); gap: .8rem; }
@@ -773,7 +773,7 @@ position: absolute; top: .65rem; left: .65rem;
       .pre-page-logo { font-size: .96rem !important; }
       .pre-page-logo .contact-check { width: 14px; height: 14px; }
       .pre-page-badge { font-size: .47rem; padding: .22rem .5rem; }
-      .pre-page-hero-main { min-height: 200px; }
+      .pre-page-hero-main { min-height: 165px; }
       .pre-page-hero-kicker { margin-bottom: .45rem; font-size: .5rem; }
       .pre-page-title { font-size: 1.32rem; margin-bottom: .45rem; }
       .pre-page-lead { font-size: .7rem; }
