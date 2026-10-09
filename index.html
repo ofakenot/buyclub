@@ -699,90 +699,118 @@ position: absolute; top: .65rem; left: .65rem;
     .country-chip i { width:7px; height:7px; border-radius:50%; display:inline-block; }
     @media (max-width:760px) { .cat-bar { padding:.65rem 0; overflow:hidden; } .cat-list { justify-content:flex-start; width:100%; padding:0 1.25rem; gap:.45rem; scroll-padding-inline:1.25rem; } .cat-btn { padding:.48rem .9rem; min-height:36px; font-size:.68rem; letter-spacing:.35px; } .contact-map-head { display:block; } .contact-map-note { text-align:left; margin-top:.35rem; } }
 
-    /* PRÉ-PÁGINA — viewport completo, hierarquia clara e SVGs organizados */
+    /* PRÉ-PÁGINA — hero full-screen, espaçado e responsivo */
     body.pre-page-open { overflow: hidden; }
     .pre-page-overlay {
       position: fixed; inset: 0; z-index: 5000; min-height: 100svh; min-height: 100dvh; overflow: auto;
       display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 1rem;
-      background: rgba(246,247,249,.94); backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
+      background: linear-gradient(180deg, rgba(250,251,252,.97), rgba(238,241,245,.94));
+      backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
       opacity: 1; visibility: visible; transition: opacity .35s ease, visibility .35s ease;
     }
     .pre-page-overlay.is-closed { opacity: 0; visibility: hidden; pointer-events: none; }
     .pre-page-card {
-      position: relative; box-sizing: border-box; width: min(100%, 720px); min-height: auto; max-height: calc(100dvh - 2rem); overflow-y: auto;
-      margin: auto; padding: clamp(1.35rem, 5vw, 2.7rem); border: 0; border-radius: 1.5rem; background: transparent; box-shadow: none;
+      position: relative; box-sizing: border-box; width: min(100%, 1120px); min-height: calc(100dvh - 2rem); max-height: calc(100dvh - 2rem);
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: clamp(1.5rem, 5vh, 3.5rem);
+      margin: auto; padding: clamp(1.5rem, 5vw, 3.25rem) clamp(1rem, 5vw, 3.5rem); border: 0; border-radius: 1.5rem; background: transparent; box-shadow: none;
       text-align: center; font-family: Arial, Helvetica, sans-serif;
     }
-    .pre-page-close { position: absolute; z-index: 4; top: .7rem; right: .7rem; width: 2.1rem; height: 2.1rem; border: 0; border-radius: 50%; background: rgba(15,23,42,.07); color: #0f172a; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .2s ease, transform .2s ease; }
-    .pre-page-close:hover { background: rgba(15,23,42,.14); transform: rotate(90deg); }
-    .pre-page-close svg { width: 1rem; height: 1rem; }
-    .pre-page-content { width: min(100%, 650px); margin: 0 auto; text-align: center; }
-    .pre-page-brand-row { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
+    .pre-page-brand-row { display: flex; flex-direction: column; align-items: center; gap: .6rem; flex: 0 0 auto; }
     .pre-page-logo { margin: 0 auto; color: #10253d !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 1.08rem !important; font-weight: 800 !important; letter-spacing: .1em !important; }
     .pre-page-logo .contact-check { width: 16px; height: 16px; color: #0798cb; }
-    .pre-page-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .26rem .62rem; border-radius: 999px; background: rgba(15,23,42,.06); color: #475569; font-size: .52rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-    .pre-page-badge svg { width: .78rem; height: .78rem; }
-    .pre-page-intro { margin-top: .7rem; }
-    .pre-page-title { max-width: 520px; margin: 0 auto .5rem; color: #0f172a; font-family: Arial, Helvetica, sans-serif; font-size: clamp(1.45rem, 3.5vw, 2rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; }
-    .pre-page-lead { max-width: 500px; margin: 0 auto .25rem; color: #334155; font-size: .84rem; font-weight: 700; line-height: 1.4; }
-    .pre-page-sublead { max-width: 500px; margin: 0 auto .4rem; color: #64748b; font-size: .69rem; line-height: 1.45; }
-    .pre-page-newlife-site { display: inline-flex; align-items: center; gap: .28rem; margin: .15rem 0 .85rem; color: #0f172a; font-size: .7rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-    .pre-page-newlife-site svg { width: .76rem; height: .76rem; }
-    .pre-page-divider { width: min(100%, 550px); height: 1px; margin: 0 auto .75rem; background: rgba(15,23,42,.1); }
-    .pre-page-section { max-width: 560px; margin: 0 auto; }
-    .pre-page-section-heading { display: flex; align-items: center; justify-content: center; margin: 0 auto .45rem; text-align: center; }
-    .pre-page-section-heading strong { display: block; color: #0f172a; font-size: .72rem; font-weight: 800; }
-    .pre-page-section-heading span { display: block; margin-top: .1rem; color: #64748b; font-size: .59rem; line-height: 1.3; }
-    .pre-page-payments { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .45rem; max-width: 560px; margin: 0 auto .7rem; }
-    .pre-page-payment { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; min-height: 68px; padding: .45rem .3rem; border: 0; border-radius: .65rem; background: rgba(255,255,255,.64); box-shadow: 0 5px 15px rgba(15,23,42,.045); }
-    .pre-page-payment-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; padding: .23rem; border-radius: .5rem; background: rgba(15,23,42,.055); }
+    .pre-page-badge { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 999px; background: rgba(15,23,42,.06); color: #475569; font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .pre-page-badge svg { width: .8rem; height: .8rem; }
+    .pre-page-hero-main { display: flex; flex: 1 1 auto; width: min(100%, 820px); min-height: clamp(230px, 42vh, 430px); flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; }
+    .pre-page-hero-kicker { margin-bottom: .85rem; color: #64748b; font-size: .62rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .pre-page-title { max-width: 760px; margin: 0 auto .9rem; color: #0f172a; font-family: Arial, Helvetica, sans-serif; font-size: clamp(1.65rem, 4vw, 2.7rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; }
+    .pre-page-lead { max-width: 620px; margin: 0 auto .55rem; color: #334155; font-size: clamp(.9rem, 1.6vw, 1.15rem); font-weight: 700; line-height: 1.45; }
+    .pre-page-sublead { max-width: 600px; margin: 0 auto .9rem; color: #64748b; font-size: .78rem; line-height: 1.5; }
+    .pre-page-newlife-site { display: inline-flex; align-items: center; gap: .35rem; margin: .1rem 0; color: #0f172a; font-size: .78rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+    .pre-page-newlife-site svg { width: .82rem; height: .82rem; }
+    .pre-page-hero-bottom { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr); align-items: stretch; gap: clamp(1rem, 3vw, 2rem); width: min(100%, 900px); flex: 0 0 auto; }
+    .pre-page-section { min-width: 0; padding: 1rem 1.1rem; border-radius: 1rem; background: rgba(255,255,255,.52); box-shadow: 0 8px 26px rgba(15,23,42,.045); }
+    .pre-page-section-heading { display: flex; align-items: center; justify-content: center; margin: 0 auto .75rem; text-align: center; }
+    .pre-page-section-heading strong { display: block; color: #0f172a; font-size: .78rem; font-weight: 800; }
+    .pre-page-section-heading span { display: block; margin-top: .15rem; color: #64748b; font-size: .64rem; line-height: 1.35; }
+    .pre-page-payments { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .6rem; margin: 0 auto; }
+    .pre-page-payment { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; min-height: 88px; padding: .65rem .35rem; border: 0; border-radius: .75rem; background: rgba(255,255,255,.68); box-shadow: 0 5px 15px rgba(15,23,42,.045); }
+    .pre-page-payment-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.95rem; height: 1.95rem; padding: .28rem; border-radius: .55rem; background: rgba(15,23,42,.055); }
     .pre-page-payment-icon svg { display: block; width: 100%; height: 100%; }
-    .pre-page-payment strong { display: block; color: #0f172a; font-size: .65rem; font-weight: 800; }
-    .pre-page-payment span:not(.pre-page-payment-icon) { display: block; margin-top: .02rem; color: #475569; font-size: .55rem; font-weight: 600; line-height: 1.25; }
-    .pre-page-highlights { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .45rem; max-width: 560px; margin: 0 auto .75rem; }
-    .pre-page-highlight { display: flex; align-items: flex-start; gap: .45rem; padding: .55rem .5rem; border-left: 2px solid rgba(15,23,42,.17); background: rgba(255,255,255,.34); text-align: left; }
-    .pre-page-highlight-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.45rem; height: 1.45rem; flex: 0 0 auto; color: #334155; }
-    .pre-page-highlight-icon svg { width: 1.12rem; height: 1.12rem; }
-    .pre-page-highlight strong { display: block; color: #0f172a; font-size: .63rem; font-weight: 800; line-height: 1.2; }
-    .pre-page-highlight span { display: block; margin-top: .14rem; color: #64748b; font-size: .55rem; line-height: 1.3; }
-    .pre-page-actions { display: flex; align-items: center; justify-content: center; gap: .45rem; flex-wrap: wrap; }
-    .pre-page-action { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; min-height: 2.45rem; padding: .58rem .85rem; border: 0; border-radius: .65rem; font: 700 .66rem Arial, Helvetica, sans-serif; text-decoration: none; cursor: pointer; transition: transform .2s ease, filter .2s ease; }
-    .pre-page-action svg { width: .95rem; height: .95rem; flex: 0 0 auto; }
-    .pre-page-action.whatsapp { background: #25D366; color: #fff; box-shadow: 0 6px 14px rgba(37,211,102,.2); }
+    .pre-page-payment strong { display: block; color: #0f172a; font-size: .72rem; font-weight: 800; }
+    .pre-page-payment span:not(.pre-page-payment-icon) { display: block; margin-top: .04rem; color: #475569; font-size: .6rem; font-weight: 600; line-height: 1.3; }
+    .pre-page-highlights { display: flex; flex-direction: column; justify-content: center; gap: .65rem; min-width: 0; }
+    .pre-page-highlight { display: flex; align-items: center; gap: .7rem; min-height: 74px; padding: .75rem .85rem; border-left: 2px solid rgba(15,23,42,.17); border-radius: .65rem; background: rgba(255,255,255,.38); text-align: left; }
+    .pre-page-highlight-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.8rem; height: 1.8rem; flex: 0 0 auto; color: #334155; }
+    .pre-page-highlight-icon svg { width: 1.3rem; height: 1.3rem; }
+    .pre-page-highlight strong { display: block; color: #0f172a; font-size: .72rem; font-weight: 800; line-height: 1.25; }
+    .pre-page-highlight span { display: block; margin-top: .2rem; color: #64748b; font-size: .62rem; line-height: 1.35; }
+    .pre-page-actions { display: flex; align-items: center; justify-content: center; gap: .6rem; flex-wrap: wrap; grid-column: 1 / -1; margin-top: .15rem; }
+    .pre-page-action { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 2.75rem; padding: .7rem 1rem; border: 0; border-radius: .7rem; font: 700 .72rem Arial, Helvetica, sans-serif; text-decoration: none; cursor: pointer; transition: transform .2s ease, filter .2s ease; }
+    .pre-page-action svg { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; }
+    .pre-page-action.whatsapp { background: #25D366; color: #fff; box-shadow: 0 7px 16px rgba(37,211,102,.2); }
     .pre-page-action.whatsapp:hover { filter: brightness(.94); transform: translateY(-1px); }
     .pre-page-action.secondary { background: rgba(15,23,42,.07); color: #0f172a; }
     .pre-page-action.secondary:hover { background: rgba(15,23,42,.13); transform: translateY(-1px); }
     .info-wa-link { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; margin-top: 1rem; min-height: 2.8rem; padding: .7rem 1rem; border-radius: .8rem; background: var(--text); color: #fff; text-decoration: none; font-size: .72rem; font-weight: 800; }
     .info-wa-link:hover { background: #000; transform: translateY(-1px); }
+    @media (max-width: 760px) {
+      .pre-page-overlay { padding: .4rem; align-items: flex-start; }
+      .pre-page-card { min-height: calc(100dvh - .8rem); max-height: none; gap: 1rem; padding: 1rem .6rem 1.2rem; }
+      .pre-page-hero-main { min-height: 240px; }
+      .pre-page-title { font-size: clamp(1.45rem, 6vw, 2.1rem); }
+      .pre-page-lead { font-size: .85rem; }
+      .pre-page-hero-bottom { grid-template-columns: 1fr; width: min(100%, 560px); gap: .8rem; }
+      .pre-page-section { padding: .9rem .7rem; }
+      .pre-page-highlights { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem; }
+      .pre-page-highlight { min-height: 68px; padding: .6rem .5rem; }
+      .pre-page-highlight strong { font-size: .63rem; }
+      .pre-page-highlight span { font-size: .55rem; }
+      .pre-page-actions { grid-column: auto; margin-top: .15rem; }
+    }
     @media (max-width: 450px) {
-      .pre-page-card { padding: .7rem .45rem .8rem; }
-      .pre-page-brand-row { gap: .25rem; }
+      .pre-page-card { min-height: calc(100dvh - .5rem); gap: .7rem; padding: .8rem .45rem 1rem; }
+      .pre-page-brand-row { gap: .3rem; }
       .pre-page-logo { font-size: .96rem !important; }
       .pre-page-logo .contact-check { width: 14px; height: 14px; }
       .pre-page-badge { font-size: .47rem; padding: .22rem .5rem; }
-      .pre-page-intro { margin-top: .45rem; }
-      .pre-page-title { font-size: 1.28rem; margin-bottom: .32rem; }
-      .pre-page-lead { font-size: .68rem; }
-      .pre-page-sublead { font-size: .58rem; margin-bottom: .18rem; }
-      .pre-page-newlife-site { font-size: .6rem; margin-bottom: .45rem; }
-      .pre-page-divider { margin-bottom: .4rem; }
-      .pre-page-section-heading { margin-bottom: .3rem; }
-      .pre-page-section-heading strong { font-size: .62rem; }
+      .pre-page-hero-main { min-height: 200px; }
+      .pre-page-hero-kicker { margin-bottom: .45rem; font-size: .5rem; }
+      .pre-page-title { font-size: 1.32rem; margin-bottom: .45rem; }
+      .pre-page-lead { font-size: .7rem; }
+      .pre-page-sublead { font-size: .58rem; margin-bottom: .55rem; }
+      .pre-page-newlife-site { font-size: .62rem; }
+      .pre-page-section { padding: .7rem .45rem; }
+      .pre-page-section-heading { margin-bottom: .5rem; }
+      .pre-page-section-heading strong { font-size: .65rem; }
       .pre-page-section-heading span { font-size: .52rem; }
-      .pre-page-payments { gap: .3rem; margin-bottom: .45rem; }
-      .pre-page-payment { min-height: 54px; padding: .28rem .15rem; gap: .15rem; border-radius: .5rem; }
-      .pre-page-payment-icon { width: 1.25rem; height: 1.25rem; padding: .18rem; }
-      .pre-page-payment strong { font-size: .56rem; }
+      .pre-page-payments { gap: .3rem; }
+      .pre-page-payment { min-height: 62px; padding: .35rem .15rem; gap: .18rem; }
+      .pre-page-payment-icon { width: 1.35rem; height: 1.35rem; padding: .18rem; }
+      .pre-page-payment strong { font-size: .57rem; }
       .pre-page-payment span:not(.pre-page-payment-icon) { font-size: .46rem; }
-      .pre-page-highlights { gap: .3rem; margin-bottom: .5rem; }
-      .pre-page-highlight { gap: .28rem; padding: .38rem .3rem; }
+      .pre-page-highlights { gap: .35rem; }
+      .pre-page-highlight { min-height: 58px; gap: .3rem; padding: .4rem .3rem; }
       .pre-page-highlight-icon { width: 1.1rem; height: 1.1rem; }
       .pre-page-highlight-icon svg { width: .85rem; height: .85rem; }
       .pre-page-highlight strong { font-size: .52rem; }
       .pre-page-highlight span { margin-top: .08rem; font-size: .45rem; }
-      .pre-page-actions { gap: .3rem; }
-      .pre-page-action { min-height: 2rem; padding: .38rem .5rem; font-size: .52rem; }
-      .pre-page-action svg { width: .78rem; height: .78rem; }
+      .pre-page-actions { gap: .35rem; }
+      .pre-page-action { min-height: 2.1rem; padding: .4rem .55rem; font-size: .54rem; }
+      .pre-page-action svg { width: .8rem; height: .8rem; }
+    }
+    @media (max-height: 620px) and (orientation: landscape) {
+      .pre-page-overlay { align-items: flex-start; }
+      .pre-page-card { min-height: auto; gap: .7rem; padding: .7rem 1rem 1rem; }
+      .pre-page-brand-row { gap: .25rem; }
+      .pre-page-hero-main { min-height: 175px; }
+      .pre-page-title { font-size: 1.5rem; margin-bottom: .35rem; }
+      .pre-page-lead { font-size: .72rem; }
+      .pre-page-sublead { font-size: .58rem; margin-bottom: .35rem; }
+      .pre-page-hero-bottom { grid-template-columns: 1.1fr .9fr; gap: .7rem; }
+      .pre-page-section { padding: .6rem; }
+      .pre-page-payment { min-height: 56px; }
+      .pre-page-highlight { min-height: 52px; padding: .4rem; }
+      .pre-page-actions { grid-column: 1 / -1; }
     }
 
   </style>
@@ -791,46 +819,37 @@ position: absolute; top: .65rem; left: .65rem;
 <body class="pre-page-open">
 <div id="pre-page" class="pre-page-overlay" role="dialog" aria-modal="true" aria-describedby="pre-page-lead">
   <section class="pre-page-card">
-    <button id="pre-page-close" class="pre-page-close" type="button" data-i18n-attr="aria-label:prePageClose" aria-label="Fechar aviso">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
+    <div class="pre-page-brand-row">
+      <div class="contact-brand-lockup pre-page-logo" aria-label="BUY CLUB US"><span>BUY CLUB US</span><svg class="contact-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C11.5 2 10.9 2.2 10.5 2.6L9.3 3.8C8.9 4.2 8.3 4.4 7.8 4.4L6.1 4.3C4.9 4.3 3.9 5.3 3.9 6.5L3.8 8.2C3.8 8.7 3.6 9.3 3.2 9.7L2 10.9C1.2 11.7 1.2 12.9 2 13.7L3.2 14.9C3.6 15.3 3.8 15.9 3.8 16.4L3.9 18.1C3.9 19.3 4.9 20.3 6.1 20.3L7.8 20.2C8.3 20.2 8.9 20.4 9.3 20.8L10.5 22C11.3 22.8 12.7 22.8 13.5 22L14.7 20.8C15.1 20.4 15.7 20.2 16.2 20.2L17.9 20.3C19.1 20.3 20.1 19.3 20.1 18.1L20.2 16.4C20.2 15.9 20.4 15.3 20.8 14.9L22 13.7C22.8 12.9 22.8 11.7 22 10.9L20.8 9.7C20.4 9.3 20.2 8.7 20.2 8.2L20.1 6.5C20.1 5.3 19.1 4.3 17.9 4.3L16.2 4.4C15.7 4.4 15.1 4.2 14.7 3.8L13.5 2.6C13.1 2.2 12.5 2 12 2Z" fill="currentColor"/><path d="M9.8 15.3 6.7 12.2C6.3 11.8 6.3 11.2 6.7 10.8 7.1 10.4 7.7 10.4 8.1 10.8l2.4 2.4 5.4-5.4c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-6.1 6.1c-.4.4-1 .4-1.4 0Z" fill="white"/></svg></div>
+      <div class="pre-page-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 7 3v5c0 4.5-2.9 7.8-7 10-4.1-2.2-7-5.5-7-10V6l7-3Z"/><path d="m8.7 11.8 2.1 2.1 4.5-4.5"/></svg><span data-i18n="prePageNewLifeKicker">REPRESENTAÇÃO OFICIAL</span></div>
+    </div>
 
-    <div class="pre-page-content">
-      <div class="pre-page-brand-row">
-        <div class="contact-brand-lockup pre-page-logo" aria-label="BUY CLUB US"><span>BUY CLUB US</span><svg class="contact-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C11.5 2 10.9 2.2 10.5 2.6L9.3 3.8C8.9 4.2 8.3 4.4 7.8 4.4L6.1 4.3C4.9 4.3 3.9 5.3 3.9 6.5L3.8 8.2C3.8 8.7 3.6 9.3 3.2 9.7L2 10.9C1.2 11.7 1.2 12.9 2 13.7L3.2 14.9C3.6 15.3 3.8 15.9 3.8 16.4L3.9 18.1C3.9 19.3 4.9 20.3 6.1 20.3L7.8 20.2C8.3 20.2 8.9 20.4 9.3 20.8L10.5 22C11.3 22.8 12.7 22.8 13.5 22L14.7 20.8C15.1 20.4 15.7 20.2 16.2 20.2L17.9 20.3C19.1 20.3 20.1 19.3 20.1 18.1L20.2 16.4C20.2 15.9 20.4 15.3 20.8 14.9L22 13.7C22.8 12.9 22.8 11.7 22 10.9L20.8 9.7C20.4 9.3 20.2 8.7 20.2 8.2L20.1 6.5C20.1 5.3 19.1 4.3 17.9 4.3L16.2 4.4C15.7 4.4 15.1 4.2 14.7 3.8L13.5 2.6C13.1 2.2 12.5 2 12 2Z" fill="currentColor"/><path d="M9.8 15.3 6.7 12.2C6.3 11.8 6.3 11.2 6.7 10.8 7.1 10.4 7.7 10.4 8.1 10.8l2.4 2.4 5.4-5.4c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-6.1 6.1c-.4.4-1 .4-1.4 0Z" fill="white"/></svg></div>
-        <div class="pre-page-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ><path d="m12 3 7 3v5c0 4.5-2.9 7.8-7 10-4.1-2.2-7-5.5-7-10V6l7-3Z"/><path d="m8.7 11.8 2.1 2.1 4.5-4.5"/></svg><span data-i18n="prePageNewLifeKicker">REPRESENTAÇÃO OFICIAL</span></div>
-      </div>
+    <div class="pre-page-hero-main">
+      <div class="pre-page-hero-kicker" data-i18n="prePageVisualTitle">ATENDIMENTO DIRETO</div>
+      <h1 class="pre-page-title" data-i18n="prePageNewLifeTitle">representantes da New Life</h1>
+      <p id="pre-page-lead" class="pre-page-lead" data-i18n="prePageNewLifeText">Produtos à pronta entrega em São Paulo, conforme disponibilidade.</p>
+      <p class="pre-page-sublead" data-i18n="prePageLead">Condições de pagamento e atendimento direto.</p>
+      <a class="pre-page-newlife-site" href="https://newlifelabs.us" target="_blank" rel="noopener noreferrer"><span data-i18n="prePageNewLifeSite">newlifelabs.us</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    </div>
 
-      <div class="pre-page-intro">
-        <h1 class="pre-page-title" data-i18n="prePageNewLifeTitle">representantes da New Life</h1>
-        <p id="pre-page-lead" class="pre-page-lead" data-i18n="prePageNewLifeText">Produtos à pronta entrega em São Paulo, conforme disponibilidade.</p>
-        <p class="pre-page-sublead" data-i18n="prePageLead">Condições de pagamento e atendimento direto.</p>
-        <a class="pre-page-newlife-site" href="https://newlifelabs.us" target="_blank" rel="noopener noreferrer"><span data-i18n="prePageNewLifeSite">newlifelabs.us</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
-      </div>
-
-      <div class="pre-page-divider"></div>
+    <div class="pre-page-hero-bottom">
       <section class="pre-page-section" aria-label="Condições de pagamento">
-        <div class="pre-page-section-heading">
-          <div><strong data-i18n="prePagePaymentHeading">Condições de pagamento</strong><span data-i18n="prePagePaymentText">Escolha a melhor forma para concluir seu pedido.</span></div>
-        </div>
+        <div class="pre-page-section-heading"><div><strong data-i18n="prePagePaymentHeading">Condições de pagamento</strong><span data-i18n="prePagePaymentText">Escolha a melhor forma para concluir seu pedido.</span></div></div>
         <div class="pre-page-payments">
           <div class="pre-page-payment"><span class="pre-page-payment-icon" data-payment-icon="card"></span><div><strong data-i18n="prePagePaymentCardTitle">Cartão</strong><span data-i18n="prePagePaymentCardText">Compras parceladas</span></div></div>
           <div class="pre-page-payment"><span class="pre-page-payment-icon" data-payment-icon="usdt"></span><div><strong>USDT</strong><span data-i18n="prePagePaymentUsdtText">Pagamento aceito</span></div></div>
           <div class="pre-page-payment"><span class="pre-page-payment-icon" data-payment-icon="pix"></span><div><strong>Pix</strong><span data-i18n="prePagePaymentPixText">Pagamento aceito</span></div></div>
         </div>
       </section>
-
       <div class="pre-page-highlights">
-        <div class="pre-page-highlight"><span class="pre-page-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div><strong data-i18n="prePageShippingTitle">Pronta entrega em São Paulo</strong><span data-i18n="prePageShippingText">Consulte a disponibilidade com nossa equipe.</span></div></div>
-        <div class="pre-page-highlight"><span class="pre-page-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4M9 12h6M9 16h5"/></svg></span><div><strong data-i18n="prePageQuoteTitle">Produto fora do catálogo</strong><span data-i18n="prePageQuoteText">Envie o nome pelo WhatsApp e receba uma cotação.</span></div></div>
+        <div class="pre-page-highlight"><span class="pre-page-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div><strong data-i18n="prePageShippingTitle">Pronta entrega em São Paulo</strong><span data-i18n="prePageShippingText">Consulte a disponibilidade com nossa equipe.</span></div></div>
+        <div class="pre-page-highlight"><span class="pre-page-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4M9 12h6M9 16h5"/></svg></span><div><strong data-i18n="prePageQuoteTitle">Produto fora do catálogo</strong><span data-i18n="prePageQuoteText">Envie o nome pelo WhatsApp e receba uma cotação.</span></div></div>
       </div>
-
       <div class="pre-page-actions">
         <a id="pre-page-wa-link" class="pre-page-action whatsapp" href="#" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.2-1.2-6.1-3.5-8.3ZM12.2 21.6h-.1c-1.7 0-3.4-.5-4.9-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.7 9.7 0 0 1-1.5-5.1c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.7 9.7 0 0 1 2.9 6.9c0 5.4-4.5 9.8-9.9 9.8Zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.8-.9-2.4-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.1 1.3 3.3c.2.2 2.3 3.5 5.6 4.9 2 .9 2.8 1 3.8.8.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4-.1-.2-.3-.3-.6-.4Z"/></svg><span data-i18n="prePageWhatsapp">Pedir cotação pelo WhatsApp</span></a>
         <button id="pre-page-enter" class="pre-page-action secondary" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span data-i18n="prePageEnter">Entrar no catálogo</span></button>
       </div>
     </div>
-
   </section>
 </div>
 <div id="app">
@@ -2415,7 +2434,6 @@ if (contactWaRow1) contactWaRow1.href = waLink('Olá! Gostaria de consultar disp
 if (contactWaRow2) contactWaRow2.href = waLink('Olá! Gostaria de consultar disponibilidade e condições de pedido.', WA_PHONES[1]);
 
 const prePage = document.getElementById('pre-page');
-const prePageClose = document.getElementById('pre-page-close');
 const prePageEnter = document.getElementById('pre-page-enter');
 const prePageWaLink = document.getElementById('pre-page-wa-link');
 const infoWaLink = document.getElementById('info-wa-link');
@@ -2431,7 +2449,6 @@ function closePrePage() {
   prePage.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('pre-page-open');
 }
-prePageClose && prePageClose.addEventListener('click', closePrePage);
 prePageEnter && prePageEnter.addEventListener('click', closePrePage);
 setDirectWhatsAppLinks();
 
