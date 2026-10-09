@@ -699,10 +699,140 @@ position: absolute; top: .65rem; left: .65rem;
     .country-chip i { width:7px; height:7px; border-radius:50%; display:inline-block; }
     @media (max-width:760px) { .cat-bar { padding:.65rem 0; overflow:hidden; } .cat-list { justify-content:flex-start; width:100%; padding:0 1.25rem; gap:.45rem; scroll-padding-inline:1.25rem; } .cat-btn { padding:.48rem .9rem; min-height:36px; font-size:.68rem; letter-spacing:.35px; } .contact-map-head { display:block; } .contact-map-note { text-align:left; margin-top:.35rem; } }
 
+    /* PRÉ-PÁGINA — viewport completo, hierarquia clara e SVGs organizados */
+    body.pre-page-open { overflow: hidden; }
+    .pre-page-overlay {
+      position: fixed; inset: 0; z-index: 5000; min-height: 100svh; min-height: 100dvh; overflow: auto;
+      display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 1rem;
+      background: rgba(246,247,249,.94); backdrop-filter: blur(20px) saturate(120%); -webkit-backdrop-filter: blur(20px) saturate(120%);
+      opacity: 1; visibility: visible; transition: opacity .35s ease, visibility .35s ease;
+    }
+    .pre-page-overlay.is-closed { opacity: 0; visibility: hidden; pointer-events: none; }
+    .pre-page-card {
+      position: relative; box-sizing: border-box; width: min(100%, 720px); min-height: auto; max-height: calc(100dvh - 2rem); overflow-y: auto;
+      margin: auto; padding: clamp(1.35rem, 5vw, 2.7rem); border: 0; border-radius: 1.5rem; background: transparent; box-shadow: none;
+      text-align: center; font-family: Arial, Helvetica, sans-serif;
+    }
+    .pre-page-close { position: absolute; z-index: 4; top: .7rem; right: .7rem; width: 2.1rem; height: 2.1rem; border: 0; border-radius: 50%; background: rgba(15,23,42,.07); color: #0f172a; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .2s ease, transform .2s ease; }
+    .pre-page-close:hover { background: rgba(15,23,42,.14); transform: rotate(90deg); }
+    .pre-page-close svg { width: 1rem; height: 1rem; }
+    .pre-page-content { width: min(100%, 650px); margin: 0 auto; text-align: center; }
+    .pre-page-brand-row { display: flex; flex-direction: column; align-items: center; gap: .45rem; }
+    .pre-page-logo { margin: 0 auto; color: #10253d !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 1.08rem !important; font-weight: 800 !important; letter-spacing: .1em !important; }
+    .pre-page-logo .contact-check { width: 16px; height: 16px; color: #0798cb; }
+    .pre-page-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .26rem .62rem; border-radius: 999px; background: rgba(15,23,42,.06); color: #475569; font-size: .52rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .pre-page-badge svg { width: .78rem; height: .78rem; }
+    .pre-page-intro { margin-top: .7rem; }
+    .pre-page-title { max-width: 520px; margin: 0 auto .5rem; color: #0f172a; font-family: Arial, Helvetica, sans-serif; font-size: clamp(1.45rem, 3.5vw, 2rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.12; }
+    .pre-page-lead { max-width: 500px; margin: 0 auto .25rem; color: #334155; font-size: .84rem; font-weight: 700; line-height: 1.4; }
+    .pre-page-sublead { max-width: 500px; margin: 0 auto .4rem; color: #64748b; font-size: .69rem; line-height: 1.45; }
+    .pre-page-newlife-site { display: inline-flex; align-items: center; gap: .28rem; margin: .15rem 0 .85rem; color: #0f172a; font-size: .7rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+    .pre-page-newlife-site svg { width: .76rem; height: .76rem; }
+    .pre-page-divider { width: min(100%, 550px); height: 1px; margin: 0 auto .75rem; background: rgba(15,23,42,.1); }
+    .pre-page-section { max-width: 560px; margin: 0 auto; }
+    .pre-page-section-heading { display: flex; align-items: center; justify-content: center; margin: 0 auto .45rem; text-align: center; }
+    .pre-page-section-heading strong { display: block; color: #0f172a; font-size: .72rem; font-weight: 800; }
+    .pre-page-section-heading span { display: block; margin-top: .1rem; color: #64748b; font-size: .59rem; line-height: 1.3; }
+    .pre-page-payments { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .45rem; max-width: 560px; margin: 0 auto .7rem; }
+    .pre-page-payment { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; min-height: 68px; padding: .45rem .3rem; border: 0; border-radius: .65rem; background: rgba(255,255,255,.64); box-shadow: 0 5px 15px rgba(15,23,42,.045); }
+    .pre-page-payment-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; padding: .23rem; border-radius: .5rem; background: rgba(15,23,42,.055); }
+    .pre-page-payment-icon svg { display: block; width: 100%; height: 100%; }
+    .pre-page-payment strong { display: block; color: #0f172a; font-size: .65rem; font-weight: 800; }
+    .pre-page-payment span:not(.pre-page-payment-icon) { display: block; margin-top: .02rem; color: #475569; font-size: .55rem; font-weight: 600; line-height: 1.25; }
+    .pre-page-highlights { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .45rem; max-width: 560px; margin: 0 auto .75rem; }
+    .pre-page-highlight { display: flex; align-items: flex-start; gap: .45rem; padding: .55rem .5rem; border-left: 2px solid rgba(15,23,42,.17); background: rgba(255,255,255,.34); text-align: left; }
+    .pre-page-highlight-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.45rem; height: 1.45rem; flex: 0 0 auto; color: #334155; }
+    .pre-page-highlight-icon svg { width: 1.12rem; height: 1.12rem; }
+    .pre-page-highlight strong { display: block; color: #0f172a; font-size: .63rem; font-weight: 800; line-height: 1.2; }
+    .pre-page-highlight span { display: block; margin-top: .14rem; color: #64748b; font-size: .55rem; line-height: 1.3; }
+    .pre-page-actions { display: flex; align-items: center; justify-content: center; gap: .45rem; flex-wrap: wrap; }
+    .pre-page-action { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; min-height: 2.45rem; padding: .58rem .85rem; border: 0; border-radius: .65rem; font: 700 .66rem Arial, Helvetica, sans-serif; text-decoration: none; cursor: pointer; transition: transform .2s ease, filter .2s ease; }
+    .pre-page-action svg { width: .95rem; height: .95rem; flex: 0 0 auto; }
+    .pre-page-action.whatsapp { background: #25D366; color: #fff; box-shadow: 0 6px 14px rgba(37,211,102,.2); }
+    .pre-page-action.whatsapp:hover { filter: brightness(.94); transform: translateY(-1px); }
+    .pre-page-action.secondary { background: rgba(15,23,42,.07); color: #0f172a; }
+    .pre-page-action.secondary:hover { background: rgba(15,23,42,.13); transform: translateY(-1px); }
+    .info-wa-link { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; margin-top: 1rem; min-height: 2.8rem; padding: .7rem 1rem; border-radius: .8rem; background: var(--text); color: #fff; text-decoration: none; font-size: .72rem; font-weight: 800; }
+    .info-wa-link:hover { background: #000; transform: translateY(-1px); }
+    @media (max-width: 450px) {
+      .pre-page-card { padding: .7rem .45rem .8rem; }
+      .pre-page-brand-row { gap: .25rem; }
+      .pre-page-logo { font-size: .96rem !important; }
+      .pre-page-logo .contact-check { width: 14px; height: 14px; }
+      .pre-page-badge { font-size: .47rem; padding: .22rem .5rem; }
+      .pre-page-intro { margin-top: .45rem; }
+      .pre-page-title { font-size: 1.28rem; margin-bottom: .32rem; }
+      .pre-page-lead { font-size: .68rem; }
+      .pre-page-sublead { font-size: .58rem; margin-bottom: .18rem; }
+      .pre-page-newlife-site { font-size: .6rem; margin-bottom: .45rem; }
+      .pre-page-divider { margin-bottom: .4rem; }
+      .pre-page-section-heading { margin-bottom: .3rem; }
+      .pre-page-section-heading strong { font-size: .62rem; }
+      .pre-page-section-heading span { font-size: .52rem; }
+      .pre-page-payments { gap: .3rem; margin-bottom: .45rem; }
+      .pre-page-payment { min-height: 54px; padding: .28rem .15rem; gap: .15rem; border-radius: .5rem; }
+      .pre-page-payment-icon { width: 1.25rem; height: 1.25rem; padding: .18rem; }
+      .pre-page-payment strong { font-size: .56rem; }
+      .pre-page-payment span:not(.pre-page-payment-icon) { font-size: .46rem; }
+      .pre-page-highlights { gap: .3rem; margin-bottom: .5rem; }
+      .pre-page-highlight { gap: .28rem; padding: .38rem .3rem; }
+      .pre-page-highlight-icon { width: 1.1rem; height: 1.1rem; }
+      .pre-page-highlight-icon svg { width: .85rem; height: .85rem; }
+      .pre-page-highlight strong { font-size: .52rem; }
+      .pre-page-highlight span { margin-top: .08rem; font-size: .45rem; }
+      .pre-page-actions { gap: .3rem; }
+      .pre-page-action { min-height: 2rem; padding: .38rem .5rem; font-size: .52rem; }
+      .pre-page-action svg { width: .78rem; height: .78rem; }
+    }
+
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
 </head>
-<body>
+<body class="pre-page-open">
+<div id="pre-page" class="pre-page-overlay" role="dialog" aria-modal="true" aria-describedby="pre-page-lead">
+  <section class="pre-page-card">
+    <button id="pre-page-close" class="pre-page-close" type="button" data-i18n-attr="aria-label:prePageClose" aria-label="Fechar aviso">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+
+    <div class="pre-page-content">
+      <div class="pre-page-brand-row">
+        <div class="contact-brand-lockup pre-page-logo" aria-label="BUY CLUB US"><span>BUY CLUB US</span><svg class="contact-check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C11.5 2 10.9 2.2 10.5 2.6L9.3 3.8C8.9 4.2 8.3 4.4 7.8 4.4L6.1 4.3C4.9 4.3 3.9 5.3 3.9 6.5L3.8 8.2C3.8 8.7 3.6 9.3 3.2 9.7L2 10.9C1.2 11.7 1.2 12.9 2 13.7L3.2 14.9C3.6 15.3 3.8 15.9 3.8 16.4L3.9 18.1C3.9 19.3 4.9 20.3 6.1 20.3L7.8 20.2C8.3 20.2 8.9 20.4 9.3 20.8L10.5 22C11.3 22.8 12.7 22.8 13.5 22L14.7 20.8C15.1 20.4 15.7 20.2 16.2 20.2L17.9 20.3C19.1 20.3 20.1 19.3 20.1 18.1L20.2 16.4C20.2 15.9 20.4 15.3 20.8 14.9L22 13.7C22.8 12.9 22.8 11.7 22 10.9L20.8 9.7C20.4 9.3 20.2 8.7 20.2 8.2L20.1 6.5C20.1 5.3 19.1 4.3 17.9 4.3L16.2 4.4C15.7 4.4 15.1 4.2 14.7 3.8L13.5 2.6C13.1 2.2 12.5 2 12 2Z" fill="currentColor"/><path d="M9.8 15.3 6.7 12.2C6.3 11.8 6.3 11.2 6.7 10.8 7.1 10.4 7.7 10.4 8.1 10.8l2.4 2.4 5.4-5.4c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-6.1 6.1c-.4.4-1 .4-1.4 0Z" fill="white"/></svg></div>
+        <div class="pre-page-badge"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ><path d="m12 3 7 3v5c0 4.5-2.9 7.8-7 10-4.1-2.2-7-5.5-7-10V6l7-3Z"/><path d="m8.7 11.8 2.1 2.1 4.5-4.5"/></svg><span data-i18n="prePageNewLifeKicker">REPRESENTAÇÃO OFICIAL</span></div>
+      </div>
+
+      <div class="pre-page-intro">
+        <h1 class="pre-page-title" data-i18n="prePageNewLifeTitle">representantes da New Life</h1>
+        <p id="pre-page-lead" class="pre-page-lead" data-i18n="prePageNewLifeText">Produtos à pronta entrega em São Paulo, conforme disponibilidade.</p>
+        <p class="pre-page-sublead" data-i18n="prePageLead">Condições de pagamento e atendimento direto.</p>
+        <a class="pre-page-newlife-site" href="https://newlifelabs.us" target="_blank" rel="noopener noreferrer"><span data-i18n="prePageNewLifeSite">newlifelabs.us</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+      </div>
+
+      <div class="pre-page-divider"></div>
+      <section class="pre-page-section" aria-label="Condições de pagamento">
+        <div class="pre-page-section-heading">
+          <div><strong data-i18n="prePagePaymentHeading">Condições de pagamento</strong><span data-i18n="prePagePaymentText">Escolha a melhor forma para concluir seu pedido.</span></div>
+        </div>
+        <div class="pre-page-payments">
+          <div class="pre-page-payment"><span class="pre-page-payment-icon" data-payment-icon="card"></span><div><strong data-i18n="prePagePaymentCardTitle">Cartão</strong><span data-i18n="prePagePaymentCardText">Compras parceladas</span></div></div>
+          <div class="pre-page-payment"><span class="pre-page-payment-icon" data-payment-icon="usdt"></span><div><strong>USDT</strong><span data-i18n="prePagePaymentUsdtText">Pagamento aceito</span></div></div>
+          <div class="pre-page-payment"><span class="pre-page-payment-icon" data-payment-icon="pix"></span><div><strong>Pix</strong><span data-i18n="prePagePaymentPixText">Pagamento aceito</span></div></div>
+        </div>
+      </section>
+
+      <div class="pre-page-highlights">
+        <div class="pre-page-highlight"><span class="pre-page-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><div><strong data-i18n="prePageShippingTitle">Pronta entrega em São Paulo</strong><span data-i18n="prePageShippingText">Consulte a disponibilidade com nossa equipe.</span></div></div>
+        <div class="pre-page-highlight"><span class="pre-page-highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ><path d="M6 3h9l3 3v15H6z"/><path d="M14 3v4h4M9 12h6M9 16h5"/></svg></span><div><strong data-i18n="prePageQuoteTitle">Produto fora do catálogo</strong><span data-i18n="prePageQuoteText">Envie o nome pelo WhatsApp e receba uma cotação.</span></div></div>
+      </div>
+
+      <div class="pre-page-actions">
+        <a id="pre-page-wa-link" class="pre-page-action whatsapp" href="#" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.2-1.2-6.1-3.5-8.3ZM12.2 21.6h-.1c-1.7 0-3.4-.5-4.9-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.7 9.7 0 0 1-1.5-5.1c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.7 9.7 0 0 1 2.9 6.9c0 5.4-4.5 9.8-9.9 9.8Zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.8-.9-2.4-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.1 1.3 3.3c.2.2 2.3 3.5 5.6 4.9 2 .9 2.8 1 3.8.8.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4-.1-.2-.3-.3-.6-.4Z"/></svg><span data-i18n="prePageWhatsapp">Pedir cotação pelo WhatsApp</span></a>
+        <button id="pre-page-enter" class="pre-page-action secondary" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span data-i18n="prePageEnter">Entrar no catálogo</span></button>
+      </div>
+    </div>
+
+  </section>
+</div>
 <div id="app">
 
   <!-- HOME VIEW -->
@@ -925,21 +1055,22 @@ position: absolute; top: .65rem; left: .65rem;
 <!-- SESSÃO DE INFORMAÇÕES -->
 <section id="info-section" class="info-sec" style="display:none;">
   <div class="info-hero">
-    <div class="info-hero-badge" data-i18n="infoBadge">Padrão de Serviço & Garantia</div>
-    <h2 class="info-title" data-i18n="infoTitle">Informações de Envio</h2>
-    <p class="info-lead" data-i18n="infoLead">Logística rápida, embalagem segura e acompanhamento integral dos seus insumos.</p>
+    <div class="info-hero-badge" data-i18n="infoBadge">Buy Club US · Atendimento direto</div>
+    <h2 class="info-title" data-i18n="infoTitle">Representantes New Life e pronta entrega em São Paulo</h2>
+    <p class="info-lead" data-i18n="infoLead">Consulte produtos, formas de pagamento e condições de envio diretamente com nossa equipe pelo WhatsApp.</p>
   </div>
 
   <div class="info-layout-grid">
   <div class="info-trust-banner">
-    <div class="trust-kicker" data-i18n="trustKicker">ORIGEM E DOCUMENTAÇÃO</div>
-    <h3 data-i18n="trustTitle">Produtos originais, rastreáveis e acompanhados de COA</h3>
-    <p data-i18n="trustText">Os produtos são comercializados como originais e cada lote pode ser acompanhado do respectivo Certificate of Analysis (COA), conforme disponibilidade da marca. Informações regulatórias e alegações de autorização devem ser verificadas na documentação oficial antes da compra.</p>
+    <div class="trust-kicker" data-i18n="trustKicker">ATENDIMENTO E CONDIÇÕES</div>
+    <h3 data-i18n="trustTitle">Representantes da New Life com produtos à pronta entrega em São Paulo</h3>
+    <p data-i18n="trustText">Parcelamos as compras no cartão, aceitamos USDT e Pix. Se você precisa de algum produto que não esteja no catálogo, envie a solicitação pelo WhatsApp e nossa equipe enviará uma cotação.</p>
     <div class="trust-grid">
-      <div><strong data-i18n="trustItem1Title">Originalidade</strong><span data-i18n="trustItem1Text">Conferência de lote e procedência informada pela marca.</span></div>
-      <div><strong data-i18n="trustItem2Title">COA</strong><span data-i18n="trustItem2Text">Certificado de análise disponibilizado quando aplicável ao lote.</span></div>
-      <div><strong data-i18n="trustItem3Title">Conformidade</strong><span data-i18n="trustItem3Text">Consulte a documentação regulatória oficial e a finalidade de pesquisa.</span></div>
+      <div><strong data-i18n="trustItem1Title">New Life</strong><span data-i18n="trustItem1Text">Somos representantes da New Life.</span></div>
+      <div><strong data-i18n="trustItem2Title">Pronta entrega</strong><span data-i18n="trustItem2Text">Produtos à pronta entrega em São Paulo, conforme disponibilidade.</span></div>
+      <div><strong data-i18n="trustItem3Title">Pagamento</strong><span data-i18n="trustItem3Text">Cartão parcelado, USDT e Pix.</span></div>
     </div>
+    <a id="info-wa-link" class="info-wa-link" href="#" target="_blank" rel="noopener noreferrer" data-i18n="infoWhatsapp">Falar diretamente pelo WhatsApp</a>
   </div>
 
     
@@ -1104,6 +1235,16 @@ const translations = {
     headerTagline:"Calidad Premium Global",heroBadge:"American Peptides",productCountSuffix:"producto",productCountSuffixPlural:"productos",navHome:"Inicio",navCategories:"Categorías",navInfo:"Info",navContact:"Contacto",categoriesTitle:"Categorías",categoriesSubtitle:"Explora nuestro catálogo por marca",profileTagline:"Productos Premium Importados",contactTitle:"Contacto",whatsappSupport:"Soporte por WhatsApp",officialSite:"Sitio Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Producto 100% original y certificado",modalSupport:"Soporte y orientación incluidos",infoBadge:"Estándar de Servicio y Garantía",infoTitle:"Información de Envío",infoLead:"Logística rápida, empaque seguro y seguimiento total de sus productos.",card1Tag:"Logística Nacional",card1Title:"Envíos y Tiempos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entrega en el <strong>mismo día</strong> para pedidos confirmados.",card1Feature2:"<strong>Otras Ciudades y Estados:</strong> Entrega expresa y rastreada con valores a combinar.",card1PillText:"Valores de Envío",card1PillVal:"A convenir",card2Tag:"Insumo Incluido",card2Title:"Agua Bacteriostática",card2Feature1:"Todas las ampolletas vienen acompañadas de <strong>agua bacteriostática</strong>.",card2Feature2:"Empaque de protección especial de grado laboratorio.",card2PillText:"Insumos incluidos sin costo extra",footerTagline:"Calidad y tecnología en péptidos.",footerRights:"Todos los derechos reservados.",heroSubline:"Original products",exchangeLabel:"Cambio",liveLabel:"en tiempo real",contactIntro:"Contacta a Buy Club US para consultar disponibilidad, lote, documentación y condiciones de envío. Nuestro equipo responde con agilidad y orienta cada etapa del pedido.",trustKicker:"ORIGEN Y DOCUMENTACIÓN",trustTitle:"Productos originales, trazables y acompañados de COA",trustText:"Los productos se presentan como originales y cada lote puede incluir su Certificate of Analysis (COA), según disponibilidad de la marca. La información regulatoria y cualquier alegación de autorización debe verificarse en la documentación oficial antes de comprar.",trustItem1Title:"Originalidad",trustItem1Text:"Información de lote y procedencia proporcionada por la marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análisis disponible cuando corresponde al lote.",trustItem3Title:"Conformidad",trustItem3Text:"Consulta la documentación regulatoria oficial y el uso previsto para investigación.",accessBtn:"Acceder",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Línea completa Usa Peptides",catNewLifeDesc:"Línea exclusiva New Life",catSynedicaDesc:"Línea de péptidos Synedica",catZphc:"ZPHC",catZphcDesc:"Línea de productos ZPHC",catTg:"TG",catTgDesc:"Línea de productos TG",catDysport:"DYSPORT",catDysportDesc:"Línea de productos DYSPORT",retailLabel:"Menudeo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidad",dragLabel:"arrastra",priceConsult:"Precio bajo consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total del lote",wholesale10Consult:"Precio a consultar para 10 unidades o más",directConsult:"Precios mediante consulta directa",researchUse:"Uso destinado a investigación",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Cerrar formulario",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Complete los datos. Después de enviar, el pedido se enviará con todos los detalles a WhatsApp.",fieldCep:"Código postal",fieldNumber:"Número",fieldAddress:"Dirección encontrada por el código postal",fieldNeighborhood:"Barrio",fieldCity:"Ciudad / Estado",fieldComplement:"Bloque / apartamento",fieldRecipient:"Nombre del destinatario",fieldCpf:"Documento del destinatario (opcional)",addressPlaceholder:"Ingrese el código postal para completar",filledByCep:"Completado por el código postal",numberPlaceholder:"N.º",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nombre completo",shippingNotice:"El <strong>documento del destinatario es opcional</strong>. Si se informa, podrá utilizarse para el registro del transportista y la generación del código de seguimiento.",paymentTitle:"Forma de pago",cryptoPayment:"Criptomoneda",backButton:"Volver",sendWhatsapp:"Enviar a WhatsApp",mapKicker:"RED INTERNACIONAL",mapTitle:"Presencia y atención",mapNote:"Globo interactivo con rotación continua. Arrastra para explorar el globo en 360°.",globeAria:"Globo 3D con rutas internacionales y códigos de países",exploreZoom:"Explorar y zoom",zoomHint:"ARRASTRA Y USA EL SCROLL",loading:"cargando…",lookupLoading:"Consultando dirección…",lookupSuccess:"Dirección completada automáticamente.",lookupError:"No se encontró el código postal. Verifica los números.",closeExplore:"Cerrar exploración",openExplore:"Explorar y zoom",totalLabel:"Total"
   }
 };
+
+Object.assign(translations.pt, {
+  prePageKicker:'Atendimento direto', prePageTitle:'Condições de atendimento', prePageLead:'Condições de pagamento e atendimento direto.', prePageCard1Title:'Pagamento', prePageCard1Text:'Parcelamos as compras no cartão e também aceitamos USDT e Pix.', prePageCard2Title:'Pronta entrega', prePageCard2Text:'Produtos à pronta entrega em São Paulo, conforme disponibilidade.', prePageCard3Title:'Não encontrou?', prePageCard3Text:'Envie o produto desejado pelo WhatsApp e vamos enviar uma cotação.', prePageCard4Title:'Representação', prePageCard4Text:'Somos representantes da New Life.', prePageWhatsapp:'Pedir cotação pelo WhatsApp', prePageEnter:'Entrar no catálogo', prePageClose:'Fechar aviso', prePageNewLifeKicker:'REPRESENTAÇÃO OFICIAL', prePageNewLifeTitle:'representantes da New Life', prePageNewLifeText:'Produtos à pronta entrega em São Paulo, conforme disponibilidade.', prePageNewLifeSite:'newlifelabs.us', prePagePaymentHeading:'Condiciones de pago', prePagePaymentText:'Elija la mejor forma de completar su pedido.', prePageShippingTitle:'Entrega inmediata en São Paulo', prePageShippingText:'Consulte la disponibilidad con nuestro equipo.', prePageQuoteTitle:'Producto fuera del catálogo', prePageQuoteText:'Envíe el nombre por WhatsApp y reciba una cotización.', prePageVisualTitle:'Atención completa', prePageVisualText:'New Life, pagos y logística en un solo lugar.', prePagePaymentHeading:'Payment options', prePagePaymentText:'Choose the best way to complete your order.', prePageShippingTitle:'Ready delivery in São Paulo', prePageShippingText:'Check availability with our team.', prePageQuoteTitle:'Product not in the catalog', prePageQuoteText:'Send the name via WhatsApp and receive a quote.', prePageVisualTitle:'Complete service', prePageVisualText:'New Life, payments and logistics in one place.', prePagePaymentHeading:'Condições de pagamento', prePagePaymentText:'Escolha a melhor forma para concluir seu pedido.', prePageShippingTitle:'Pronta entrega em São Paulo', prePageShippingText:'Consulte a disponibilidade com nossa equipe.', prePageQuoteTitle:'Produto fora do catálogo', prePageQuoteText:'Envie o nome pelo WhatsApp e receba uma cotação.', prePageVisualTitle:'Atendimento completo', prePageVisualText:'New Life, pagamentos e logística em um só lugar.', prePagePaymentCardTitle:'Cartão', prePagePaymentCardText:'Compras parceladas', prePagePaymentUsdtText:'Pagamento aceito', prePagePaymentPixText:'Pagamento aceito', prePageNote:'Se precisar de algum produto que não esteja no catálogo, envie o nome pelo WhatsApp e vamos enviar uma cotação.', infoBadge:'Buy Club US · Atendimento direto', infoTitle:'Representantes New Life e pronta entrega em São Paulo', infoLead:'Consulte produtos, formas de pagamento e condições de envio diretamente com nossa equipe pelo WhatsApp.', trustKicker:'ATENDIMENTO E CONDIÇÕES', trustTitle:'Representantes da New Life com produtos à pronta entrega em São Paulo', trustText:'Parcelamos as compras no cartão, aceitamos USDT e Pix. Se você precisa de algum produto que não esteja no catálogo, envie a solicitação pelo WhatsApp e nossa equipe enviará uma cotação.', trustItem1Title:'New Life', trustItem1Text:'Somos representantes da New Life.', trustItem2Title:'Pronta entrega', trustItem2Text:'Produtos à pronta entrega em São Paulo, conforme disponibilidade.', trustItem3Title:'Pagamento', trustItem3Text:'Cartão parcelado, USDT e Pix.', infoWhatsapp:'Falar diretamente pelo WhatsApp', catEleviaDesc:'Linha de produtos Elevia', catMounjaroDesc:'Produtos Mounjaro', catCosmeticosDesc:'Linha de cosméticos Medicube'
+});
+Object.assign(translations.en, {
+  prePageKicker:'Direct service', prePageTitle:'Service conditions', prePageLead:'Payment conditions and direct service.', prePageCard1Title:'Payment', prePageCard1Text:'We offer installment payments by card and also accept USDT and Pix.', prePageCard2Title:'Ready for delivery', prePageCard2Text:'Products ready for delivery in São Paulo, subject to availability.', prePageCard3Title:'Can\'t find it?', prePageCard3Text:'Send the product request via WhatsApp and we will send a quote.', prePageCard4Title:'Representation', prePageCard4Text:'We are New Life representatives.', prePageWhatsapp:'Request a quote on WhatsApp', prePageEnter:'Enter catalog', prePageClose:'Close notice', prePageNewLifeKicker:'OFFICIAL REPRESENTATION', prePageNewLifeTitle:'New Life representatives', prePageNewLifeText:'Products ready for delivery in São Paulo, subject to availability.', prePageNewLifeSite:'newlifelabs.us', prePagePaymentCardTitle:'Card', prePagePaymentCardText:'Installment payments', prePagePaymentUsdtText:'Payment accepted', prePagePaymentPixText:'Payment accepted', prePageNote:'If you need a product that is not in the catalog, send its name via WhatsApp and we will send a quote.', infoBadge:'Buy Club US · Direct service', infoTitle:'New Life representatives and ready delivery in São Paulo', infoLead:'Check products, payment methods and shipping conditions directly with our team on WhatsApp.', trustKicker:'SERVICE AND CONDITIONS', trustTitle:'New Life representatives with products ready for delivery in São Paulo', trustText:'We offer card installments and accept USDT and Pix. If you need a product that is not in the catalog, send the request via WhatsApp and our team will send a quote.', trustItem1Title:'New Life', trustItem1Text:'We are New Life representatives.', trustItem2Title:'Ready delivery', trustItem2Text:'Products ready for delivery in São Paulo, subject to availability.', trustItem3Title:'Payment', trustItem3Text:'Installment card payments, USDT and Pix.', infoWhatsapp:'Speak directly on WhatsApp', catEleviaDesc:'Elevia product line', catMounjaroDesc:'Mounjaro products', catCosmeticosDesc:'Medicube cosmetics line'
+});
+Object.assign(translations.es, {
+  prePageKicker:'Atención directa', prePageTitle:'Condiciones de atención', prePageLead:'Condiciones de pago y atención directa.', prePageCard1Title:'Pago', prePageCard1Text:'Parcelamos las compras con tarjeta y también aceptamos USDT y Pix.', prePageCard2Title:'Entrega inmediata', prePageCard2Text:'Productos disponibles para entrega en São Paulo, según disponibilidad.', prePageCard3Title:'¿No lo encontró?', prePageCard3Text:'Envíe el producto por WhatsApp y le enviaremos una cotización.', prePageCard4Title:'Representación', prePageCard4Text:'Somos representantes de New Life.', prePageWhatsapp:'Pedir cotización por WhatsApp', prePageEnter:'Entrar al catálogo', prePageClose:'Cerrar aviso', prePageNewLifeKicker:'REPRESENTACIÓN OFICIAL', prePageNewLifeTitle:'representantes de New Life', prePageNewLifeText:'Productos disponibles para entrega en São Paulo, según disponibilidad.', prePageNewLifeSite:'newlifelabs.us', prePagePaymentCardTitle:'Tarjeta', prePagePaymentCardText:'Compras en cuotas', prePagePaymentUsdtText:'Pago aceptado', prePagePaymentPixText:'Pago aceptado', prePageNote:'Si necesita un producto que no está en el catálogo, envíe su nombre por WhatsApp y le enviaremos una cotización.', infoBadge:'Buy Club US · Atención directa', infoTitle:'Representantes New Life y entrega en São Paulo', infoLead:'Consulte productos, formas de pago y condiciones de envío directamente con nuestro equipo por WhatsApp.', trustKicker:'ATENCIÓN Y CONDICIONES', trustTitle:'Representantes de New Life con productos disponibles para entrega en São Paulo', trustText:'Parcelamos compras con tarjeta y aceptamos USDT y Pix. Si necesita un producto que no está en el catálogo, envíe la solicitud por WhatsApp y nuestro equipo le enviará una cotización.', trustItem1Title:'New Life', trustItem1Text:'Somos representantes de New Life.', trustItem2Title:'Entrega inmediata', trustItem2Text:'Productos disponibles para entrega en São Paulo, según disponibilidad.', trustItem3Title:'Pago', trustItem3Text:'Tarjeta en cuotas, USDT y Pix.', infoWhatsapp:'Hablar directamente por WhatsApp', catEleviaDesc:'Línea de productos Elevia', catMounjaroDesc:'Productos Mounjaro', catCosmeticosDesc:'Línea de cosméticos Medicube'
+});
 
 let currentLang = 'pt';
 function t(k){ return (translations[currentLang]||{})[k] || (translations.pt||{})[k] || k; }
@@ -1885,7 +2026,7 @@ const productData = {
           "New Life",
           "newlife",
           ["https://newlifelabs.us/images/retatrutide120mg.png"],
-          997, "preço Sob consulta", "preço Sob consulta",
+          897.84, "preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/RETATRUTIDE%20120MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20RETATRUTIDE%20120%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1896,7 +2037,7 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/retatru60mg.png"], 
-          700, "preço Sob consulta", "preço Sob consulta",
+          697, "preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/RETATRUTIDE%2060MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20RETATRUTIDE%2060%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1907,7 +2048,7 @@ const productData = {
           "NEW", 
           "newlife", 
           ["https://newlifelabs.us/images/tirzepatida120mg.png"],
-          997, "preço Sob consulta", "preço Sob consulta",
+          897, "preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/TIRZEPATIDE%20120MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20TIRZEPATIDE%20120%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1918,7 +2059,7 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/tirzepatida60mg.png"], 
-          655,"preço Sob consulta", "Preço Sob consulta",
+          600,"preço Sob consulta", "Preço Sob consulta",
           "https://newlifelabs.us/pdfs/TIRZEPATIDE%2060MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20TIRZEPATIDE%2060%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1940,7 +2081,7 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/glow.png"], 
-          600, "preço Sob consulta", "preço Sob consulta",
+          550, "preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/GLOW%2070MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20GLOW%20Blend%2070%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1951,7 +2092,7 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/klow.png"], 
-          620,"preço Sob consulta", "preço Sob consulta",
+          550,"preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/KLOW%2080MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20KLOW%20Blend%2080%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1962,7 +2103,7 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/cjc.png"], 
-          547, "preço Sob consulta", "preço Sob consulta",
+          500, "preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/CJC%201295%20+%20IPAMORELIN%2010MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20CJC-1295%20+%20IPAMORELIN%2010%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -1984,7 +2125,7 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/mots-c.png"], 
-          600, "preço Sob consulta", "preço Sob consulta",
+          500, "preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/MOTS-C%2040MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20MOTS-C%2040%20mg%20-%20New%20Life%20Labs.pdf"
         ),
@@ -2017,35 +2158,40 @@ const productData = {
           "New Life", 
           "newlife", 
           ["https://newlifelabs.us/images/cbl514.png"], 
-          650,"preço Sob consulta", "preço Sob consulta",
+          550,"preço Sob consulta", "preço Sob consulta",
           "https://newlifelabs.us/pdfs/CBL-514%2020MG%20-%20Test%20Report%20New%20Life%20Labs.pdf",
           "https://newlifelabs.us/manual/Guia%20Tecnico%20-%20CBL-514%2020%20mg%20-%20New%20Life%20Labs.pdf"
         ),
+    // ==================== ELEVIA ====================
+        makeProduct(215, "Sérum GHK-Cu e PDRN", `Sérum GHK-Cu e PDRN da Elevia, destinado exclusivamente à pesquisa e à avaliação técnica. Lote, composição, pureza, estabilidade, armazenamento e documentação oficial devem ser confirmados antes da aquisição. Não constitui medicamento, indicação terapêutica ou orientação de uso.`, "Elevia", "elevia", ["https://bropharmaceutical.com/app/images/elevianew.png"], 350, "Sob consulta", "Sob consulta"),
     // ==================== USA PEPTIDES ====================
-        makeProduct(4, "Retatrutide 40mg", DESC_RETATRUTIDE_40, "Usa Peptides", "usapeptides", ["images/retatrutide.webp", "images/retatrutide-ampola-usa.webp"], 900, 520, 480),
-        makeProduct(1, "Tirzepatide 120mg", DESC_TIRZEPATIDE_120, "Usa Peptides", "usapeptides", ["images/tirze120usa.webp"], 1300, 620, 570),
-        makeProduct(2, "Tirzepatide 60mg", DESC_TIRZEPATIDE_60, "Usa Peptides", "usapeptides", ["images/tirzepatide-60mg.webp", "images/tirze60-ampola-usa.webp"], 800, 410, 370),
-        makeProduct(3, "Tirzepatide 30mg", DESC_TIRZEPATIDE_30, "Usa Peptides", "usapeptides", ["images/tirzepatide-30mg.webp", "images/tirzepatide-60mg-ampola.webp"], 380, 280, 250),
-        makeProduct(23, "Beauty Stack", DESC_BEAUTY_STACK, "Usa Peptides", "usapeptides", ["images/BeautyStack.webp"], 780, 580, 530),
-        makeProduct(14, "GHK-Cu 100mg", DESC_GHK_CU, "Usa Peptides", "usapeptides", ["images/GHK-Cu.webp"], 310, 220, 195),
-        makeProduct(15, "GLOW Stack", DESC_GLOW, "Usa Peptides", "usapeptides", ["images/Glow_251ff2bd-e94f-46a5-9b5a-07caa883edca.webp", "images/glow-ampola-usa.webp"], 590, 440, 395),
-        makeProduct(24, "KLOW Stack", DESC_KLOW, "Usa Peptides", "usapeptides", ["images/Klow.webp", "images/kpv-ampola-usa.webp"], 640, 480, 430),
-        makeProduct(25, "SLU-PP-332 10mg", DESC_SLUPP, "Usa Peptides", "usapeptides", ["images/Slupp332.webp"], 490, 370, 330),
-        makeProduct(22, "AOD-9604 10mg", DESC_AOD_9604, "Usa Peptides", "usapeptides", ["images/AOD9604.webp", "images/aod-ampola-usa.webp"], 360, 270, 240),
-        makeProduct(21, "PT-141 10mg", DESC_PT141, "Usa Peptides", "usapeptides", ["images/PT141.webp", "images/pt-ampola-usa.webp"], 330, 240, 210),
-        makeProduct(16, "NAD+ 500mg", DESC_NAD_500, "Usa Peptides", "usapeptides", ["images/NAD_b7f97953-0b38-4b0c-9687-c3106dea8e87.webp"], 450, 330, 290),
-        makeProduct(13, "HGH-FRAG 10mg", DESC_HGH_FRAG, "Usa Peptides", "usapeptides", ["images/HGH_Frag.webp", "images/hgh-ampola-usa.webp"], 340, 250, 220),
-        makeProduct(5, "BPC-157 10mg + TB-500 10mg", DESC_BB20, "Usa Peptides", "usapeptides", ["images/BB20_eb1baebc-216d-43ea-992a-c42fac035224.webp"], 420, 310, 280),
-        makeProduct(6, "CJC-1295 + Ipamorelin", DESC_CJC_IPAMORELIN, "Usa Peptides", "usapeptides", ["images/CJC_Ipamorelin.webp", "images/cjc-ampola-usa.webp"], 390, 290, 260),
-        makeProduct(7, "Tesamorelin 10mg", DESC_TESAMORELIN, "Usa Peptides", "usapeptides", ["images/Tessamorelin.webp", "images/tesa-ampola-usa.webp"], 480, 360, 320),
-        makeProduct(12, "MOTS-c 10mg", DESC_MOTS_C, "Usa Peptides", "usapeptides", ["images/Mots_C.webp", "images/mots-ampola-usa.webp"], 380, 280, 250),
-        makeProduct(11, "Semax 10mg", DESC_SEMAX, "Usa Peptides", "usapeptides", ["images/Semax_76a81cb4-0dd4-4287-bfaf-fbc03b0aac38.webp", "images/semax-ampola-usa.webp"], 320, 240, 210),
-        makeProduct(9, "Epithalon 10mg", DESC_EPITHALON, "Usa Peptides", "usapeptides", ["images/Epithalon_fb023cbc-6916-472a-a6cf-dc0b95024ee5.webp", "images/epithalon-ampola-usa.webp"], 350, 260, 230),
-        makeProduct(10, "SS-31 10mg", DESC_SS31, "Usa Peptides", "usapeptides", ["images/SS31_4600c956-f7e5-438b-918f-5380addb08d7.webp", "images/ss31-ampola-usa.webp"], 410, 300, 270),
-        makeProduct(8, "MT2 10mg", DESC_MT2, "Usa Peptides", "usapeptides", ["images/Melanotan_2.webp", "images/melanotan-ampola-usa.webp"], 290, 210, 185),
+        makeProduct(4, "Retatrutide 40mg", DESC_RETATRUTIDE_40, "Usa Peptides", "usapeptides", ["images/retatrutide.webp", "images/retatrutide-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(1, "Tirzepatide 120mg", DESC_TIRZEPATIDE_120, "Usa Peptides", "usapeptides", ["images/tirze120usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(2, "Tirzepatide 60mg", DESC_TIRZEPATIDE_60, "Usa Peptides", "usapeptides", ["images/tirzepatide-60mg.webp", "images/tirze60-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(3, "Tirzepatide 30mg", DESC_TIRZEPATIDE_30, "Usa Peptides", "usapeptides", ["images/tirzepatide-30mg.webp", "images/tirzepatide-60mg-ampola.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(23, "Beauty Stack", DESC_BEAUTY_STACK, "Usa Peptides", "usapeptides", ["images/BeautyStack.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(14, "GHK-Cu 100mg", DESC_GHK_CU, "Usa Peptides", "usapeptides", ["images/GHK-Cu.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(15, "GLOW Stack", DESC_GLOW, "Usa Peptides", "usapeptides", ["images/Glow_251ff2bd-e94f-46a5-9b5a-07caa883edca.webp", "images/glow-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(24, "KLOW Stack", DESC_KLOW, "Usa Peptides", "usapeptides", ["images/Klow.webp", "images/kpv-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(25, "SLU-PP-332 10mg", DESC_SLUPP, "Usa Peptides", "usapeptides", ["images/Slupp332.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(22, "AOD-9604 10mg", DESC_AOD_9604, "Usa Peptides", "usapeptides", ["images/AOD9604.webp", "images/aod-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(21, "PT-141 10mg", DESC_PT141, "Usa Peptides", "usapeptides", ["images/PT141.webp", "images/pt-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(16, "NAD+ 500mg", DESC_NAD_500, "Usa Peptides", "usapeptides", ["images/NAD_b7f97953-0b38-4b0c-9687-c3106dea8e87.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(13, "HGH-FRAG 10mg", DESC_HGH_FRAG, "Usa Peptides", "usapeptides", ["images/HGH_Frag.webp", "images/hgh-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(5, "BPC-157 10mg + TB-500 10mg", DESC_BB20, "Usa Peptides", "usapeptides", ["images/BB20_eb1baebc-216d-43ea-992a-c42fac035224.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(6, "CJC-1295 + Ipamorelin", DESC_CJC_IPAMORELIN, "Usa Peptides", "usapeptides", ["images/CJC_Ipamorelin.webp", "images/cjc-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(7, "Tesamorelin 10mg", DESC_TESAMORELIN, "Usa Peptides", "usapeptides", ["images/Tessamorelin.webp", "images/tesa-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(12, "MOTS-c 10mg", DESC_MOTS_C, "Usa Peptides", "usapeptides", ["images/Mots_C.webp", "images/mots-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(11, "Semax 10mg", DESC_SEMAX, "Usa Peptides", "usapeptides", ["images/Semax_76a81cb4-0dd4-4287-bfaf-fbc03b0aac38.webp", "images/semax-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(9, "Epithalon 10mg", DESC_EPITHALON, "Usa Peptides", "usapeptides", ["images/Epithalon_fb023cbc-6916-472a-a6cf-dc0b95024ee5.webp", "images/epithalon-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(10, "SS-31 10mg", DESC_SS31, "Usa Peptides", "usapeptides", ["images/SS31_4600c956-f7e5-438b-918f-5380addb08d7.webp", "images/ss31-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(8, "MT2 10mg", DESC_MT2, "Usa Peptides", "usapeptides", ["images/Melanotan_2.webp", "images/melanotan-ampola-usa.webp"], "Sob consulta", "Sob consulta", "Sob consulta"),
     // ==================== SYNEDICA ====================
-        makeProduct(17, "Retatrutide 40mg Synedica", "Retatrutide 40mg na apresentação Synedica, destinado exclusivamente à pesquisa e à avaliação técnica conforme documentação oficial do lote.", "Synedica", "synedica", ["images/retasynedicanew.jpeg", "images/retaverdesynedica.png"], 897, 780, 720),
-        makeProduct(33, "GLOW GHK-Cu Synedica", "GLOW GHK-Cu na versão Synedica, destinado exclusivamente à pesquisa e à avaliação técnica conforme documentação oficial do lote.", "Synedica", "synedica", ["images/glowsynedicanew.png"], 797,"preço sob consulta", "preço sob consulta"),
+        makeProduct(17, "Retatrutide 40mg Synedica", "Retatrutide 40mg na apresentação Synedica, destinado exclusivamente à pesquisa e à avaliação técnica conforme documentação oficial do lote.", "Synedica", "synedica", ["images/retasynedicanew.jpeg", "images/retaverdesynedica.png"], 750, 780, 720),
+        makeProduct(33, "GLOW GHK-Cu Synedica", "GLOW GHK-Cu na versão Synedica, destinado exclusivamente à pesquisa e à avaliação técnica conforme documentação oficial do lote.", "Synedica", "synedica", ["images/glowsynedicanew.png"], 600,"preço sob consulta", "preço sob consulta"),
+        makeProduct(216, "GLOW Alluvi", `GLOW Alluvi da Synedica, destinado exclusivamente à pesquisa e à avaliação técnica conforme documentação oficial do lote. Lote, composição, pureza, estabilidade, armazenamento e documentação oficial devem ser confirmados antes da aquisição. Não constitui medicamento, indicação terapêutica ou orientação de uso.`, "Synedica", "synedica", ["https://images.tcdn.com.br/img/img_prod/1477431/glow_blend_bpc_157_tb_500_70mg_alluvi_healthcare_1_20260527110727_7700f97ce80b.png"], 600, "Sob consulta", "Sob consulta"),
+    // ==================== MOUNJARO ====================
+        makeProduct(217, "Mounjaro Kwikpen original", `Mounjaro Kwikpen original, conforme identificação e documentação do fornecedor. O lote, a autenticidade, a composição, a conservação e a documentação oficial devem ser confirmados antes da aquisição. Não constitui orientação de uso ou indicação terapêutica.`, "Mounjaro", "mounjaro", ["https://medino-product.imgix.net/mounjaro-kwikpen-15mg-step-6-d0eca3e7.png?h=350&w=350&fit=fill&bg=FFF&auto=format&q=90"], 2600, "Sob consulta", "Sob consulta"),
     // ==================== ZPHC ====================
         makeProduct(204, "Trestolone Enanthate ZPHC — 50 mg/ml (10 ampoules)", DESC_ZPHC_NEW, "ZPHC", "zphc", ["images/enanthate.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
         makeProduct(205, "HGH FRAGMENT 176-191aa (50MG) ZPHC", DESC_ZPHC_NEW, "ZPHC", "zphc", ["images/hgh.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
@@ -2054,14 +2200,22 @@ const productData = {
         makeProduct(203, "ZPtrop 80 — Somatropina 16 UI/VIAL", DESC_ZPTROP_80, "ZPHC", "zphc", ["images/zptron.png"], "Sob consulta", "Sob consulta", "Sob consulta"),
         makeProduct(201, "Retatrutida ZPHC 60mg", DESC_ZPHC_RETATRUTIDE_60, "ZPHC", "zphc", ["images/retazphc.png"], "Sob consulta", "Sob consulta", "Sob consulta"),
     // ==================== TG ====================
-        makeProduct(202, "Tirzepatida TG 15mg — 4 ampolas", DESC_TG_TIRZEPATIDE_15, "TG", "tg", ["images/tg.png"], 750, 650, "Sob consulta"),
+        makeProduct(202, "Tirzepatida TG 15mg — 4 ampolas", DESC_TG_TIRZEPATIDE_15, "TG", "tg", ["images/tg.png"], 700, 650, "Sob consulta"),
+    // ==================== COSMÉTICOS ====================
+        makeProduct(218, "MEDICUBE ZERO PORE PAD 2.0", `MEDICUBE ZERO PORE PAD 2.0, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/2/1/921-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(219, "MEDICUBE COLLAGEN JELLY CREAM 110ML", `MEDICUBE COLLAGEN JELLY CREAM 110ML, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/0/8/908-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(220, "MEDICUBE PDRN PINK PEPTIDE SERUM 30ML", `MEDICUBE PDRN PINK PEPTIDE SERUM 30ML, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/0/5/905-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(221, "MEDICUBE ZERO PORE PAD MILD 70PCS 155G", `MEDICUBE ZERO PORE PAD MILD 70PCS 155G, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/3/4/934-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(222, "MEDICUBE COLLAGEN NIGHT WRAPPING MASK 75", `MEDICUBE COLLAGEN NIGHT WRAPPING MASK 75, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/2/5/925-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(223, "MEDICUBE ONE DAY EXOSOME SHOT 7500 30ML", `MEDICUBE ONE DAY EXOSOME SHOT 7500 30ML, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/3/1/931-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(224, "MEDICUBE RED SUCCINIC ACID SERUM 30ML", `MEDICUBE RED SUCCINIC ACID SERUM 30ML, produto cosmético conforme identificação do fornecedor. Ingredientes, lote, autenticidade, validade, condições de armazenamento e documentação devem ser confirmados antes da aquisição.`, "Medicube", "cosmeticos", ["https://babilonia.com.py/img/p/9/0/6/906-large_default.jpg"], "Sob consulta", "Sob consulta", "Sob consulta"),
     // ==================== OUTRAS MARCAS ====================
         makeProduct(213, "Toxina Botulínica Dysport 500U", `Dysport 500U é uma apresentação de toxina botulínica tipo A, com 500 unidades por frasco, conforme identificação do fornecedor. Produto destinado exclusivamente à pesquisa e à avaliação técnica. Lote, composição, autenticidade, armazenamento e documentação oficial devem ser confirmados antes da aquisição. Não constitui medicamento, indicação terapêutica ou orientação de uso.`, "DYSPORT", "dysport", ["https://www.mygaldermastore.com.br/media/catalog/product/g/u/gutta_lo1_mockup_dysport_a500.png?quality=80&fit=bounds&height=700&width=700&canvas=700:700"], 650, "Sob consulta", "Sob consulta"),
         makeProduct(214, "Dysport Toxina Botulínica 500U — IPSEN Botox", `Dysport toxina botulínica, Clostridium botulinum Type A, com 500 unidades por frasco, identificado como produto IPSEN conforme a informação fornecida. Produto destinado exclusivamente à pesquisa e à avaliação técnica. Lote, composição, autenticidade, armazenamento e documentação oficial devem ser confirmados antes da aquisição. Não constitui medicamento, indicação terapêutica ou orientação de uso.`, "DYSPORT", "dysport", ["https://cdn.mimsprd.mims.com/drug-resources/SG/packshot/Dysport6001PPS0.JPG"], 600, "Sob consulta", "Sob consulta"),
-        makeProduct(208, "TIRZEC 15MG — 4 VIALS", `Tirzec 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "TIRZEC", "tirzec", ["https://bucket-prod.us-ord-10.linodeobjects.com/site/media/fotos/produtos/thumbs/big/ca3763d58ebf968f6ceb2b0db0acc77f050b4a75.webp"], 750, "Sob consulta", "Sob consulta"),
-        makeProduct(209, "TIRZEC 15MG MD", `Tirzec 15mg na apresentação MD, identificada com a concentração informada pelo fornecedor. Produto destinado exclusivamente à pesquisa e à avaliação laboratorial, sujeito à conferência de lote, composição, pureza, estabilidade e documentação oficial. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "TIRZEC", "tirzec", ["https://saude.abril.com.br/wp-content/uploads/2026/08/tirzec.webp?crop=1&resize=1212,909"], 600, "Sob consulta", "Sob consulta"),
-        makeProduct(210, "LIPOLESS 15MG MD", `Lipoless 15mg na apresentação MD, com concentração identificada conforme as informações do fornecedor. Produto destinado exclusivamente à pesquisa, com finalidade, composição, pureza, estabilidade e condições de armazenamento sujeitas à confirmação na documentação oficial do lote. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["https://www.lipoless.com.py/wp-content/uploads/2025/10/Lipoless-MD-15.png"], 600, "Sob consulta", "Sob consulta"),
-        makeProduct(211, "LIPOLESS 15MG — 4 VIALS", `Lipoless 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A identidade, composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["https://veja.abril.com.br/wp-content/uploads/2026/01/lipoless.jpg?crop=1&resize=1212,909"], 750, "Sob consulta", "Sob consulta"),
+        makeProduct(208, "TIRZEC 15MG — 4 VIALS", `Tirzec 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "TIRZEC", "tirzec", ["https://bucket-prod.us-ord-10.linodeobjects.com/site/media/fotos/produtos/thumbs/big/ca3763d58ebf968f6ceb2b0db0acc77f050b4a75.webp"], 700, "Sob consulta", "Sob consulta"),
+        makeProduct(209, "TIRZEC 15MG MD", `Tirzec 15mg na apresentação MD, identificada com a concentração informada pelo fornecedor. Produto destinado exclusivamente à pesquisa e à avaliação laboratorial, sujeito à conferência de lote, composição, pureza, estabilidade e documentação oficial. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "TIRZEC", "tirzec", ["https://saude.abril.com.br/wp-content/uploads/2026/08/tirzec.webp?crop=1&resize=1212,909"], "Sob consulta", "Sob consulta", "Sob consulta"),
+        makeProduct(210, "LIPOLESS 15MG MD", `Lipoless 15mg na apresentação MD, com concentração identificada conforme as informações do fornecedor. Produto destinado exclusivamente à pesquisa, com finalidade, composição, pureza, estabilidade e condições de armazenamento sujeitas à confirmação na documentação oficial do lote. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["https://www.lipoless.com.py/wp-content/uploads/2025/10/Lipoless-MD-15.png"], 497, "Sob consulta", "Sob consulta"),
+        makeProduct(211, "LIPOLESS 15MG — 4 VIALS", `Lipoless 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A identidade, composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["https://veja.abril.com.br/wp-content/uploads/2026/01/lipoless.jpg?crop=1&resize=1212,909"], 650, "Sob consulta", "Sob consulta"),
   ],
   en: [],
   es: []
@@ -2075,6 +2229,9 @@ function getCategories(){
   return [
     {id:"newlife",     icon:"sparkles", name:"New Life",     title:"New Life",     desc:"Linha exclusiva New Life",         nameKey:"catNewLife",     descKey:"catNewLifeDesc"},
     {id:"synedica",    icon:"syringe",  name:"Synedica",     title:"Synedica",     desc:"Linha de peptídeos Synedica",      nameKey:"catSynedica",    descKey:"catSynedicaDesc"},
+    {id:"elevia",      icon:"sparkles", name:"Elevia",       title:"Elevia",       desc:"Linha de produtos Elevia",        nameKey:"catElevia",      descKey:"catEleviaDesc"},
+    {id:"mounjaro",    icon:"syringe",  name:"Mounjaro",     title:"Mounjaro",     desc:"Produtos Mounjaro",               nameKey:"catMounjaro",    descKey:"catMounjaroDesc"},
+    {id:"cosmeticos",  icon:"sparkles", name:"Cosméticos",   title:"Cosméticos",   desc:"Linha de cosméticos Medicube",   nameKey:"catCosmeticos",  descKey:"catCosmeticosDesc"},
     {id:"usapeptides", icon:"flask",    name:"Usa Peptides", title:"Usa Peptides", desc:"Linha de peptídeos Usa Peptides",  nameKey:"catUsaPeptides", descKey:"catUsaPeptidesDesc"},
     {id:"zphc",        icon:"flask",    name:"ZPHC",        title:"ZPHC",        desc:"Linha de produtos ZPHC",        nameKey:"catZphc",        descKey:"catZphcDesc"},
     {id:"tg",          icon:"syringe",  name:"TG",          title:"TG",          desc:"Linha de produtos TG",          nameKey:"catTg",          descKey:"catTgDesc"},
@@ -2096,13 +2253,13 @@ let products = productData.pt;
 let selectedProduct = null;
 let modalPriceType = 'varejo';
 function isWholesaleConsultProduct(product) {
-  return product && (['tirzec', 'lipoless', 'zphc', 'usapeptides', 'tg', 'dysport'].includes(product.category) || [33, 17, 34, 113].includes(product.id));
+  return product && (typeof product.priceAtacado5 !== 'number' || typeof product.priceAtacado10 !== 'number' || ['tirzec', 'lipoless', 'zphc', 'usapeptides', 'tg', 'dysport'].includes(product.category) || [33, 17, 34, 113].includes(product.id));
 }
 function isRetailConsultProduct(product) {
-  return product && product.category === 'usapeptides' && ![4, 2, 1].includes(product.id);
+  return product && typeof product.priceVarejo !== 'number';
 }
 function isConsultProduct(product) {
-  return product && (product.category === 'zphc' && !(Number(product.priceVarejo) > 0));
+  return product && typeof product.priceVarejo !== 'number' && typeof product.priceAtacado5 !== 'number' && typeof product.priceAtacado10 !== 'number';
 }
 function getWaMessage(product, type, order = null) {
   const productLabel = `${product.badge} — ${product.name}`;
@@ -2257,6 +2414,27 @@ const contactWaRow2 = document.getElementById('contact-wa-row-2');
 if (contactWaRow1) contactWaRow1.href = waLink('Olá! Gostaria de consultar disponibilidade e condições de pedido.');
 if (contactWaRow2) contactWaRow2.href = waLink('Olá! Gostaria de consultar disponibilidade e condições de pedido.', WA_PHONES[1]);
 
+const prePage = document.getElementById('pre-page');
+const prePageClose = document.getElementById('pre-page-close');
+const prePageEnter = document.getElementById('pre-page-enter');
+const prePageWaLink = document.getElementById('pre-page-wa-link');
+const infoWaLink = document.getElementById('info-wa-link');
+const directWaMessage = 'Olá! Gostaria de consultar um produto, disponibilidade e condições de pagamento. Se o produto não estiver no catálogo, por favor envie uma cotação.';
+function setDirectWhatsAppLinks() {
+  const href = waLink(directWaMessage, WA_PHONE);
+  if (prePageWaLink) prePageWaLink.href = href;
+  if (infoWaLink) infoWaLink.href = href;
+}
+function closePrePage() {
+  if (!prePage) return;
+  prePage.classList.add('is-closed');
+  prePage.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('pre-page-open');
+}
+prePageClose && prePageClose.addEventListener('click', closePrePage);
+prePageEnter && prePageEnter.addEventListener('click', closePrePage);
+setDirectWhatsAppLinks();
+
 function openCheckout(product, type = 'varejo') {
   if (!product || !checkoutModal) return;
   selectedProduct = product;
@@ -2313,9 +2491,9 @@ function renderCatBar(){
 }
 
 const ORIGIN_LABELS = {
-  pt: { newlife: 'Fabricado nos EUA', synedica: 'Fabricado na Alemanha', usapeptides: 'Fabricado nos EUA', zphc: 'Fabricado na China', tg: 'Fabricado no Paraguai', tirzec: 'Fabricado no Paraguai', lipoless: 'Fabricado no Paraguai', dysport: 'Fabricado na França' },
-  en: { newlife: 'Made in the USA', synedica: 'Made in Germany', usapeptides: 'Made in the USA', zphc: 'Made in China', tg: 'Made in Paraguay', tirzec: 'Made in Paraguay', lipoless: 'Made in Paraguay', dysport: 'Made in France' },
-  es: { newlife: 'Fabricado en EE. UU.', synedica: 'Fabricado en Alemania', usapeptides: 'Fabricado en EE. UU.', zphc: 'Fabricado en China', tg: 'Fabricado en Paraguay', tirzec: 'Fabricado en Paraguay', lipoless: 'Fabricado en Paraguay', dysport: 'Fabricado en Francia' }
+  pt: { newlife: 'Fabricado nos EUA', synedica: 'Fabricado na Alemanha', elevia: 'Pronta entrega em São Paulo', mounjaro: 'Pronta entrega em São Paulo', cosmeticos: 'Pronta entrega em São Paulo', usapeptides: 'Fabricado nos EUA', zphc: 'Fabricado na China', tg: 'Fabricado no Paraguai', tirzec: 'Fabricado no Paraguai', lipoless: 'Fabricado no Paraguai', dysport: 'Fabricado na França' },
+  en: { newlife: 'Made in the USA', synedica: 'Made in Germany', elevia: 'Ready in São Paulo', mounjaro: 'Ready in São Paulo', cosmeticos: 'Ready in São Paulo', usapeptides: 'Made in the USA', zphc: 'Made in China', tg: 'Made in Paraguay', tirzec: 'Made in Paraguay', lipoless: 'Made in Paraguay', dysport: 'Made in France' },
+  es: { newlife: 'Fabricado en EE. UU.', synedica: 'Fabricado en Alemania', elevia: 'Entrega disponible en São Paulo', mounjaro: 'Entrega disponible en São Paulo', cosmeticos: 'Entrega disponible en São Paulo', usapeptides: 'Fabricado en EE. UU.', zphc: 'Fabricado en China', tg: 'Fabricado en Paraguay', tirzec: 'Fabricado en Paraguay', lipoless: 'Fabricado en Paraguay', dysport: 'Fabricado en Francia' }
 };
 function getOriginLabel(categoryId) {
   return (ORIGIN_LABELS[currentLang] || ORIGIN_LABELS.pt)[categoryId] || '';
@@ -2331,7 +2509,7 @@ function renderProducts(){
   if (secOrigin) secOrigin.textContent = getOriginLabel(currentCat);
 
   gridEl.innerHTML = filtered.map((p,i)=>{
-    const isConsultCategory = isConsultProduct(p) && !isWholesaleConsultProduct(p);
+    const isConsultCategory = isConsultProduct(p);
     const wholesaleConsult = isWholesaleConsultProduct(p);
     const hasWholesale = p.id !== 203 || isWholesaleConsultProduct(p);
 
@@ -2488,7 +2666,7 @@ function updateModalUI() {
     wholesaleLabelText = `${t('wholesaleMin10')} — ${t('wholesale10Consult')}`;
   }
 
-  const isConsultCategory = isConsultProduct(selectedProduct) && !isWholesaleConsultProduct(selectedProduct);
+  const isConsultCategory = isConsultProduct(selectedProduct);
   const hasWholesale = selectedProduct.id !== 203 || isWholesaleConsultProduct(selectedProduct);
 
   modalBody.innerHTML = `
