@@ -806,6 +806,63 @@ position: absolute; top: .65rem; left: .65rem;
       .cat-list { position: relative; top: auto; right: auto; left: auto; width: 100%; margin-top: .72rem; max-height: min(65vh, 430px); }
     }
 
+    /* BRAND PICKER STRUCTURAL FIX — painel irmão no fluxo vertical */
+    .cat-bar { display: flex; flex-direction: column; align-items: center; overflow: visible !important; }
+    .cat-bar > .brand-picker { flex: 0 0 auto; }
+    .cat-bar > .cat-list { position: relative !important; top: auto !important; right: auto !important; left: auto !important; width: min(100%, 430px); margin: .78rem auto 0; }
+    @media (max-width: 760px) {
+      .cat-bar > .cat-list { width: min(320px, calc(100% - 1.5rem)); margin-top: .68rem; }
+    }
+    @media (max-width: 420px) {
+      .cat-bar > .cat-list { width: min(300px, calc(100% - 1rem)); margin-top: .58rem; }
+    }
+
+    /* BRAND MENU REBUILD — menu nativo, estável e sem sobreposição */
+    .cat-bar { position: sticky; top: 54px; z-index: 240; display: flex; flex-direction: column; align-items: center; width: 100%; padding: .65rem 1rem; overflow: visible !important; }
+    .brand-picker { position: relative; z-index: 600; width: min(100%, 430px); margin: 0; }
+    .brand-picker > summary { list-style: none; }
+    .brand-picker > summary::-webkit-details-marker { display: none; }
+    .brand-picker > summary::marker { display: none; }
+    .brand-picker-trigger { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: .7rem; width: 100%; min-height: 3.35rem; padding: .62rem .8rem; border: 1px solid rgba(15,23,42,.14); border-radius: 1.15rem; background: rgba(255,255,255,.78); color: var(--text); box-shadow: 0 10px 30px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.92); backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%); cursor: pointer; text-align: left; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .2s ease; }
+    .brand-picker-trigger:hover, .brand-picker[open] > .brand-picker-trigger { border-color: rgba(15,23,42,.26); background: rgba(255,255,255,.94); box-shadow: 0 14px 34px rgba(15,23,42,.12), inset 0 1px 0 rgba(255,255,255,.96); }
+    .brand-picker-trigger:active { transform: scale(.99); }
+    .brand-picker-hamburger { display: inline-flex; align-items: center; justify-content: center; flex-direction: column; gap: 3px; width: 2.05rem; height: 2.05rem; border-radius: .72rem; background: #111113; }
+    .brand-picker-hamburger span { display: block; width: .82rem; height: 1.5px; border-radius: 999px; background: #fff; }
+    .brand-picker-copy { display: flex; min-width: 0; flex-direction: column; gap: .12rem; }
+    .brand-picker-label { color: var(--muted); font-size: .62rem; font-weight: 800; letter-spacing: .1em; line-height: 1.1; text-transform: uppercase; }
+    .brand-picker-current { overflow: hidden; color: var(--text); font-size: .9rem; font-weight: 800; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+    .brand-picker-chevron { width: .58rem; height: .58rem; border-right: 1.7px solid currentColor; border-bottom: 1.7px solid currentColor; color: var(--muted); transform: rotate(45deg) translate(-2px,-2px); transition: transform .25s ease; }
+    .brand-picker[open] .brand-picker-chevron { transform: rotate(225deg) translate(-2px,-2px); }
+    .brand-picker > .cat-list { position: relative !important; inset: auto !important; display: flex; flex-direction: column; gap: .2rem; width: 100%; max-height: min(65vh, 430px); margin: .72rem 0 0; padding: .55rem; border: 1px solid rgba(15,23,42,.1); border-radius: 1.15rem; background: rgba(255,255,255,.94); box-shadow: 0 20px 48px rgba(15,23,42,.14), inset 0 1px 0 rgba(255,255,255,.9); overflow-x: hidden; overflow-y: auto; backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); }
+    .brand-picker > .cat-list .cat-btn { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; width: 100%; min-height: 2.75rem; padding: .68rem .78rem; border: 0; border-radius: .82rem; background: transparent; color: #52606f; font-size: .76rem; font-weight: 650; letter-spacing: .01em; text-align: left; cursor: pointer; transition: background .18s ease, color .18s ease, transform .18s ease; }
+    .brand-picker > .cat-list .cat-btn:hover { background: rgba(15,23,42,.055); color: #101114; }
+    .brand-picker > .cat-list .cat-btn.active { background: #111113; color: #fff; box-shadow: 0 6px 14px rgba(15,23,42,.16); }
+    .brand-picker > .cat-list .cat-btn:active { transform: scale(.985); }
+    .brand-picker > .cat-list .cat-btn-label { min-width: 0; line-height: 1.2; }
+    .brand-picker > .cat-list .cat-btn-check { width: auto; height: auto; background: transparent; color: currentColor; font-size: 1rem; line-height: 1; }
+    @media (max-width: 760px) {
+      .cat-bar { top: 54px; padding: .55rem 0; }
+      .brand-picker { width: min(320px, calc(100% - 1.5rem)); }
+      .brand-picker-trigger { min-height: 3rem; border-radius: 1rem; }
+      .brand-picker-current { font-size: .82rem; }
+      .brand-picker > .cat-list { max-height: min(68vh, 430px); margin-top: .68rem; }
+      .brand-picker > .cat-list .cat-btn { min-height: 2.9rem; padding: .72rem .82rem; }
+    }
+    @media (max-width: 420px) {
+      .brand-picker { width: min(300px, calc(100% - 1rem)); }
+      .brand-picker-trigger { min-height: 2.85rem; gap: .55rem; }
+      .brand-picker-hamburger { width: 1.8rem; height: 1.8rem; }
+      .brand-picker-label { font-size: .56rem; }
+      .brand-picker-current { font-size: .78rem; }
+      .brand-picker > .cat-list { max-height: min(66vh, 390px); margin-top: .58rem; }
+      .brand-picker > .cat-list .cat-btn { min-height: 2.8rem; padding: .68rem .75rem; }
+    }
+
+    /* BRAND MENU ROW RESET — elimina deslocamento residual das opções */
+    .brand-picker > .cat-list { display: block !important; position: relative !important; inset: auto !important; transform: none !important; }
+    .brand-picker > .cat-list .cat-btn { position: relative !important; inset: auto !important; display: grid !important; margin: 0 !important; transform: none !important; }
+    .brand-picker > .cat-list .cat-btn + .cat-btn { margin-top: .2rem !important; }
+
     /* HERO PRINCIPAL — parcelamento no topo e grupo Buy Club no rodapé */
     .hero { min-height: clamp(520px, 58vw, 700px); padding: 5.5rem 1.5rem 2.4rem; justify-content: center; }
     .hero-content { width: min(100%, 780px); flex: 0 0 auto; }
@@ -1194,14 +1251,14 @@ position: absolute; top: .65rem; left: .65rem;
     </section>
 
     <nav class="cat-bar" aria-label="Escolher marca" data-i18n-attr="aria-label:chooseBrand">
-      <div class="brand-picker" id="brand-picker">
-        <button class="brand-picker-trigger" id="brand-picker-trigger" type="button" aria-expanded="false" aria-controls="cat-list" aria-label="Escolher marca" data-i18n-attr="aria-label:chooseBrand">
+      <details class="brand-picker" id="brand-picker">
+        <summary class="brand-picker-trigger" id="brand-picker-trigger" aria-controls="cat-list" aria-expanded="false" aria-label="Escolher marca" data-i18n-attr="aria-label:chooseBrand">
           <span class="brand-picker-hamburger" aria-hidden="true"><span></span><span></span><span></span></span>
           <span class="brand-picker-copy"><span class="brand-picker-label" data-i18n="chooseBrand">Escolher marca</span><span class="brand-picker-current" id="brand-picker-current">New Life</span></span>
           <span class="brand-picker-chevron" aria-hidden="true"></span>
-        </button>
-        <div class="cat-list" id="cat-list" role="menu" hidden></div>
-      </div>
+        </summary>
+        <div class="cat-list" id="cat-list" role="menu"></div>
+      </details>
     </nav>
 
     <section class="products-wrap">
@@ -2792,12 +2849,15 @@ function getCategoryLabel(category) {
   const translated = t(category.nameKey);
   return translated && translated !== category.nameKey ? translated : category.name;
 }
-function setBrandMenuOpen(open){
-  if (!brandPicker || !brandPickerTrigger || !catListEl) return;
-  brandPicker.classList.toggle('open', open);
-  brandPickerTrigger.setAttribute('aria-expanded', String(open));
-  catListEl.hidden = !open;
-  if (open) requestAnimationFrame(() => { catListEl.scrollTop = 0; });
+function syncBrandMenuState() {
+  if (!brandPicker || !brandPickerTrigger) return;
+  brandPickerTrigger.setAttribute('aria-expanded', String(brandPicker.open));
+  if (brandPicker.open && catListEl) requestAnimationFrame(() => { catListEl.scrollTop = 0; });
+}
+function setBrandMenuOpen(open) {
+  if (!brandPicker) return;
+  brandPicker.open = Boolean(open);
+  syncBrandMenuState();
 }
 function renderCatBar(){
   const cats = getCategories();
@@ -2812,7 +2872,7 @@ function renderCatBar(){
     btn.addEventListener('click',()=>{ currentCat=btn.dataset.category; setBrandMenuOpen(false); renderCatBar(); renderProducts(); });
   });
 }
-brandPickerTrigger?.addEventListener('click', () => setBrandMenuOpen(!brandPicker.classList.contains('open')));
+brandPicker?.addEventListener('toggle', syncBrandMenuState);
 document.addEventListener('click', (event) => {
   if (brandPicker && !brandPicker.contains(event.target)) setBrandMenuOpen(false);
 });
