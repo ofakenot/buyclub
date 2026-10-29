@@ -2097,6 +2097,10 @@ position: absolute; top: .65rem; left: .65rem;
     .nl-preload.is-leaving { animation: nlOut .7s cubic-bezier(.65,0,.35,1) forwards; }
     .nl-preload-mark { position: relative; display: grid; place-items: center; width: clamp(150px, 38vw, 200px); aspect-ratio: 1; }
     .nl-preload-glow { position: absolute; inset: 8%; border-radius: 50%; background: conic-gradient(from 210deg, rgba(91,141,239,.55), rgba(155,111,224,.5), rgba(239,154,106,.45), rgba(91,141,239,.55)); filter: blur(34px); opacity: 0; animation: nlGlowIn 1.2s ease .2s forwards, nlGlowPulse 2.6s ease-in-out 1.4s infinite; }
+    .nl-logo-crop { display: block; background: url(images/logo-newlife.png) no-repeat; }
+    .nl-crop-emblem { aspect-ratio: 1036/1000; background-size: 262.741% auto; background-position: 48.636% 7.843%; }
+    .nl-crop-word { width: 100%; aspect-ratio: 2578/393; background-size: 105.586% auto; background-position: 50.000% 79.344%; }
+    .nl-crop-sub { aspect-ratio: 1600/125; background-size: 170.125% auto; background-position: 50.178% 95.984%; }
     .nl-preload-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
     .nl-preload-ring circle { fill: none; stroke: url(#nlRing); stroke-width: 1.4; stroke-linecap: round; stroke-dasharray: 604; stroke-dashoffset: 604; opacity: .8; animation: nlRingDraw 1.8s cubic-bezier(.65,0,.35,1) .25s forwards; }
     .nl-preload-emblem { position: relative; width: 68%; height: auto; opacity: 0; transform: scale(.82) rotate(-10deg); filter: blur(12px); animation: nlEmblemIn 1.1s cubic-bezier(.16,1,.3,1) .1s forwards; }
@@ -2211,17 +2215,17 @@ position: absolute; top: .65rem; left: .65rem;
     <div class="nl-preload-mark">
       <span class="nl-preload-glow" aria-hidden="true"></span>
       <svg class="nl-preload-ring" viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="nlRing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b8def"/><stop offset=".5" stop-color="#9b6fe0"/><stop offset="1" stop-color="#ef9a6a"/></linearGradient></defs><circle cx="100" cy="100" r="96"/></svg>
-      <img class="nl-preload-emblem" src="images/logo-newlife-emblema.webp" alt="">
+      <span class="nl-preload-emblem nl-logo-crop nl-crop-emblem" aria-hidden="true"></span>
     </div>
-    <div class="nl-preload-word"><img src="images/logo-newlife-texto.webp" alt="New Life"><span class="nl-preload-shine" aria-hidden="true"></span></div>
-    <img class="nl-preload-sub" src="images/logo-newlife-healthcare.webp" alt="Healthcare">
+    <div class="nl-preload-word"><span class="nl-logo-crop nl-crop-word" role="img" aria-label="New Life"></span><span class="nl-preload-shine" aria-hidden="true"></span></div>
+    <span class="nl-preload-sub nl-logo-crop nl-crop-sub" role="img" aria-label="Healthcare"></span>
     <p class="nl-preload-kicker">Representantes oficiais no Brasil</p>
     <div class="nl-preload-bar" aria-hidden="true"><span></span></div>
   </div>
   <div class="nl-quiz" id="nl-quiz" hidden>
     <div class="nl-quiz-card">
       <aside class="nl-quiz-aside">
-        <img class="nl-quiz-aside-logo" src="images/logo-newlife.webp" alt="New Life Healthcare">
+        <img class="nl-quiz-aside-logo" src="images/logo-newlife.png" alt="New Life Healthcare">
         <p class="nl-quiz-aside-kicker">Avaliação personalizada</p>
         <h2 class="nl-quiz-aside-title">Descubra suas calorias diárias e o peptídeo ideal para o seu objetivo</h2>
         <ul class="nl-quiz-aside-list">
@@ -2233,7 +2237,7 @@ position: absolute; top: .65rem; left: .65rem;
       </aside>
       <div class="nl-quiz-main">
         <div class="nl-quiz-top">
-          <img class="nl-quiz-logo" src="images/logo-newlife.webp" alt="New Life Healthcare">
+          <img class="nl-quiz-logo" src="images/logo-newlife.png" alt="New Life Healthcare">
           <span class="nl-quiz-count" id="nl-quiz-step-label"></span>
           <button class="nl-quiz-skip" type="button" id="nl-quiz-skip">Pular</button>
         </div>
@@ -4217,9 +4221,10 @@ function setBrandMenuOpen(open) {
   brandPicker.open = Boolean(open);
   syncBrandMenuState();
 }
-const BRAND_LOGOS = {"zphc": "images/logo-zphc.webp", "cosmeticos": "images/logo-medicube.webp", "newlife": "images/logo-newlife-icone.webp", "synedica": "images/logo-synedica.webp", "estetica": "images/logo-dysport.webp", "alluvi": "images/logo-alluvi.webp", "mounjaro": "images/logo-mounjaro.webp"};
+const BRAND_LOGOS = {"zphc": "images/logo-zphc.webp", "cosmeticos": "images/logo-medicube.webp", "synedica": "images/logo-synedica.webp", "estetica": "images/logo-dysport.webp", "alluvi": "images/logo-alluvi.webp", "mounjaro": "images/logo-mounjaro.webp"};
 const BRAND_MONOGRAMS = { alluvi: ['AL', '#0f766e'], mounjaro: ['MJ', '#7c3aed'] };
 function brandLogoHtml(id, name) {
+  if (id === 'newlife') return `<span class="bm-logo"><span class="nl-logo-crop nl-crop-emblem" style="width:100%" role="img" aria-label="${name}"></span></span>`;
   if (BRAND_LOGOS[id]) return `<span class="bm-logo"><img src="${BRAND_LOGOS[id]}" alt="${name}" loading="lazy" onerror="this.parentNode.remove()"></span>`;
   const [initials, color] = BRAND_MONOGRAMS[id] || [String(name).slice(0, 2).toUpperCase(), '#334155'];
   return `<span class="bm-logo bm-logo-mono" style="color:${color}" aria-hidden="true">${initials}</span>`;
