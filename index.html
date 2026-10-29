@@ -2205,6 +2205,31 @@ position: absolute; top: .65rem; left: .65rem;
       .nl-quiz-logo { display: none; }
       .nl-quiz-count { justify-self: start; }
     }
+    /* MOBILE: menu no topo (abaixo da faixa de parcelamento) e redes do hero em um card */
+    .hero-social { display: none; }
+    @media (max-width: 760px) {
+      body.nav-top-mobile .bot-nav { position: absolute !important; top: var(--nav-top, 112px) !important; bottom: auto !important; left: 50% !important; transform: translateX(-50%) !important; width: calc(100% - 28px) !important; max-width: 400px !important; padding: .22rem .3rem !important; border-radius: 1rem !important; background: rgba(10, 22, 38, .62) !important; border: 1px solid rgba(255,255,255,.14) !important; box-shadow: 0 8px 22px rgba(0,0,0,.22) !important; opacity: 1 !important; filter: none !important; pointer-events: auto !important; z-index: 40 !important; }
+      body.nav-top-mobile.brand-menu-open .bot-nav { z-index: 1000 !important; }
+      body.nav-top-mobile .bot-nav .nav-item, body.nav-top-mobile .bot-nav .nav-brand-item { min-height: 2.45rem !important; padding: .22rem .1rem !important; border-radius: .75rem !important; color: rgba(226,232,240,.78); }
+      body.nav-top-mobile .bot-nav .nav-item.active, body.nav-top-mobile .bot-nav .nav-brand-picker[open] > .nav-brand-item { color: #fff; background: rgba(255,255,255,.14) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.18) !important; }
+      body.nav-top-mobile .bot-nav .nav-icon { width: 20px !important; height: 18px !important; margin-bottom: 2px !important; }
+      body.nav-top-mobile .bot-nav .nav-item svg, body.nav-top-mobile .bot-nav .nav-brand-picker .brand-picker-hamburger svg { width: 16px !important; height: 16px !important; }
+      body.nav-top-mobile .bot-nav .nav-brand-picker .brand-picker-hamburger { width: 19px !important; height: 19px !important; }
+      body.nav-top-mobile .bot-nav .nav-label, body.nav-top-mobile .nav-brand-picker .brand-picker-label { font-size: 7px !important; letter-spacing: .3px !important; }
+      body.nav-top-mobile .bot-nav .nav-brand-picker > .cat-list { top: calc(100% + .5rem) !important; bottom: auto !important; }
+      body.nav-top-mobile .hero { padding-top: 7.4rem !important; }
+      .hero-footer .hero-group-button { display: none !important; }
+      .hero-social { display: flex; align-items: center; justify-content: center; gap: .4rem; width: 100%; max-width: 340px; margin: 0 auto; }
+      .hero-social-btn { flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: .32rem; padding: .36rem .5rem .36rem .36rem; border: 1px solid rgba(255,255,255,.34); border-radius: .85rem; color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.24); transition: transform .2s ease, filter .2s ease; }
+      .hero-social-btn:active { transform: scale(.96); }
+      .hero-social-icon { display: inline-grid; place-items: center; flex: 0 0 auto; width: 1.55rem; height: 1.55rem; border-radius: .5rem; background: rgba(255,255,255,.2); }
+      .hero-social-icon svg { width: .92rem; height: .92rem; }
+      .hero-social-label { font-size: .66rem !important; line-height: 1; font-weight: 700; letter-spacing: .01em; white-space: nowrap; }
+      .hero-social-btn:nth-child(1) { background: linear-gradient(135deg, #2563eb 0%, #0e7490 100%); }
+      .hero-social-btn:nth-child(2) { background: linear-gradient(135deg, rgba(37,211,102,.96), rgba(22,163,74,.96)); }
+      .hero-social-btn:nth-child(3) { background: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%); }
+      body.nav-top-mobile .products-wrap { padding-bottom: 2.5rem !important; }
+    }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
 </head>
@@ -2386,6 +2411,11 @@ position: absolute; top: .65rem; left: .65rem;
           <span class="hero-group-copy"><strong data-i18n="heroGroupTitle">Grupo Buy Club</strong><span data-i18n="heroGroupText">Entre para receber novidades e condições</span></span>
           <svg class="hero-group-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
+        <div class="hero-social" role="group" aria-label="Redes Buy Club">
+          <a class="hero-social-btn" href="https://whatsapp.com/channel/0029Vb8llzMI7Be87RGPxo3l" target="_blank" rel="noopener noreferrer" aria-label="Canal Buy Club no WhatsApp" title="Canal"><span class="hero-social-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h4l9-5v12l-9-5H4z"/><path d="M8 13l1.5 6h3L11 13"/><path d="M20 9a4 4 0 0 1 0 6"/></svg></span><span class="hero-social-label">Canal</span></a>
+          <a class="hero-social-btn" href="https://chat.whatsapp.com/DGpMXz40qiT5CBh40SY2x5?mode=gi_t" target="_blank" rel="noopener noreferrer" aria-label="Grupo Buy Club no WhatsApp" title="Grupo"><span class="hero-social-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.2-1.2-6.1-3.5-8.3ZM12.2 21.6h-.1c-1.7 0-3.4-.5-4.9-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.7 9.7 0 0 1-1.5-5.1c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.7 9.7 0 0 1 2.9 6.9c0 5.4-4.5 9.8-9.9 9.8Zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.7-1.4-3.8-3.2-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.8-.9-2.4-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.1 1.3 3.3c.2.2 2.3 3.5 5.6 4.9 2 .9 2.8 1 3.8.8.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4-.1-.2-.3-.3-.6-.4Z"/></svg></span><span class="hero-social-label">Grupo</span></a>
+          <a class="hero-social-btn" href="https://instagram.com/neewlifeus" target="_blank" rel="noopener noreferrer" aria-label="Instagram New Life" title="Instagram"><span class="hero-social-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg></span><span class="hero-social-label">Instagram</span></a>
+        </div>
       </div>
     </section>
 
@@ -4252,6 +4282,29 @@ brandPicker?.addEventListener('toggle', syncBrandMenuState);
 document.addEventListener('click', (event) => {
   if (brandPicker && !brandPicker.contains(event.target)) setBrandMenuOpen(false);
 });
+
+// MOBILE: menu fixo no topo, logo abaixo da faixa de parcelamento do hero
+(function () {
+  const mq = window.matchMedia('(max-width: 760px)');
+  function placeTopNav() {
+    const on = mq.matches;
+    document.body.classList.toggle('nav-top-mobile', on);
+    if (!on) { document.body.style.paddingTop = ''; return; }
+    const note = document.querySelector('.hero-top-note');
+    const header = document.querySelector('.header');
+    const nav = document.querySelector('.bot-nav');
+    let top = 8;
+    if (note && note.offsetParent) { document.body.style.paddingTop = ''; top = note.getBoundingClientRect().bottom + window.scrollY + 8; }
+    else if (header && header.offsetParent) { document.body.style.paddingTop = ''; top = header.getBoundingClientRect().bottom + window.scrollY + 8; }
+    else document.body.style.paddingTop = ((nav ? nav.offsetHeight : 52) + 16) + 'px';
+    document.body.style.setProperty('--nav-top', Math.round(top) + 'px');
+  }
+  (mq.addEventListener ? mq.addEventListener('change', placeTopNav) : mq.addListener(placeTopNav));
+  window.addEventListener('resize', placeTopNav);
+  window.addEventListener('load', placeTopNav);
+  document.addEventListener('click', () => setTimeout(placeTopNav, 60));
+  placeTopNav();
+})();
 const botNav = document.querySelector('.bot-nav');
 let botNavScrollTimer = null;
 function revealBotNav() {
