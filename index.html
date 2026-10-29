@@ -440,34 +440,84 @@ position: absolute; top: .65rem; left: .65rem;
     .modal-feat span { font-size: .82rem; color: var(--text); font-weight: 600; }
     .modal-foot { padding: 1rem 1.25rem 1.25rem; border-top: 1px solid var(--border); background: var(--bg-glass); width: 100%; }
     .modal-wa { display: flex; align-items: center; justify-content: center; gap: .65rem; width: 100%; height: 3.25rem; background: var(--text); color: #ffffff; border-radius: 1rem; text-decoration: none; font-weight: 800; font-size: .9rem; transition: all .25s; }
-    .checkout-title { font-family: var(--font-display); font-size: 1.7rem; letter-spacing: .05em; color: var(--text); width: 100%; margin-bottom: .25rem; }
-    .checkout-subtitle { color: var(--muted); font-size: .76rem; line-height: 1.5; width: 100%; margin-bottom: 1rem; }
-    .checkout-product-summary { width: 100%; padding: .8rem .9rem; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: .8rem; background: rgba(15,23,42,.04); color: var(--text); font-size: .78rem; line-height: 1.5; }
-    .checkout-product-summary strong { display: block; font-size: .86rem; }
-    .checkout-form { width: 100%; display: flex; flex-direction: column; gap: .75rem; }
-    .checkout-field { display: flex; flex-direction: column; gap: .3rem; width: 100%; }
-    .checkout-field label, .checkout-payment-title { color: var(--text); font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-    .checkout-field input { width: 100%; height: 2.75rem; padding: 0 .8rem; border: 1px solid var(--border-light); border-radius: .65rem; background: #fff; color: var(--text); font: inherit; font-size: .82rem; outline: none; }
-    .checkout-field input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
-    .checkout-field input[readonly] { background:#f1f5f9; color:#475569; }
-    .checkout-address-grid { display:grid; grid-template-columns:minmax(0,1fr) 120px; gap:.65rem; width:100%; }
-    .checkout-inline-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.65rem; width:100%; }
-    .checkout-lookup-status { min-height:1rem; color:#0b899d; font-size:.62rem; font-weight:700; }
-    .checkout-shipping-notice { padding:.7rem .8rem; border:1px solid #f2d79f; border-radius:.7rem; background:#fff8e8; color:#79551d; font-size:.68rem; line-height:1.45; }
-    .checkout-cpf-field { display:none; }
-    .checkout-cpf-field.visible { display:flex; }
-    @media (max-width:560px) { .checkout-address-grid, .checkout-inline-grid { grid-template-columns:1fr; gap:.75rem; } }
-    .checkout-payment { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .45rem; margin-top: .15rem; }
-    .checkout-payment label { position: relative; display: flex; align-items: center; gap: .38rem; min-height: 2.15rem; padding: .38rem .48rem; border: 1px solid var(--border-light); border-radius: .58rem; background: #fff; color: var(--text); font-size: .66rem; font-weight: 800; cursor: pointer; transition: border-color .2s, background .2s, transform .2s; }
-    .checkout-payment label:has(input:checked) { border-color: #2563eb; background: #eff6ff; transform: translateY(-1px); }
-    .checkout-payment input { width: .78rem; height: .78rem; margin: 0; accent-color: #2563eb; flex: 0 0 auto; }
-    .checkout-payment-icon { width: 1.18rem; height: 1.18rem; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    /* CHECKOUT — estilo Shopify */
+    .co-overlay { align-items: stretch; background: rgba(9,9,11,.35); backdrop-filter: blur(6px); }
+    .co-shell { position: relative; width: 100%; height: 100%; height: 100dvh; overflow-y: auto; overscroll-behavior: contain; background: #fff; color: #0f172a; transform: translateY(18px); opacity: 0; transition: transform .35s cubic-bezier(.16,1,.3,1), opacity .25s ease; -webkit-overflow-scrolling: touch; }
+    .co-overlay.active .co-shell { transform: none; opacity: 1; }
+    .co-header { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 2.5rem 1fr auto; align-items: center; gap: .75rem; padding: .85rem 1rem; padding-top: max(.85rem, env(safe-area-inset-top)); background: rgba(255,255,255,.96); backdrop-filter: blur(12px); border-bottom: 1px solid #e5e7eb; }
+    .co-back { width: 2.5rem; height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; border-radius: 999px; background: #fff; color: #0f172a; cursor: pointer; }
+    .co-back:hover { background: #f8fafc; }
+    .co-brand { font-family: var(--font-display); font-size: 1.45rem; letter-spacing: .08em; line-height: 1; text-align: center; }
+    .co-secure { display: inline-flex; align-items: center; gap: .3rem; color: #64748b; font-size: .66rem; font-weight: 700; white-space: nowrap; }
+    .co-secure svg { width: .9rem; height: .9rem; }
+    .co-summary-toggle { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; border: 0; border-bottom: 1px solid #e5e7eb; background: #f8fafc; color: #0f172a; font: inherit; cursor: pointer; }
+    .co-summary-toggle-label { display: inline-flex; align-items: center; gap: .45rem; color: #1d4ed8; font-size: .82rem; font-weight: 600; }
+    .co-summary-toggle-label svg { width: 1.05rem; height: 1.05rem; }
+    .co-summary-toggle .co-chevron { width: .85rem; height: .85rem; transition: transform .2s ease; }
+    .co-summary-toggle[aria-expanded="true"] .co-chevron { transform: rotate(180deg); }
+    .co-summary-toggle strong { font-size: 1rem; font-weight: 800; }
+    .co-grid { display: flex; flex-direction: column; }
+    .co-aside { display: none; background: #f8fafc; border-bottom: 1px solid #e5e7eb; }
+    .co-aside.is-open { display: block; }
+    .co-aside-inner, .co-main-inner { width: 100%; max-width: 34rem; margin: 0 auto; padding: 1.25rem 1rem; }
+    .co-title { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: .05em; line-height: 1; margin-bottom: .35rem; }
+    .co-subtitle { color: #64748b; font-size: .78rem; line-height: 1.5; margin-bottom: 1.25rem; }
+    .checkout-form { width: 100%; display: flex; flex-direction: column; gap: 1.5rem; }
+    .co-section { display: flex; flex-direction: column; gap: .7rem; }
+    .co-section-title { font-size: 1.05rem; font-weight: 800; letter-spacing: -.01em; color: #0f172a; margin-bottom: .1rem; }
+    .checkout-field { position: relative; display: flex; flex-direction: column; width: 100%; }
+    .co-float input { width: 100%; height: 3.25rem; padding: 1.15rem .85rem .35rem; border: 1px solid #d1d5db; border-radius: .6rem; background: #fff; color: #0f172a; font: inherit; font-size: .9rem; outline: none; transition: border-color .15s, box-shadow .15s; }
+    .co-float label { position: absolute; left: .87rem; top: .42rem; color: #6b7280; font-size: .66rem; font-weight: 500; pointer-events: none; }
+    .co-float input::placeholder { color: #9ca3af; }
+    .co-float input:focus { border-color: #1d4ed8; box-shadow: 0 0 0 1px #1d4ed8; }
+    .co-float input[readonly] { background: #f3f4f6; color: #374151; }
+    .co-float input[readonly]:focus { border-color: #d1d5db; box-shadow: none; }
+    .checkout-address-grid { display: grid; grid-template-columns: minmax(0,1fr) 7.5rem; gap: .7rem; width: 100%; }
+    .checkout-inline-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: .7rem; width: 100%; }
+    .checkout-lookup-status { min-height: 0; margin-top: -.35rem; color: #0b899d; font-size: .68rem; font-weight: 700; }
+    .checkout-lookup-status:empty { display: none; }
+    .checkout-shipping-notice { padding: .7rem .85rem; border-radius: .6rem; background: #f8fafc; border: 1px solid #e5e7eb; color: #475569; font-size: .7rem; line-height: 1.5; }
+    .checkout-cpf-field { display: none; }
+    .checkout-cpf-field.visible { display: flex; }
+    .checkout-payment { display: flex; flex-direction: column; border: 1px solid #d1d5db; border-radius: .6rem; overflow: hidden; }
+    .checkout-payment label { display: flex; align-items: center; gap: .75rem; min-height: 3.25rem; padding: .75rem .9rem; background: #fff; cursor: pointer; font-size: .86rem; font-weight: 600; color: #0f172a; transition: background .15s; }
+    .checkout-payment label + label { border-top: 1px solid #e5e7eb; }
+    .checkout-payment label:has(input:checked) { background: #eff6ff; box-shadow: inset 0 0 0 1px #1d4ed8; }
+    .checkout-payment input { width: 1.05rem; height: 1.05rem; margin: 0; accent-color: #1d4ed8; flex: 0 0 auto; }
+    .co-pay-name { flex: 1; }
+    .co-pay-name small { margin-left: .35rem; color: #64748b; font-size: .7rem; font-weight: 500; }
+    .checkout-payment-icon { width: 1.5rem; height: 1.5rem; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
     .checkout-payment-icon svg { width: 100%; height: 100%; display: block; }
-    .checkout-actions { display: flex; gap: .6rem; width: 100%; margin-top: .4rem; }
-    .checkout-action { flex: 1; min-height: 2.9rem; border: none; border-radius: .75rem; font: inherit; font-size: .72rem; font-weight: 800; cursor: pointer; }
-    .checkout-action.cancel { background: rgba(15,23,42,.08); color: var(--text); }
-    .checkout-action.submit { background: #16a34a; color: #fff; }
-    @media (max-width: 420px) { .checkout-payment { grid-template-columns: 1fr; } }
+    .checkout-actions { display: flex; flex-direction: column; gap: .5rem; width: 100%; padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
+    .checkout-action { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; border: 0; font: inherit; cursor: pointer; }
+    .checkout-action svg { width: 1.1rem; height: 1.1rem; }
+    .checkout-action.submit { min-height: 3.4rem; border-radius: .6rem; background: #16a34a; color: #fff; font-size: .95rem; font-weight: 800; box-shadow: 0 6px 18px rgba(22,163,74,.22); transition: background .15s; }
+    .checkout-action.submit:hover { background: #15803d; }
+    .checkout-action.cancel { min-height: 2.6rem; background: none; color: #1d4ed8; font-size: .8rem; font-weight: 600; }
+    .co-items { display: flex; flex-direction: column; gap: .9rem; }
+    .co-item { display: grid; grid-template-columns: 4rem minmax(0,1fr) auto; align-items: center; gap: .85rem; }
+    .co-thumb { position: relative; width: 4rem; height: 4rem; border: 1px solid #e5e7eb; border-radius: .6rem; background: #fff; }
+    .co-thumb img { width: 100%; height: 100%; object-fit: contain; padding: .3rem; border-radius: .6rem; }
+    .co-qty { position: absolute; top: -.45rem; right: -.45rem; min-width: 1.3rem; height: 1.3rem; padding: 0 .3rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: #6b7280; color: #fff; font-size: .66rem; font-weight: 800; }
+    .co-item-name { font-size: .82rem; font-weight: 700; line-height: 1.3; color: #0f172a; }
+    .co-item-meta { margin-top: .15rem; color: #64748b; font-size: .7rem; }
+    .co-item-price { font-size: .82rem; font-weight: 700; white-space: nowrap; text-align: right; }
+    .co-totals { display: flex; flex-direction: column; gap: .5rem; margin-top: 1.25rem; padding-top: 1.1rem; border-top: 1px solid #e5e7eb; }
+    .co-row { display: flex; justify-content: space-between; gap: 1rem; color: #374151; font-size: .82rem; }
+    .co-row span:last-child { font-weight: 600; color: #0f172a; text-align: right; }
+    .co-row.co-total { margin-top: .35rem; align-items: baseline; color: #0f172a; font-size: 1.05rem; font-weight: 800; }
+    .co-row.co-total small { margin-right: .35rem; color: #64748b; font-size: .68rem; font-weight: 600; }
+    .co-total-note { margin-top: .75rem; color: #64748b; font-size: .68rem; line-height: 1.5; }
+    @media (max-width: 420px) { .co-secure span { display: none; } }
+    @media (max-width: 340px) { .checkout-inline-grid, .checkout-address-grid { grid-template-columns: 1fr; } }
+    @media (min-width: 900px) {
+      .co-summary-toggle { display: none; }
+      .co-grid { flex-direction: row-reverse; min-height: calc(100dvh - 4.25rem); }
+      .co-main { flex: 1 1 55%; border-right: 1px solid #e5e7eb; }
+      .co-aside, .co-aside.is-open { display: block; flex: 1 1 45%; border-bottom: 0; }
+      .co-main-inner { max-width: 36rem; margin: 0 0 0 auto; padding: 2.25rem 2.75rem 2.5rem; }
+      .co-aside-inner { position: sticky; top: 4.25rem; max-width: 28rem; margin: 0; padding: 2.25rem 2.75rem; }
+    }
 
     /* CATEGORIES VIEW */
     .cats-view { min-height: 100vh; background: var(--bg); padding-bottom: 9rem; display: flex; flex-direction: column; align-items: center; }
@@ -1725,9 +1775,6 @@ position: absolute; top: .65rem; left: .65rem;
     .cart-summary .cart-continue { width: 100%; margin-top: .6rem; background: rgba(15,23,42,.08); color: var(--text); }
     .cart-count { position: absolute; top: -.2rem; right: .15rem; display: grid; place-items: center; min-width: 1rem; height: 1rem; padding: 0 .2rem; border-radius: 999px; background: #16a34a; color: #fff; font-size: .5rem; font-weight: 800; line-height: 1; }
     .nav-cart-icon { position: relative; }
-    .checkout-summary-line { display: flex; justify-content: space-between; gap: .75rem; padding: .35rem 0; border-top: 1px solid rgba(15,23,42,.08); font-size: .72rem; }
-    .checkout-summary-line:first-of-type { margin-top: .4rem; }
-    .checkout-summary-line small { color: var(--muted-dark); font-size: .65rem; text-align: right; white-space: nowrap; }
     .cart-toast { position: fixed; left: 50%; bottom: 6.2rem; z-index: 2600; transform: translate(-50%, 1rem); opacity: 0; pointer-events: none; padding: .75rem 1rem; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(9,9,11,.92); color: #fff; font-size: .7rem; font-weight: 800; box-shadow: 0 10px 24px rgba(0,0,0,.2); transition: opacity .25s ease, transform .25s ease; }
     .cart-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
     @media (max-width: 700px) { .cart-content-grid { grid-template-columns: 1fr; } .cart-summary { position: static; } }
@@ -2188,74 +2235,86 @@ position: absolute; top: .65rem; left: .65rem;
     </div>
   </div>
 
-  <!-- MODAL CHECKOUT / PEDIDO -->
-  <div class="modal-overlay" id="checkout-modal">
-    <div class="modal-box">
-      <div class="modal-handle"></div>
-      <div class="modal-head">
-        <button class="modal-close-btn" id="checkout-close" type="button" aria-label="Fechar formulário" data-i18n-attr="aria-label:closeForm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+  <!-- CHECKOUT (estilo Shopify) -->
+  <div class="modal-overlay co-overlay" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="co-title">
+    <div class="co-shell">
+      <header class="co-header">
+        <button class="co-back" id="checkout-close" type="button" aria-label="Fechar formulário" data-i18n-attr="aria-label:closeForm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-      </div>
-      <div class="modal-body">
-        <h2 class="checkout-title" data-i18n="checkoutTitle">Finalizar pedido</h2>
-        <p class="checkout-subtitle" data-i18n="checkoutSubtitle">Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.</p>
-        <div class="checkout-product-summary" id="checkout-product-summary"></div>
-        <form class="checkout-form" id="checkout-form">
-          <div class="checkout-address-grid">
-            <div class="checkout-field">
-              <label for="checkout-cep" data-i18n="fieldCep">CEP</label>
-              <input id="checkout-cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" required>
-              <span class="checkout-lookup-status" id="checkout-lookup-status" aria-live="polite"></span>
-            </div>
-            <div class="checkout-field">
-              <label for="checkout-number" data-i18n="fieldNumber">Número</label>
-              <input id="checkout-number" name="number" type="text" inputmode="numeric" autocomplete="address-line2" placeholder="Nº" data-i18n-placeholder="numberPlaceholder" required>
-            </div>
+        <span class="co-brand">BUY CLUB US</span>
+        <span class="co-secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="coSecure">Checkout seguro</span></span>
+      </header>
+      <button class="co-summary-toggle" id="co-summary-toggle" type="button" aria-expanded="false" aria-controls="co-aside">
+        <span class="co-summary-toggle-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L20.5 8H6"/><circle cx="10" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg><span id="co-summary-toggle-text" data-i18n="coShowSummary">Mostrar resumo do pedido</span><svg class="co-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+        <strong id="co-total-mobile"></strong>
+      </button>
+      <div class="co-grid">
+        <aside class="co-aside" id="co-aside">
+          <div class="co-aside-inner" id="checkout-product-summary"></div>
+        </aside>
+        <main class="co-main">
+          <div class="co-main-inner">
+            <h2 class="co-title" id="co-title" data-i18n="checkoutTitle">Finalizar pedido</h2>
+            <p class="co-subtitle" data-i18n="checkoutSubtitle">Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.</p>
+            <form class="checkout-form" id="checkout-form" novalidate>
+              <section class="co-section">
+                <h3 class="co-section-title" data-i18n="coDelivery">Entrega</h3>
+                <div class="checkout-field co-float">
+                  <input id="checkout-recipient" name="recipient" type="text" autocomplete="name" placeholder="Nome completo" data-i18n-placeholder="fullNamePlaceholder" required>
+                  <label for="checkout-recipient" data-i18n="fieldRecipient">Nome de quem vai receber</label>
+                </div>
+                <div class="checkout-address-grid">
+                  <div class="checkout-field co-float">
+                    <input id="checkout-cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" required>
+                    <label for="checkout-cep" data-i18n="fieldCep">CEP</label>
+                  </div>
+                  <div class="checkout-field co-float">
+                    <input id="checkout-number" name="number" type="text" inputmode="numeric" autocomplete="address-line2" placeholder="Nº" data-i18n-placeholder="numberPlaceholder" required>
+                    <label for="checkout-number" data-i18n="fieldNumber">Número</label>
+                  </div>
+                </div>
+                <span class="checkout-lookup-status" id="checkout-lookup-status" aria-live="polite"></span>
+                <div class="checkout-field co-float">
+                  <input id="checkout-address" name="address" type="text" autocomplete="street-address" placeholder="Digite o CEP para preencher" data-i18n-placeholder="addressPlaceholder" readonly required>
+                  <label for="checkout-address" data-i18n="fieldAddress">Endereço encontrado pelo CEP</label>
+                </div>
+                <div class="checkout-inline-grid">
+                  <div class="checkout-field co-float">
+                    <input id="checkout-neighborhood" name="neighborhood" type="text" placeholder="Preenchido pelo CEP" data-i18n-placeholder="filledByCep" readonly required>
+                    <label for="checkout-neighborhood" data-i18n="fieldNeighborhood">Bairro</label>
+                  </div>
+                  <div class="checkout-field co-float">
+                    <input id="checkout-city" name="city" type="text" placeholder="Preenchido pelo CEP" data-i18n-placeholder="filledByCep" readonly required>
+                    <label for="checkout-city" data-i18n="fieldCity">Cidade / UF</label>
+                  </div>
+                </div>
+                <div class="checkout-field co-float">
+                  <input id="checkout-complement" name="complement" type="text" autocomplete="address-line2" placeholder="Opcional" data-i18n-placeholder="optionalPlaceholder">
+                  <label for="checkout-complement" data-i18n="fieldComplement">Bloco / apartamento</label>
+                </div>
+                <div class="checkout-field co-float checkout-cpf-field" id="checkout-cpf-field">
+                  <input id="checkout-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14">
+                  <label for="checkout-cpf" data-i18n="fieldCpf">CPF do destinatário (opcional)</label>
+                </div>
+                <p class="checkout-shipping-notice" data-i18n="shippingNotice">O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.</p>
+              </section>
+              <section class="co-section">
+                <h3 class="co-section-title checkout-payment-title" data-i18n="paymentTitle">Forma de pagamento</h3>
+                <div class="checkout-payment" role="radiogroup">
+                  <label><input type="radio" name="payment" value="Pix" required><span class="co-pay-name">Pix</span><span class="checkout-payment-icon" data-payment-icon="pix"></span></label>
+                  <label><input type="radio" name="payment" value="Cartão"><span class="co-pay-name">Cartão <small>até 12x</small></span><span class="checkout-payment-icon" data-payment-icon="card"></span></label>
+                  <label><input type="radio" name="payment" value="USDT"><span class="co-pay-name">USDT</span><span class="checkout-payment-icon" data-payment-icon="usdt"></span></label>
+                  <label><input type="radio" name="payment" value="Criptomoeda"><span class="co-pay-name" data-i18n="cryptoPayment">Criptomoeda</span><span class="checkout-payment-icon" data-payment-icon="crypto"></span></label>
+                </div>
+              </section>
+              <div class="checkout-actions">
+                <button class="checkout-action submit" type="submit"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.03c-.25.69-1.44 1.32-1.98 1.37-.51.05-1.15.07-1.85-.12a16.7 16.7 0 0 1-1.68-.62c-2.95-1.27-4.88-4.24-5.03-4.44-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.59-.37.79-.37h.57c.18 0 .43-.07.67.51.25.59.84 2.04.91 2.19.07.15.12.32.02.52-.1.2-.15.32-.3.49-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.49.22.57.35.07.12.07.71-.18 1.4Z"/></svg><span data-i18n="sendWhatsapp">Enviar para o WhatsApp</span></button>
+                <button class="checkout-action cancel" id="checkout-cancel" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span data-i18n="backButton">Voltar</span></button>
+              </div>
+            </form>
           </div>
-          <div class="checkout-field">
-            <label for="checkout-address" data-i18n="fieldAddress">Endereço encontrado pelo CEP</label>
-            <input id="checkout-address" name="address" type="text" autocomplete="street-address" placeholder="Digite o CEP para preencher" data-i18n-placeholder="addressPlaceholder" readonly required>
-          </div>
-          <div class="checkout-inline-grid">
-            <div class="checkout-field">
-              <label for="checkout-neighborhood" data-i18n="fieldNeighborhood">Bairro</label>
-              <input id="checkout-neighborhood" name="neighborhood" type="text" placeholder="Preenchido pelo CEP" data-i18n-placeholder="filledByCep" readonly required>
-            </div>
-            <div class="checkout-field">
-              <label for="checkout-city" data-i18n="fieldCity">Cidade / UF</label>
-              <input id="checkout-city" name="city" type="text" placeholder="Preenchido pelo CEP" data-i18n-placeholder="filledByCep" readonly required>
-            </div>
-          </div>
-          <div class="checkout-inline-grid">
-            <div class="checkout-field">
-              <label for="checkout-complement" data-i18n="fieldComplement">Bloco / apartamento</label>
-              <input id="checkout-complement" name="complement" type="text" autocomplete="address-line2" placeholder="Opcional" data-i18n-placeholder="optionalPlaceholder">
-            </div>
-            <div class="checkout-field">
-              <label for="checkout-recipient" data-i18n="fieldRecipient">Nome de quem vai receber</label>
-              <input id="checkout-recipient" name="recipient" type="text" autocomplete="name" placeholder="Nome completo" data-i18n-placeholder="fullNamePlaceholder" required>
-            </div>
-          </div>
-          <div class="checkout-shipping-notice" data-i18n="shippingNotice">O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.</div>
-          <div class="checkout-field checkout-cpf-field" id="checkout-cpf-field">
-            <label for="checkout-cpf" data-i18n="fieldCpf">CPF do destinatário (opcional)</label>
-            <input id="checkout-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14">
-          </div>
-          <div class="checkout-field">
-            <span class="checkout-payment-title" data-i18n="paymentTitle">Forma de pagamento</span>
-            <div class="checkout-payment">
-              <label><input type="radio" name="payment" value="Cartão" required><span class="checkout-payment-icon" data-payment-icon="card"></span><span>Cartão</span></label>
-              <label><input type="radio" name="payment" value="USDT"><span class="checkout-payment-icon" data-payment-icon="usdt"></span><span>USDT</span></label>
-              <label><input type="radio" name="payment" value="Pix"><span class="checkout-payment-icon" data-payment-icon="pix"></span><span>Pix</span></label>
-              <label><input type="radio" name="payment" value="Criptomoeda"><span class="checkout-payment-icon" data-payment-icon="crypto"></span><span data-i18n="cryptoPayment">Criptomoeda</span></label>
-            </div>
-          </div>
-          <div class="checkout-actions">
-            <button class="checkout-action cancel" id="checkout-cancel" type="button" data-i18n="backButton">Voltar</button>
-            <button class="checkout-action submit" type="submit" data-i18n="sendWhatsapp">Enviar para o WhatsApp</button>
-          </div>
-        </form>
+        </main>
       </div>
     </div>
   </div>
@@ -2436,13 +2495,13 @@ function paymentBadgesHtml(){
 /* i18n - PT, EN e ES */
 const translations = {
   pt:{
-    headerTagline:"Qualidade Premium Global",heroBadge:"American Peptides",productCountSuffix:"produto",productCountSuffixPlural:"produtos",navHome:"Início",navCategories:"Categorias",navInfo:"Info",navContact:"Contato",categoriesTitle:"Categorias",chooseBrand:"Escolher marca",chooseBrandHint:"Selecione uma marca para ver os produtos",closeBrandMenu:"Fechar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética injetável",catEsteticaDesc:"Linha de estética injetável",categoriesSubtitle:"Explore nosso catálogo por marca",profileTagline:"Produtos Premium Importados",contactTitle:"Contato",whatsappSupport:"WhatsApp Suporte",officialSite:"Site Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Produto 100% original e certificado",modalSupport:"Suporte e orientação inclusos",infoBadge:"Padrão de Serviço & Garantia",infoTitle:"Informações de Envio",infoLead:"Logística rápida, embalagem segura e acompanhamento integral dos seus insumos.",card1Tag:"Logística Nacional",card1Title:"Envios & Prazos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entregue no <strong>mesmo dia</strong> para pedidos confirmados.",card1Feature2:"<strong>Outras Cidades & Estados:</strong> Entrega expressa e rastreada com valores a combinar.",card1PillText:"Valores de Frete",card1PillVal:"A Combinar",card2Tag:"Insumo Incluso",card2Title:"Água Bacteriostática",card2Feature1:"Todas as ampolas e frascos acompanham <strong>água bacteriostática</strong> pronta para reconstituição imediata.",card2Feature2:"Embalagem protetora de grau laboratorial para garantir total integridade e esterilidade no transporte.",card2PillText:"Insumos inclusos sem custo extra",footerTagline:"Qualidade e tecnologia em peptídeos.",footerRights:"Todos os direitos reservados.",heroSubline:"Original products",heroInstallment:"Parcele sua compra em até 12x no cartão",heroPaymentMethods:"Aceitamos Pix e USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Entre para receber novidades e condições",exchangeLabel:"Câmbio",liveLabel:"em tempo real",contactIntro:"Fale com a Buy Club US para consultar disponibilidade, lote, documentação e condições de envio. Nossa equipe responde com agilidade e orienta cada etapa do pedido.",trustKicker:"ORIGEM E DOCUMENTAÇÃO",trustTitle:"Produtos originais, rastreáveis e acompanhados de COA",trustText:"Os produtos são comercializados como originais e cada lote pode ser acompanhado do respectivo Certificate of Analysis (COA), conforme disponibilidade da marca. Informações regulatórias e alegações de autorização devem ser verificadas na documentação oficial antes da compra.",trustItem1Title:"Originalidade",trustItem1Text:"Conferência de lote e procedência informada pela marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análise disponibilizado quando aplicável ao lote.",trustItem3Title:"Conformidade",trustItem3Text:"Consulte a documentação regulatória oficial e a finalidade de pesquisa.",accessBtn:"Acessar",buyBtn:"Comprar",addToCartBtn:"Adicionar ao carrinho",cartNav:"Carrinho",cartTitle:"Seu carrinho",cartEmpty:"Seu carrinho está vazio.",cartEmptyText:"Adicione os produtos que deseja comprar e finalize tudo em um só pedido.",cartContinue:"Continuar comprando",cartFinalize:"Finalizar compra",cartClear:"Limpar carrinho",cartRemove:"Remover",cartQty:"Quantidade",cartSubtotal:"Subtotal",cartConsult:"Valor sob consulta",cartUnit:"/unidade",cartAdded:"Produto adicionado ao carrinho",cartBack:"Voltar ao catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Linha completa de peptídeos Usa Peptides",catNewLifeDesc:"Linha exclusiva de produtos New Life",catSynedicaDesc:"Linha de peptídeos Synedica",catZphc:"ZPHC",catZphcDesc:"Linha de produtos ZPHC",catTg:"TG",catTgDesc:"Linha de produtos TG",catDysport:"DYSPORT",catDysportDesc:"Linha de produtos DYSPORT",retailLabel:"Varejo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidade",dragLabel:"arraste",priceConsult:"Preço sob consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total do lote",wholesale10Consult:"Valor a consultar para 10 unidades ou mais",directConsult:"Preços mediante consulta direta",researchUse:"Uso destinado à pesquisa",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Fechar formulário",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.",fieldCep:"CEP",fieldNumber:"Número",fieldAddress:"Endereço encontrado pelo CEP",fieldNeighborhood:"Bairro",fieldCity:"Cidade / UF",fieldComplement:"Bloco / apartamento",fieldRecipient:"Nome de quem vai receber",fieldCpf:"CPF do destinatário (opcional)",addressPlaceholder:"Digite o CEP para preencher",filledByCep:"Preenchido pelo CEP",numberPlaceholder:"Nº",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nome completo",shippingNotice:"O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.",paymentTitle:"Forma de pagamento",cryptoPayment:"Criptomoeda",backButton:"Voltar",sendWhatsapp:"Enviar para o WhatsApp",mapKicker:"REDE INTERNACIONAL",mapTitle:"Presença e atendimento",mapNote:"Planeta interativo com rotação contínua. Arraste para explorar o globo em 360°.",globeAria:"Globo 3D com rotas internacionais e siglas dos países",exploreZoom:"Explorar &amp; Zoom",zoomHint:"ARRASTE E USE O SCROLL",loading:"carregando…",lookupLoading:"Consultando endereço…",lookupSuccess:"Endereço preenchido automaticamente.",lookupError:"Não foi possível localizar o CEP. Verifique os números.",closeExplore:"Fechar exploração",openExplore:"Explorar &amp; Zoom",totalLabel:"Total"
+    headerTagline:"Qualidade Premium Global",heroBadge:"American Peptides",productCountSuffix:"produto",productCountSuffixPlural:"produtos",navHome:"Início",navCategories:"Categorias",navInfo:"Info",navContact:"Contato",categoriesTitle:"Categorias",chooseBrand:"Escolher marca",chooseBrandHint:"Selecione uma marca para ver os produtos",closeBrandMenu:"Fechar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética injetável",catEsteticaDesc:"Linha de estética injetável",categoriesSubtitle:"Explore nosso catálogo por marca",profileTagline:"Produtos Premium Importados",contactTitle:"Contato",whatsappSupport:"WhatsApp Suporte",officialSite:"Site Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Produto 100% original e certificado",modalSupport:"Suporte e orientação inclusos",infoBadge:"Padrão de Serviço & Garantia",infoTitle:"Informações de Envio",infoLead:"Logística rápida, embalagem segura e acompanhamento integral dos seus insumos.",card1Tag:"Logística Nacional",card1Title:"Envios & Prazos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entregue no <strong>mesmo dia</strong> para pedidos confirmados.",card1Feature2:"<strong>Outras Cidades & Estados:</strong> Entrega expressa e rastreada com valores a combinar.",card1PillText:"Valores de Frete",card1PillVal:"A Combinar",card2Tag:"Insumo Incluso",card2Title:"Água Bacteriostática",card2Feature1:"Todas as ampolas e frascos acompanham <strong>água bacteriostática</strong> pronta para reconstituição imediata.",card2Feature2:"Embalagem protetora de grau laboratorial para garantir total integridade e esterilidade no transporte.",card2PillText:"Insumos inclusos sem custo extra",footerTagline:"Qualidade e tecnologia em peptídeos.",footerRights:"Todos os direitos reservados.",heroSubline:"Original products",heroInstallment:"Parcele sua compra em até 12x no cartão",heroPaymentMethods:"Aceitamos Pix e USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Entre para receber novidades e condições",exchangeLabel:"Câmbio",liveLabel:"em tempo real",contactIntro:"Fale com a Buy Club US para consultar disponibilidade, lote, documentação e condições de envio. Nossa equipe responde com agilidade e orienta cada etapa do pedido.",trustKicker:"ORIGEM E DOCUMENTAÇÃO",trustTitle:"Produtos originais, rastreáveis e acompanhados de COA",trustText:"Os produtos são comercializados como originais e cada lote pode ser acompanhado do respectivo Certificate of Analysis (COA), conforme disponibilidade da marca. Informações regulatórias e alegações de autorização devem ser verificadas na documentação oficial antes da compra.",trustItem1Title:"Originalidade",trustItem1Text:"Conferência de lote e procedência informada pela marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análise disponibilizado quando aplicável ao lote.",trustItem3Title:"Conformidade",trustItem3Text:"Consulte a documentação regulatória oficial e a finalidade de pesquisa.",accessBtn:"Acessar",buyBtn:"Comprar",addToCartBtn:"Adicionar ao carrinho",cartNav:"Carrinho",cartTitle:"Seu carrinho",cartEmpty:"Seu carrinho está vazio.",cartEmptyText:"Adicione os produtos que deseja comprar e finalize tudo em um só pedido.",cartContinue:"Continuar comprando",cartFinalize:"Finalizar compra",cartClear:"Limpar carrinho",cartRemove:"Remover",cartQty:"Quantidade",cartSubtotal:"Subtotal",cartConsult:"Valor sob consulta",cartUnit:"/unidade",cartAdded:"Produto adicionado ao carrinho",cartBack:"Voltar ao catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Linha completa de peptídeos Usa Peptides",catNewLifeDesc:"Linha exclusiva de produtos New Life",catSynedicaDesc:"Linha de peptídeos Synedica",catZphc:"ZPHC",catZphcDesc:"Linha de produtos ZPHC",catTg:"TG",catTgDesc:"Linha de produtos TG",catDysport:"DYSPORT",catDysportDesc:"Linha de produtos DYSPORT",retailLabel:"Varejo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidade",dragLabel:"arraste",priceConsult:"Preço sob consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total do lote",wholesale10Consult:"Valor a consultar para 10 unidades ou mais",directConsult:"Preços mediante consulta direta",researchUse:"Uso destinado à pesquisa",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Fechar formulário",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.",fieldCep:"CEP",fieldNumber:"Número",fieldAddress:"Endereço encontrado pelo CEP",fieldNeighborhood:"Bairro",fieldCity:"Cidade / UF",fieldComplement:"Bloco / apartamento",fieldRecipient:"Nome de quem vai receber",fieldCpf:"CPF do destinatário (opcional)",addressPlaceholder:"Digite o CEP para preencher",filledByCep:"Preenchido pelo CEP",numberPlaceholder:"Nº",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nome completo",shippingNotice:"O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.",paymentTitle:"Forma de pagamento",cryptoPayment:"Criptomoeda",backButton:"Voltar",sendWhatsapp:"Enviar para o WhatsApp",mapKicker:"REDE INTERNACIONAL",mapTitle:"Presença e atendimento",mapNote:"Planeta interativo com rotação contínua. Arraste para explorar o globo em 360°.",globeAria:"Globo 3D com rotas internacionais e siglas dos países",exploreZoom:"Explorar &amp; Zoom",zoomHint:"ARRASTE E USE O SCROLL",loading:"carregando…",lookupLoading:"Consultando endereço…",lookupSuccess:"Endereço preenchido automaticamente.",lookupError:"Não foi possível localizar o CEP. Verifique os números.",closeExplore:"Fechar exploração",openExplore:"Explorar &amp; Zoom",totalLabel:"Total",coSecure:"Checkout seguro",coShowSummary:"Mostrar resumo do pedido",coHideSummary:"Ocultar resumo do pedido",coDelivery:"Entrega",coShipping:"Frete",coTotalNote:"Frete e condições finais são confirmados pelo WhatsApp após o envio do pedido."
   },
   en:{
-    headerTagline:"Global Premium Quality",heroBadge:"American Peptides",productCountSuffix:"product",productCountSuffixPlural:"products",navHome:"Home",navCategories:"Categories",navInfo:"Info",navContact:"Contact",categoriesTitle:"Categories",chooseBrand:"Choose brand",chooseBrandHint:"Select a brand to view products",closeBrandMenu:"Close brands",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosmetics",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Injectable aesthetics",catEsteticaDesc:"Injectable aesthetics line",categoriesSubtitle:"Explore our catalog by brand",profileTagline:"Premium Imported Products",contactTitle:"Contact",whatsappSupport:"WhatsApp Support",officialSite:"Official Website",finalizeOrder:"Place Order",modalOriginal:"100% original and certified product",modalSupport:"Support and guidance included",infoBadge:"Service Standards & Quality",infoTitle:"Shipping Information",infoLead:"Fast logistics, secure packaging and full tracking of your supplies.",card1Tag:"National Logistics",card1Title:"Shipping & Delivery",card1Feature1:"<strong>São Paulo (Capital):</strong> Delivered on the <strong>same day</strong> for confirmed orders.",card1Feature2:"<strong>Other Cities & States:</strong> Express tracked shipping with rates to be agreed.",card1PillText:"Shipping Rates",card1PillVal:"To be agreed",card2Tag:"Supply Included",card2Title:"Bacteriostatic Water",card2Feature1:"All vials come accompanied by <strong>bacteriostatic water</strong> ready for reconstitution.",card2Feature2:"Laboratory grade protective packaging ensuring complete sterility during transit.",card2PillText:"Supplies included at no extra cost",footerTagline:"Quality and technology in peptides.",footerRights:"All rights reserved.",heroSubline:"Original products",heroInstallment:"Split your purchase into up to 12 card installments",heroPaymentMethods:"We accept Pix and USDT",heroGroupTitle:"Buy Club group",heroGroupText:"Join for updates and offers",exchangeLabel:"Exchange",liveLabel:"live",contactIntro:"Contact Buy Club US to check availability, lot information, documentation and shipping conditions. Our team responds quickly and guides every step of the order.",trustKicker:"ORIGIN AND DOCUMENTATION",trustTitle:"Original, traceable products accompanied by COA",trustText:"Products are presented as original and each lot may be accompanied by its Certificate of Analysis (COA), when available from the brand. Regulatory information and authorization claims must be checked against official documentation before purchase.",trustItem1Title:"Originality",trustItem1Text:"Lot and provenance information supplied by the brand.",trustItem2Title:"COA",trustItem2Text:"Certificate of analysis provided when applicable to the lot.",trustItem3Title:"Compliance",trustItem3Text:"Review official regulatory documentation and research-use purpose.",accessBtn:"Access",buyBtn:"Buy",addToCartBtn:"Add to cart",cartNav:"Cart",cartTitle:"Your cart",cartEmpty:"Your cart is empty.",cartEmptyText:"Add the products you want and finish everything in one order.",cartContinue:"Continue shopping",cartFinalize:"Checkout",cartClear:"Clear cart",cartRemove:"Remove",cartQty:"Quantity",cartSubtotal:"Subtotal",cartConsult:"Price on request",cartUnit:"/unit",cartAdded:"Product added to cart",cartBack:"Back to catalog",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Full line of Usa Peptides",catNewLifeDesc:"Exclusive New Life product line",catSynedicaDesc:"Synedica peptide line",catZphc:"ZPHC",catZphcDesc:"ZPHC product line",catTg:"TG",catTgDesc:"TG product line",retailLabel:"Retail",wholesale5Label:"5 units",wholesale10Label:"10 units",unitSuffix:"/unit",dragLabel:"drag",priceConsult:"Price on request",wholesaleMin5:"Min. 5 units",wholesaleMin10:"Min. 10 units",wholesale5Total:"Lot total",wholesale10Consult:"Price on request for 10 units or more",directConsult:"Prices available by direct consultation",researchUse:"For research use",pageTitle:"Buy Club US — Premium Catalog",closeForm:"Close form",checkoutTitle:"Place order",checkoutSubtitle:"Fill in the details below. After sending, the order will be forwarded with all details to WhatsApp.",fieldCep:"ZIP code",fieldNumber:"Number",fieldAddress:"Address found from ZIP code",fieldNeighborhood:"Neighborhood",fieldCity:"City / State",fieldComplement:"Unit / apartment",fieldRecipient:"Recipient name",fieldCpf:"Recipient tax ID (optional)",addressPlaceholder:"Enter the ZIP code to fill in",filledByCep:"Filled from ZIP code",numberPlaceholder:"No.",optionalPlaceholder:"Optional",fullNamePlaceholder:"Full name",shippingNotice:"The recipient&#39;s <strong>tax ID is optional</strong>. If provided, it may be used for carrier registration and tracking-code generation.",paymentTitle:"Payment method",cryptoPayment:"Cryptocurrency",backButton:"Back",sendWhatsapp:"Send to WhatsApp",mapKicker:"INTERNATIONAL NETWORK",mapTitle:"Presence and support",mapNote:"Interactive globe with continuous rotation. Drag to explore the globe in 360°.",globeAria:"3D globe with international routes and country codes",exploreZoom:"Explore &amp; Zoom",zoomHint:"DRAG AND USE SCROLL",loading:"loading…",lookupLoading:"Looking up address…",lookupSuccess:"Address filled automatically.",lookupError:"ZIP code not found. Check the numbers.",closeExplore:"Close exploration",openExplore:"Explore &amp; Zoom",totalLabel:"Total"
+    headerTagline:"Global Premium Quality",heroBadge:"American Peptides",productCountSuffix:"product",productCountSuffixPlural:"products",navHome:"Home",navCategories:"Categories",navInfo:"Info",navContact:"Contact",categoriesTitle:"Categories",chooseBrand:"Choose brand",chooseBrandHint:"Select a brand to view products",closeBrandMenu:"Close brands",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosmetics",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Injectable aesthetics",catEsteticaDesc:"Injectable aesthetics line",categoriesSubtitle:"Explore our catalog by brand",profileTagline:"Premium Imported Products",contactTitle:"Contact",whatsappSupport:"WhatsApp Support",officialSite:"Official Website",finalizeOrder:"Place Order",modalOriginal:"100% original and certified product",modalSupport:"Support and guidance included",infoBadge:"Service Standards & Quality",infoTitle:"Shipping Information",infoLead:"Fast logistics, secure packaging and full tracking of your supplies.",card1Tag:"National Logistics",card1Title:"Shipping & Delivery",card1Feature1:"<strong>São Paulo (Capital):</strong> Delivered on the <strong>same day</strong> for confirmed orders.",card1Feature2:"<strong>Other Cities & States:</strong> Express tracked shipping with rates to be agreed.",card1PillText:"Shipping Rates",card1PillVal:"To be agreed",card2Tag:"Supply Included",card2Title:"Bacteriostatic Water",card2Feature1:"All vials come accompanied by <strong>bacteriostatic water</strong> ready for reconstitution.",card2Feature2:"Laboratory grade protective packaging ensuring complete sterility during transit.",card2PillText:"Supplies included at no extra cost",footerTagline:"Quality and technology in peptides.",footerRights:"All rights reserved.",heroSubline:"Original products",heroInstallment:"Split your purchase into up to 12 card installments",heroPaymentMethods:"We accept Pix and USDT",heroGroupTitle:"Buy Club group",heroGroupText:"Join for updates and offers",exchangeLabel:"Exchange",liveLabel:"live",contactIntro:"Contact Buy Club US to check availability, lot information, documentation and shipping conditions. Our team responds quickly and guides every step of the order.",trustKicker:"ORIGIN AND DOCUMENTATION",trustTitle:"Original, traceable products accompanied by COA",trustText:"Products are presented as original and each lot may be accompanied by its Certificate of Analysis (COA), when available from the brand. Regulatory information and authorization claims must be checked against official documentation before purchase.",trustItem1Title:"Originality",trustItem1Text:"Lot and provenance information supplied by the brand.",trustItem2Title:"COA",trustItem2Text:"Certificate of analysis provided when applicable to the lot.",trustItem3Title:"Compliance",trustItem3Text:"Review official regulatory documentation and research-use purpose.",accessBtn:"Access",buyBtn:"Buy",addToCartBtn:"Add to cart",cartNav:"Cart",cartTitle:"Your cart",cartEmpty:"Your cart is empty.",cartEmptyText:"Add the products you want and finish everything in one order.",cartContinue:"Continue shopping",cartFinalize:"Checkout",cartClear:"Clear cart",cartRemove:"Remove",cartQty:"Quantity",cartSubtotal:"Subtotal",cartConsult:"Price on request",cartUnit:"/unit",cartAdded:"Product added to cart",cartBack:"Back to catalog",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Full line of Usa Peptides",catNewLifeDesc:"Exclusive New Life product line",catSynedicaDesc:"Synedica peptide line",catZphc:"ZPHC",catZphcDesc:"ZPHC product line",catTg:"TG",catTgDesc:"TG product line",retailLabel:"Retail",wholesale5Label:"5 units",wholesale10Label:"10 units",unitSuffix:"/unit",dragLabel:"drag",priceConsult:"Price on request",wholesaleMin5:"Min. 5 units",wholesaleMin10:"Min. 10 units",wholesale5Total:"Lot total",wholesale10Consult:"Price on request for 10 units or more",directConsult:"Prices available by direct consultation",researchUse:"For research use",pageTitle:"Buy Club US — Premium Catalog",closeForm:"Close form",checkoutTitle:"Place order",checkoutSubtitle:"Fill in the details below. After sending, the order will be forwarded with all details to WhatsApp.",fieldCep:"ZIP code",fieldNumber:"Number",fieldAddress:"Address found from ZIP code",fieldNeighborhood:"Neighborhood",fieldCity:"City / State",fieldComplement:"Unit / apartment",fieldRecipient:"Recipient name",fieldCpf:"Recipient tax ID (optional)",addressPlaceholder:"Enter the ZIP code to fill in",filledByCep:"Filled from ZIP code",numberPlaceholder:"No.",optionalPlaceholder:"Optional",fullNamePlaceholder:"Full name",shippingNotice:"The recipient&#39;s <strong>tax ID is optional</strong>. If provided, it may be used for carrier registration and tracking-code generation.",paymentTitle:"Payment method",cryptoPayment:"Cryptocurrency",backButton:"Back",sendWhatsapp:"Send to WhatsApp",mapKicker:"INTERNATIONAL NETWORK",mapTitle:"Presence and support",mapNote:"Interactive globe with continuous rotation. Drag to explore the globe in 360°.",globeAria:"3D globe with international routes and country codes",exploreZoom:"Explore &amp; Zoom",zoomHint:"DRAG AND USE SCROLL",loading:"loading…",lookupLoading:"Looking up address…",lookupSuccess:"Address filled automatically.",lookupError:"ZIP code not found. Check the numbers.",closeExplore:"Close exploration",openExplore:"Explore &amp; Zoom",totalLabel:"Total",coSecure:"Secure checkout",coShowSummary:"Show order summary",coHideSummary:"Hide order summary",coDelivery:"Delivery",coShipping:"Shipping",coTotalNote:"Shipping and final terms are confirmed on WhatsApp after you send the order."
   },
   es:{
-    headerTagline:"Calidad Premium Global",heroBadge:"American Peptides",productCountSuffix:"producto",productCountSuffixPlural:"productos",navHome:"Inicio",navCategories:"Categorías",navInfo:"Info",navContact:"Contacto",categoriesTitle:"Categorías",chooseBrand:"Elegir marca",chooseBrandHint:"Seleccione una marca para ver los productos",closeBrandMenu:"Cerrar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética inyectable",catEsteticaDesc:"Línea de estética inyectable",categoriesSubtitle:"Explora nuestro catálogo por marca",profileTagline:"Productos Premium Importados",contactTitle:"Contacto",whatsappSupport:"Soporte por WhatsApp",officialSite:"Sitio Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Producto 100% original y certificado",modalSupport:"Soporte y orientación incluidos",infoBadge:"Estándar de Servicio y Garantía",infoTitle:"Información de Envío",infoLead:"Logística rápida, empaque seguro y seguimiento total de sus productos.",card1Tag:"Logística Nacional",card1Title:"Envíos y Tiempos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entrega en el <strong>mismo día</strong> para pedidos confirmados.",card1Feature2:"<strong>Otras Ciudades y Estados:</strong> Entrega expresa y rastreada con valores a combinar.",card1PillText:"Valores de Envío",card1PillVal:"A convenir",card2Tag:"Insumo Incluido",card2Title:"Agua Bacteriostática",card2Feature1:"Todas las ampolletas vienen acompañadas de <strong>agua bacteriostática</strong>.",card2Feature2:"Empaque de protección especial de grado laboratorio.",card2PillText:"Insumos incluidos sin costo extra",footerTagline:"Calidad y tecnología en péptidos.",footerRights:"Todos los derechos reservados.",heroSubline:"Original products",heroInstallment:"Divide tu compra hasta en 12 cuotas con tarjeta",heroPaymentMethods:"Aceptamos Pix y USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Únase para recibir novedades y condiciones",exchangeLabel:"Cambio",liveLabel:"en tiempo real",contactIntro:"Contacta a Buy Club US para consultar disponibilidad, lote, documentación y condiciones de envío. Nuestro equipo responde con agilidad y orienta cada etapa del pedido.",trustKicker:"ORIGEN Y DOCUMENTACIÓN",trustTitle:"Productos originales, trazables y acompañados de COA",trustText:"Los productos se presentan como originales y cada lote puede incluir su Certificate of Analysis (COA), según disponibilidad de la marca. La información regulatoria y cualquier alegación de autorización debe verificarse en la documentación oficial antes de comprar.",trustItem1Title:"Originalidad",trustItem1Text:"Información de lote y procedencia proporcionada por la marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análisis disponible cuando corresponde al lote.",trustItem3Title:"Conformidad",trustItem3Text:"Consulta la documentación regulatoria oficial y el uso previsto para investigación.",accessBtn:"Acceder",buyBtn:"Comprar",addToCartBtn:"Añadir al carrito",cartNav:"Carrito",cartTitle:"Tu carrito",cartEmpty:"Tu carrito está vacío.",cartEmptyText:"Añade los productos que deseas y finaliza todo en un solo pedido.",cartContinue:"Seguir comprando",cartFinalize:"Finalizar compra",cartClear:"Vaciar carrito",cartRemove:"Eliminar",cartQty:"Cantidad",cartSubtotal:"Subtotal",cartConsult:"Precio bajo consulta",cartUnit:"/unidad",cartAdded:"Producto añadido al carrito",cartBack:"Volver al catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Línea completa Usa Peptides",catNewLifeDesc:"Línea exclusiva New Life",catSynedicaDesc:"Línea de péptidos Synedica",catZphc:"ZPHC",catZphcDesc:"Línea de productos ZPHC",catTg:"TG",catTgDesc:"Línea de productos TG",catDysport:"DYSPORT",catDysportDesc:"Línea de productos DYSPORT",retailLabel:"Menudeo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidad",dragLabel:"arrastra",priceConsult:"Precio bajo consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total del lote",wholesale10Consult:"Precio a consultar para 10 unidades o más",directConsult:"Precios mediante consulta directa",researchUse:"Uso destinado a investigación",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Cerrar formulario",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Complete los datos. Después de enviar, el pedido se enviará con todos los detalles a WhatsApp.",fieldCep:"Código postal",fieldNumber:"Número",fieldAddress:"Dirección encontrada por el código postal",fieldNeighborhood:"Barrio",fieldCity:"Ciudad / Estado",fieldComplement:"Bloque / apartamento",fieldRecipient:"Nombre del destinatario",fieldCpf:"Documento del destinatario (opcional)",addressPlaceholder:"Ingrese el código postal para completar",filledByCep:"Completado por el código postal",numberPlaceholder:"N.º",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nombre completo",shippingNotice:"El <strong>documento del destinatario es opcional</strong>. Si se informa, podrá utilizarse para el registro del transportista y la generación del código de seguimiento.",paymentTitle:"Forma de pago",cryptoPayment:"Criptomoneda",backButton:"Volver",sendWhatsapp:"Enviar a WhatsApp",mapKicker:"RED INTERNACIONAL",mapTitle:"Presencia y atención",mapNote:"Globo interactivo con rotación continua. Arrastra para explorar el globo en 360°.",globeAria:"Globo 3D con rutas internacionales y códigos de países",exploreZoom:"Explorar y zoom",zoomHint:"ARRASTRA Y USA EL SCROLL",loading:"cargando…",lookupLoading:"Consultando dirección…",lookupSuccess:"Dirección completada automáticamente.",lookupError:"No se encontró el código postal. Verifica los números.",closeExplore:"Cerrar exploración",openExplore:"Explorar y zoom",totalLabel:"Total"
+    headerTagline:"Calidad Premium Global",heroBadge:"American Peptides",productCountSuffix:"producto",productCountSuffixPlural:"productos",navHome:"Inicio",navCategories:"Categorías",navInfo:"Info",navContact:"Contacto",categoriesTitle:"Categorías",chooseBrand:"Elegir marca",chooseBrandHint:"Seleccione una marca para ver los productos",closeBrandMenu:"Cerrar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética inyectable",catEsteticaDesc:"Línea de estética inyectable",categoriesSubtitle:"Explora nuestro catálogo por marca",profileTagline:"Productos Premium Importados",contactTitle:"Contacto",whatsappSupport:"Soporte por WhatsApp",officialSite:"Sitio Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Producto 100% original y certificado",modalSupport:"Soporte y orientación incluidos",infoBadge:"Estándar de Servicio y Garantía",infoTitle:"Información de Envío",infoLead:"Logística rápida, empaque seguro y seguimiento total de sus productos.",card1Tag:"Logística Nacional",card1Title:"Envíos y Tiempos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entrega en el <strong>mismo día</strong> para pedidos confirmados.",card1Feature2:"<strong>Otras Ciudades y Estados:</strong> Entrega expresa y rastreada con valores a combinar.",card1PillText:"Valores de Envío",card1PillVal:"A convenir",card2Tag:"Insumo Incluido",card2Title:"Agua Bacteriostática",card2Feature1:"Todas las ampolletas vienen acompañadas de <strong>agua bacteriostática</strong>.",card2Feature2:"Empaque de protección especial de grado laboratorio.",card2PillText:"Insumos incluidos sin costo extra",footerTagline:"Calidad y tecnología en péptidos.",footerRights:"Todos los derechos reservados.",heroSubline:"Original products",heroInstallment:"Divide tu compra hasta en 12 cuotas con tarjeta",heroPaymentMethods:"Aceptamos Pix y USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Únase para recibir novedades y condiciones",exchangeLabel:"Cambio",liveLabel:"en tiempo real",contactIntro:"Contacta a Buy Club US para consultar disponibilidad, lote, documentación y condiciones de envío. Nuestro equipo responde con agilidad y orienta cada etapa del pedido.",trustKicker:"ORIGEN Y DOCUMENTACIÓN",trustTitle:"Productos originales, trazables y acompañados de COA",trustText:"Los productos se presentan como originales y cada lote puede incluir su Certificate of Analysis (COA), según disponibilidad de la marca. La información regulatoria y cualquier alegación de autorización debe verificarse en la documentación oficial antes de comprar.",trustItem1Title:"Originalidad",trustItem1Text:"Información de lote y procedencia proporcionada por la marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análisis disponible cuando corresponde al lote.",trustItem3Title:"Conformidad",trustItem3Text:"Consulta la documentación regulatoria oficial y el uso previsto para investigación.",accessBtn:"Acceder",buyBtn:"Comprar",addToCartBtn:"Añadir al carrito",cartNav:"Carrito",cartTitle:"Tu carrito",cartEmpty:"Tu carrito está vacío.",cartEmptyText:"Añade los productos que deseas y finaliza todo en un solo pedido.",cartContinue:"Seguir comprando",cartFinalize:"Finalizar compra",cartClear:"Vaciar carrito",cartRemove:"Eliminar",cartQty:"Cantidad",cartSubtotal:"Subtotal",cartConsult:"Precio bajo consulta",cartUnit:"/unidad",cartAdded:"Producto añadido al carrito",cartBack:"Volver al catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Línea completa Usa Peptides",catNewLifeDesc:"Línea exclusiva New Life",catSynedicaDesc:"Línea de péptidos Synedica",catZphc:"ZPHC",catZphcDesc:"Línea de productos ZPHC",catTg:"TG",catTgDesc:"Línea de productos TG",catDysport:"DYSPORT",catDysportDesc:"Línea de productos DYSPORT",retailLabel:"Menudeo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidad",dragLabel:"arrastra",priceConsult:"Precio bajo consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total del lote",wholesale10Consult:"Precio a consultar para 10 unidades o más",directConsult:"Precios mediante consulta directa",researchUse:"Uso destinado a investigación",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Cerrar formulario",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Complete los datos. Después de enviar, el pedido se enviará con todos los detalles a WhatsApp.",fieldCep:"Código postal",fieldNumber:"Número",fieldAddress:"Dirección encontrada por el código postal",fieldNeighborhood:"Barrio",fieldCity:"Ciudad / Estado",fieldComplement:"Bloque / apartamento",fieldRecipient:"Nombre del destinatario",fieldCpf:"Documento del destinatario (opcional)",addressPlaceholder:"Ingrese el código postal para completar",filledByCep:"Completado por el código postal",numberPlaceholder:"N.º",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nombre completo",shippingNotice:"El <strong>documento del destinatario es opcional</strong>. Si se informa, podrá utilizarse para el registro del transportista y la generación del código de seguimiento.",paymentTitle:"Forma de pago",cryptoPayment:"Criptomoneda",backButton:"Volver",sendWhatsapp:"Enviar a WhatsApp",mapKicker:"RED INTERNACIONAL",mapTitle:"Presencia y atención",mapNote:"Globo interactivo con rotación continua. Arrastra para explorar el globo en 360°.",globeAria:"Globo 3D con rutas internacionales y códigos de países",exploreZoom:"Explorar y zoom",zoomHint:"ARRASTRA Y USA EL SCROLL",loading:"cargando…",lookupLoading:"Consultando dirección…",lookupSuccess:"Dirección completada automáticamente.",lookupError:"No se encontró el código postal. Verifica los números.",closeExplore:"Cerrar exploración",openExplore:"Explorar y zoom",totalLabel:"Total",coSecure:"Pago seguro",coShowSummary:"Mostrar resumen del pedido",coHideSummary:"Ocultar resumen del pedido",coDelivery:"Entrega",coShipping:"Envío",coTotalNote:"El envío y las condiciones finales se confirman por WhatsApp después de enviar el pedido."
   }
 };
 
@@ -3784,22 +3843,57 @@ document.querySelectorAll('[data-pre-enter], #pre-page-enter').forEach(button =>
 setDirectWhatsAppLinks();
 document.getElementById('cart-clear')?.addEventListener('click', clearCart);
 
+function getCheckoutItems() {
+  return checkoutItems.length ? checkoutItems : (selectedProduct ? [{ product: selectedProduct, type: modalPriceType, qty: 1 }] : []);
+}
+function checkoutTotalText(items) {
+  const values = items.map(({product, type}) => getCartPriceValue(product, type));
+  if (values.some(value => value === null)) return t('cartConsult');
+  return `R$ ${formatBRL(values.reduce((sum, value, index) => sum + value * items[index].qty, 0))}`;
+}
+function setCheckoutSummaryOpen(open) {
+  const toggle = document.getElementById('co-summary-toggle');
+  const aside = document.getElementById('co-aside');
+  const label = document.getElementById('co-summary-toggle-text');
+  if (!toggle || !aside) return;
+  toggle.setAttribute('aria-expanded', String(open));
+  aside.classList.toggle('is-open', open);
+  if (label) label.textContent = t(open ? 'coHideSummary' : 'coShowSummary');
+}
 function renderCheckoutSummary() {
   if (!checkoutSummary) return;
-  const items = checkoutItems.length ? checkoutItems : (selectedProduct ? [{ product: selectedProduct, type: modalPriceType, qty: 1 }] : []);
-  if (!items.length) { checkoutSummary.innerHTML = ''; return; }
-  checkoutSummary.innerHTML = `<strong>${t('cartTitle')}</strong>${items.map(({product, type, qty}) => `<div class="checkout-summary-line"><span>${product.name} × ${qty}</span><small>${getCartPriceText(product, type)}</small></div>`).join('')}`;
+  const items = getCheckoutItems();
+  const totalMobile = document.getElementById('co-total-mobile');
+  if (!items.length) { checkoutSummary.innerHTML = ''; if (totalMobile) totalMobile.textContent = ''; return; }
+  const total = checkoutTotalText(items);
+  const lines = items.map(({product, type, qty}) => {
+    const unit = getCartPriceValue(product, type);
+    const lineTotal = unit === null ? t('cartConsult') : `R$ ${formatBRL(unit * qty)}`;
+    const condition = type === 'atacado5' ? t('wholesale5Label') : type === 'atacado10' ? t('wholesale10Label') : t('retailLabel');
+    return `<div class="co-item"><div class="co-thumb"><img src="${product.images[0]}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.style.visibility='hidden'"><span class="co-qty">${qty}</span></div><div><div class="co-item-name">${product.name}</div><div class="co-item-meta">${formatBrandLabel(product.badge)} · ${condition}</div></div><div class="co-item-price">${lineTotal}</div></div>`;
+  }).join('');
+  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${total}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>${t('card1PillVal')}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
+  if (totalMobile) totalMobile.textContent = total;
 }
+function showCheckout() {
+  renderCheckoutSummary();
+  setCheckoutSummaryOpen(false);
+  checkoutModal.classList.add('active');
+  const shell = checkoutModal.querySelector('.co-shell');
+  if (shell) shell.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+document.getElementById('co-summary-toggle')?.addEventListener('click', () => {
+  const toggle = document.getElementById('co-summary-toggle');
+  setCheckoutSummaryOpen(toggle.getAttribute('aria-expanded') !== 'true');
+});
 function openCheckout(product, type = 'varejo') {
   if (!product || !checkoutModal) return;
   selectedProduct = product;
   modalPriceType = type;
   checkoutItems = [{ product, type, qty: 1 }];
   if (modal && modal.classList.contains('active')) modal.classList.remove('active');
-  renderCheckoutSummary();
-  checkoutModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => checkoutCep && checkoutCep.focus(), 250);
+  showCheckout();
 }
 function openCartCheckout() {
   const items = cartItems.map(item => ({ product: getCartProduct(item), type: item.type, qty: item.qty })).filter(entry => entry.product);
@@ -3807,10 +3901,7 @@ function openCartCheckout() {
   selectedProduct = null;
   checkoutItems = items;
   modalPriceType = items[0].type;
-  renderCheckoutSummary();
-  checkoutModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => checkoutCep && checkoutCep.focus(), 250);
+  showCheckout();
 }
 
 function closeCheckout() {
@@ -3821,7 +3912,7 @@ function closeCheckout() {
 
 function submitCheckout(event) {
   event.preventDefault();
-  const items = checkoutItems.length ? checkoutItems : (selectedProduct ? [{ product: selectedProduct, type: modalPriceType, qty: 1 }] : []);
+  const items = getCheckoutItems();
   if (!items.length || !checkoutForm) return;
   const formData = new FormData(checkoutForm);
   const city = String(formData.get('city') || '').trim();
