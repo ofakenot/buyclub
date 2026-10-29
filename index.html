@@ -2206,7 +2206,17 @@ position: absolute; top: .65rem; left: .65rem;
       .nl-quiz-count { justify-self: start; }
     }
     /* MOBILE: menu no topo (abaixo da faixa de parcelamento) e redes do hero em um card */
-    .hero-social { display: none; }
+    .hero-footer .hero-group-button { display: none !important; }
+    .hero-social { display: flex; align-items: center; justify-content: center; gap: .4rem; width: 100%; max-width: 340px; margin: 0 auto; }
+    .hero-social-btn { flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: .32rem; padding: .36rem .5rem .36rem .36rem; border: 1px solid rgba(255,255,255,.34); border-radius: .85rem; color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.24); transition: transform .2s ease, filter .2s ease; }
+    .hero-social-btn:active { transform: scale(.96); }
+    .hero-social-icon { display: inline-grid; place-items: center; flex: 0 0 auto; width: 1.55rem; height: 1.55rem; border-radius: .5rem; background: rgba(255,255,255,.2); }
+    .hero-social-icon svg { width: .92rem; height: .92rem; }
+    .hero-social-label { font-size: .66rem !important; line-height: 1; font-weight: 700; letter-spacing: .01em; white-space: nowrap; }
+    .hero-social-btn:nth-child(1) { background: linear-gradient(135deg, #2563eb 0%, #0e7490 100%); }
+    .hero-social-btn:nth-child(2) { background: linear-gradient(135deg, rgba(37,211,102,.96), rgba(22,163,74,.96)); }
+    .hero-social-btn:nth-child(3) { background: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%); }
+    @media (min-width: 761px) { .hero-social { max-width: 460px; gap: .6rem; } .hero-social-btn { padding: .55rem .8rem .55rem .55rem; gap: .5rem; border-radius: 1rem; } .hero-social-btn:hover { transform: translateY(-2px); filter: brightness(1.05); } .hero-social-icon { width: 2rem; height: 2rem; border-radius: .6rem; } .hero-social-icon svg { width: 1.05rem; height: 1.05rem; } .hero-social-label { font-size: .82rem !important; } }
     @media (max-width: 760px) {
       body.nav-top-mobile .bot-nav { position: absolute !important; top: var(--nav-top, 112px) !important; bottom: auto !important; left: 50% !important; transform: translateX(-50%) !important; width: calc(100% - 28px) !important; max-width: 400px !important; padding: .22rem .3rem !important; border-radius: 1rem !important; background: rgba(10, 22, 38, .62) !important; border: 1px solid rgba(255,255,255,.14) !important; box-shadow: 0 8px 22px rgba(0,0,0,.22) !important; opacity: 1 !important; filter: none !important; pointer-events: auto !important; z-index: 40 !important; }
       body.nav-top-mobile.brand-menu-open .bot-nav { z-index: 1000 !important; }
@@ -2218,22 +2228,12 @@ position: absolute; top: .65rem; left: .65rem;
       body.nav-top-mobile .bot-nav .nav-label, body.nav-top-mobile .nav-brand-picker .brand-picker-label { font-size: 7px !important; letter-spacing: .3px !important; }
       body.nav-top-mobile .bot-nav .nav-brand-picker > .cat-list { top: calc(100% + .5rem) !important; bottom: auto !important; }
       body.nav-top-mobile .hero { padding-top: 7.4rem !important; }
-      .hero-footer .hero-group-button { display: none !important; }
-      .hero-social { display: flex; align-items: center; justify-content: center; gap: .4rem; width: 100%; max-width: 340px; margin: 0 auto; }
-      .hero-social-btn { flex: 1 1 0; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: .32rem; padding: .36rem .5rem .36rem .36rem; border: 1px solid rgba(255,255,255,.34); border-radius: .85rem; color: #fff; text-decoration: none; box-shadow: 0 10px 22px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.24); transition: transform .2s ease, filter .2s ease; }
-      .hero-social-btn:active { transform: scale(.96); }
-      .hero-social-icon { display: inline-grid; place-items: center; flex: 0 0 auto; width: 1.55rem; height: 1.55rem; border-radius: .5rem; background: rgba(255,255,255,.2); }
-      .hero-social-icon svg { width: .92rem; height: .92rem; }
-      .hero-social-label { font-size: .66rem !important; line-height: 1; font-weight: 700; letter-spacing: .01em; white-space: nowrap; }
-      .hero-social-btn:nth-child(1) { background: linear-gradient(135deg, #2563eb 0%, #0e7490 100%); }
-      .hero-social-btn:nth-child(2) { background: linear-gradient(135deg, rgba(37,211,102,.96), rgba(22,163,74,.96)); }
-      .hero-social-btn:nth-child(3) { background: linear-gradient(135deg, #f58529 0%, #dd2a7b 55%, #8134af 100%); }
       body.nav-top-mobile .products-wrap { padding-bottom: 2.5rem !important; }
     }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
 </head>
-<body class="pre-page-open">
+<body>
 <!-- PRÉ-LOAD NEW LIFE + QUIZ -->
 <div id="nl-intro" class="nl-intro" role="dialog" aria-modal="true" aria-label="Representantes oficiais New Life">
   <div class="nl-preload" id="nl-preload">
@@ -2276,7 +2276,7 @@ position: absolute; top: .65rem; left: .65rem;
     </div>
   </div>
 </div>
-<div id="pre-page" class="pre-page-overlay pre-banner-overlay" role="dialog" aria-modal="true" aria-describedby="pre-page-lead">
+<div id="pre-page" class="pre-page-overlay pre-banner-overlay is-closed" aria-hidden="true" hidden role="dialog" aria-modal="true" aria-describedby="pre-page-lead">
   <section class="pre-banner-shell" aria-label="Buy Club US">
     <span id="pre-page-lead" class="pre-banner-sr">Informações comerciais, métodos de pagamento e acesso ao catálogo.</span>
     <div class="pb-announce" aria-hidden="true"><span>Parcelamos em até 12x no cartão</span><span>Pix e USDT</span><span>Pronta entrega em São Paulo</span></div>
