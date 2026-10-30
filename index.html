@@ -3810,7 +3810,7 @@ const productData = {
 };
 
 /* Descrições técnicas fornecidas pelo usuário: preservadas integralmente em todos os idiomas para evitar fallback genérico. */
-const REMOVED_CATEGORIES = ['usapeptides', 'tg', 'tirzec', 'lipoless', 'gluconex'];
+const REMOVED_CATEGORIES = ['usapeptides'];
 productData.pt = productData.pt.filter(p => !REMOVED_CATEGORIES.includes(p.category));
 productData.en = productData.pt.map(p => ({...p}));
 productData.es = productData.pt.map(p => ({...p}));
@@ -3822,7 +3822,11 @@ function getCategories(){
     {id:"alluvi",      icon:"sparkles", name:"Alluvi",       title:"Alluvi",       desc:"Linha de produtos Alluvi",        nameKey:"catAlluvi",      descKey:"catAlluviDesc"},
     {id:"mounjaro",    icon:"syringe",  name:"Mounjaro",     title:"Mounjaro",     desc:"Produtos Mounjaro",               nameKey:"catMounjaro",    descKey:"catMounjaroDesc"},
     {id:"zphc",        icon:"flask",    name:"ZPHC",        title:"ZPHC",        desc:"Linha de produtos ZPHC",        nameKey:"catZphc",        descKey:"catZphcDesc"},
+    {id:"tg",          icon:"syringe",  name:"TG",          title:"TG",          desc:"Linha de produtos TG",          nameKey:"catTg",          descKey:"catTgDesc"},
     {id:"estetica",    icon:"syringe",  name:"Estética injetável", title:"Estética injetável", desc:"Linha de estética injetável", nameKey:"catEstetica", descKey:"catEsteticaDesc"},
+    {id:"tirzec",icon:"syringe",name:"TIRZEC",title:"TIRZEC",desc:"Linha de produtos TIRZEC",nameKey:"catTirzec",descKey:"catTirzecDesc"},
+    {id:"lipoless",icon:"syringe",name:"LIPOLESS",title:"LIPOLESS",desc:"Linha de produtos LIPOLESS",nameKey:"catLipoless",descKey:"catLipolessDesc"},
+    {id:"gluconex",    icon:"syringe",  name:"Gluconex",     title:"Gluconex",     desc:"Linha de tirzepatida Gluconex",  nameKey:"catGluconex",    descKey:"catGluconexDesc"},
     {id:"cosmeticos",  icon:"sparkles", name:"Cosméticos",   title:"Cosméticos",   desc:"Linha de cosméticos Medicube",   nameKey:"catCosmeticos",  descKey:"catCosmeticosDesc"},
   ];
 }
@@ -4253,7 +4257,7 @@ function setBrandMenuOpen(open) {
   brandPicker.open = Boolean(open);
   syncBrandMenuState();
 }
-const BRAND_LOGOS = {"zphc": "images/logo-zphc.webp", "cosmeticos": "images/logo-medicube.webp", "synedica": "images/logo-synedica.webp", "estetica": "images/logo-dysport.webp", "alluvi": "images/logo-alluvi.webp", "mounjaro": "images/logo-mounjaro.webp"};
+const BRAND_LOGOS = {"zphc": "images/logo-zphc.webp", "cosmeticos": "images/logo-medicube.webp", "synedica": "images/logo-synedica.webp", "estetica": "images/logo-dysport.webp", "alluvi": "images/logo-alluvi.webp", "mounjaro": "images/logo-mounjaro.webp", "tg": "images/logo-tg.webp", "tirzec": "images/logo-tirzec.webp", "lipoless": "images/logo-lipoless.webp", "gluconex": "images/logo-gluconex.webp"};
 const BRAND_MONOGRAMS = { alluvi: ['AL', '#0f766e'], mounjaro: ['MJ', '#7c3aed'] };
 function brandLogoHtml(id, name) {
   if (id === 'newlife') return `<span class="bm-logo"><span class="nl-logo-crop nl-crop-emblem" style="width:100%" role="img" aria-label="${name}"></span></span>`;
