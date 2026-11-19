@@ -432,10 +432,16 @@ position: absolute; top: .65rem; left: .65rem;
     }
     .modal-body { overflow-y: auto; padding: 1.25rem; flex: 1; text-align: left; display: flex; flex-direction: column; align-items: flex-start; }
     .modal-img-wrap { width: 100%; aspect-ratio: 1; background: #ffffff; border-radius: 1.25rem; overflow: hidden; position: relative; border: 1px solid var(--border); }
+    .modal-img-wrap { flex-shrink: 0; }
     .modal-img-wrap .card-slider { width: 100%; height: 100%; }
     .modal-img-wrap .card-slide img { width: 68%; height: 68%; }
     .card-slide img[data-src$="synedica-retatrutide-ampola.webp"] { width: 50%; height: 50%; }
     .pb-product-img img[src$="synedica-retatrutide-ampola.webp"], .nl-res-product-img img[src$="synedica-retatrutide-ampola.webp"] { transform: none !important; padding: 18%; }
+    .card-share, .modal-share { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; border: 1px solid var(--border); background: rgba(255,255,255,.88); color: #263241; cursor: pointer; font: inherit; -webkit-tap-highlight-color: transparent; transition: background .2s ease, transform .2s ease; }
+    .card-share { position: absolute; top: .55rem; right: .55rem; z-index: 5; width: 2.1rem; height: 2.1rem; padding: 0; border-radius: 999px; backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+    .card-share:hover, .modal-share:hover { background: #ffffff; transform: translateY(-1px); }
+    .card-share svg, .modal-share svg { width: 1rem; height: 1rem; }
+    .modal-share { padding: .45rem .85rem; border-radius: 999px; font-size: .78rem; font-weight: 700; margin: 0 0 .7rem; align-self: flex-start; }
     .modal-badge { display: inline-block; padding: .3rem .75rem; background: var(--text); color: #ffffff; font-size: .6rem; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; border-radius: .5rem; margin: 1rem 0 .5rem; }
     .modal-name { font-family: var(--font-display); font-size: 1.85rem; letter-spacing: .04em; color: var(--text); margin-bottom: .4rem; text-align: left; width: 100%; }
     .modal-desc { color: var(--muted-dark); font-size: .84rem; line-height: 1.6; margin-bottom: 1rem; display: block !important; text-align: left; white-space: pre-line; width: 100%; }
@@ -3935,7 +3941,8 @@ const productData = {
         makeProduct(208, "TIRZEC 15MG — 4 VIALS", `Tirzec 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "TIRZEC", "tirzec", ["https://bucket-prod.us-ord-10.linodeobjects.com/site/media/fotos/produtos/thumbs/big/ca3763d58ebf968f6ceb2b0db0acc77f050b4a75.webp"], 680, 597, "Sob consulta"),
         makeProduct(209, "TIRZEC 15MG MD", `Tirzec 15mg na apresentação MD, identificada com a concentração informada pelo fornecedor. Produto destinado exclusivamente à pesquisa e à avaliação laboratorial, sujeito à conferência de lote, composição, pureza, estabilidade e documentação oficial. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "TIRZEC", "tirzec", ["https://saude.abril.com.br/wp-content/uploads/2026/08/tirzec.webp?crop=1&resize=1212,909"], "Sob consulta", "Sob consulta", "Sob consulta"),
         makeProduct(210, "LIPOLESS 15MG MD", `Lipoless 15mg na apresentação MD, com concentração identificada conforme as informações do fornecedor. Produto destinado exclusivamente à pesquisa, com finalidade, composição, pureza, estabilidade e condições de armazenamento sujeitas à confirmação na documentação oficial do lote. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["https://www.lipoless.com.py/wp-content/uploads/2025/10/Lipoless-MD-15.png"], 650, "Sob consulta", "Sob consulta"),
-        makeProduct(211, "Lipoless 15mg - 4 vials", `Lipoless 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A identidade, composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["images/lipoless-15mg-4-vials.webp"], 650, "Sob consulta", "Sob consulta"),
+        makeProduct(211, "LIPOLESS 15MG — 4 VIALS", `Lipoless 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A identidade, composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["https://veja.abril.com.br/wp-content/uploads/2026/01/lipoless.jpg?crop=1&resize=1212,909"], 650, "Sob consulta", "Sob consulta"),
+        makeProduct(235, "Lipoless 15mg - 4 vials", `Lipoless 15mg em apresentação com quatro frascos individuais. Produto destinado exclusivamente à pesquisa, com concentração e quantidade informadas na embalagem. A identidade, composição, pureza, estabilidade, lote e documentação devem ser confirmados nos registros oficiais do fornecedor. Não constitui medicamento, indicação terapêutica ou orientação de uso humano ou veterinário.`, "LIPOLESS", "lipoless", ["images/lipoless-15mg-4-vials.webp"], 650, "Sob consulta", "Sob consulta"),
   ],
   en: [],
   es: []
@@ -4486,6 +4493,7 @@ function renderProducts(){
       <div class="card-img-wrap${p.images.length > 1 ? '' : ' single-image'}" data-drag-label="${p.images.length > 1 ? t('dragLabel') : ''}">
         ${slider(p.images, p.name)}
         <span class="card-badge">${formatBrandLabel(p.badge)}</span>
+        ${shareButtonHtml('card-share')}
       </div>
       <div class="card-body">
         <h3 class="card-name">${p.nameHtml}</h3>
@@ -4582,7 +4590,10 @@ function bindCards(parent){
     if(btnAtacado5) btnAtacado5.addEventListener('click', (e) => { e.stopPropagation(); setCardPriceType('atacado5'); });
     if(btnAtacado10) btnAtacado10.addEventListener('click', (e) => { e.stopPropagation(); setCardPriceType('atacado10'); });
 
-    card.addEventListener('click',e=>{ if(!e.target.closest('.card-cta') && !e.target.closest('.price-type-btn') && !moved) openModal(pId, card.dataset.type || 'varejo'); });
+    const shareBtn = card.querySelector('.card-share');
+    if(shareBtn) shareBtn.addEventListener('click', (e) => { e.stopPropagation(); if(p) shareProduct(p); });
+
+    card.addEventListener('click',e=>{ if(!e.target.closest('.card-cta') && !e.target.closest('.price-type-btn') && !e.target.closest('.card-share') && !moved) openModal(pId, card.dataset.type || 'varejo'); });
   });
 
   parent.querySelectorAll('.card-cta').forEach(btn=>{
@@ -4611,6 +4622,66 @@ function renderCatsView(){
   catsListEl.querySelectorAll('.cat-card').forEach(card=>{
     card.addEventListener('click',()=>{ currentCat=card.dataset.category; switchTab('home'); renderCatBar(); renderProducts(); });
   });
+}
+
+/* COMPARTILHAR PRODUTO: link ?produto=ID abre direto no produto */
+const SHARE_TXT = {
+  pt: { share: 'Compartilhar', copied: 'Link do produto copiado', copy: 'Copie o link do produto:' },
+  en: { share: 'Share', copied: 'Product link copied', copy: 'Copy the product link:' },
+  es: { share: 'Compartir', copied: 'Enlace del producto copiado', copy: 'Copie el enlace del producto:' }
+};
+function shareText(key) { return (SHARE_TXT[currentLang] || SHARE_TXT.pt)[key]; }
+function shareButtonHtml(cls, withLabel = false) {
+  const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+  const label = shareText('share');
+  return `<button class="${cls}" type="button" aria-label="${label}" title="${label}">${icon}${withLabel ? `<span>${label}</span>` : ''}</button>`;
+}
+function productShareUrl(product) {
+  const url = new URL(location.href);
+  url.search = '';
+  url.hash = '';
+  url.searchParams.set('produto', product.id);
+  return url.toString();
+}
+function copyTextFallback(text) {
+  const area = document.createElement('textarea');
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.opacity = '0';
+  document.body.appendChild(area);
+  area.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  area.remove();
+  return ok;
+}
+async function shareProduct(product) {
+  if (!product) return;
+  const url = productShareUrl(product);
+  const title = `${product.name} | Buy Club`;
+  if (navigator.share) {
+    try { await navigator.share({ title, text: product.name, url }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(url); showCartToast(shareText('copied')); return; }
+  } catch (e) { /* tenta o método antigo abaixo */ }
+  if (copyTextFallback(url)) showCartToast(shareText('copied'));
+  else window.prompt(shareText('copy'), url);
+}
+function getSharedProductId() {
+  let raw = null;
+  try { raw = new URLSearchParams(location.search).get('produto'); } catch (e) { return 0; }
+  const id = Number(raw);
+  return Number.isInteger(id) && products.some(p => p.id === id) ? id : 0;
+}
+function openSharedProduct(id) {
+  const product = products.find(p => p.id === id);
+  if (!product) return;
+  if (typeof enterCatalogCategory === 'function') enterCatalogCategory(product.category);
+  else { currentCat = product.category; renderCatBar(); renderProducts(); }
+  setTimeout(() => openModal(id), 350);
 }
 
 function openModal(id, initialType = 'varejo'){
@@ -4645,6 +4716,7 @@ function updateModalUI() {
     </div>
     <span class="modal-badge">${formatBrandLabel(selectedProduct.badge)}</span>
     <h2 class="modal-name">${selectedProduct.nameHtml}</h2>
+    ${shareButtonHtml('modal-share', true)}
     <div class="modal-desc">${selectedProduct.description}</div>
 
     ${renderNewLifeButtons(selectedProduct)}
@@ -4686,6 +4758,9 @@ function updateModalUI() {
     </div>`;
 
   btnWa.href = '#';
+
+  const modalShareBtn = modalBody.querySelector('.modal-share');
+  if(modalShareBtn) modalShareBtn.addEventListener('click', () => shareProduct(selectedProduct));
 
   const modalBtnVarejo = document.getElementById('modal-btn-varejo');
   const modalBtnAtacado5 = document.getElementById('modal-btn-atacado5');
@@ -4802,6 +4877,13 @@ renderPreFeatured();
 /* PRÉ-LOAD NEW LIFE + QUIZ */
 (function () {
   const intro = document.getElementById('nl-intro');
+  const sharedProductId = getSharedProductId();
+  if (sharedProductId) {
+    if (intro) intro.remove();
+    document.body.classList.remove('nl-intro-open');
+    openSharedProduct(sharedProductId);
+    return;
+  }
   if (!intro) return;
   document.body.classList.add('nl-intro-open');
 
