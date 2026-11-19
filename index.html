@@ -2556,6 +2556,16 @@ position: absolute; top: .65rem; left: .65rem;
     .shop-policy-date { color: var(--muted); font-size: .7rem; }
     @media (max-width: 620px) { .shop-policy { padding: 0; align-items: flex-end; } .shop-policy-box { max-height: 92dvh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; } }
 
+    .shop-secure { display: flex; align-items: flex-start; gap: .65rem; padding: .8rem .9rem; border: 1px solid rgba(22,163,74,.28); border-radius: .85rem; background: rgba(22,163,74,.07); color: var(--muted-dark); font-size: .74rem; line-height: 1.45; text-align: left; }
+    .shop-secure svg { width: 20px; height: 20px; flex: 0 0 auto; margin-top: .05rem; fill: none; stroke: #15803d; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .shop-secure strong { display: block; color: var(--text); font-size: .78rem; }
+    .shop-secure-list { display: flex; flex-wrap: wrap; gap: .3rem .8rem; margin-top: .3rem; }
+    .shop-secure-list span { display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 600; color: #15803d; }
+    .pdp-info .shop-secure { margin: 0 0 1rem; }
+    #shop-cart-drawer .shop-secure { margin-top: .8rem; }
+    .checkout-form .shop-secure { margin: .2rem 0 .8rem; }
+    .shop-footer .shop-secure { margin-top: .8rem; }
+    @media (max-width: 620px) { .shop-footer .shop-secure { text-align: left; } }
     /* ===== PÁGINA DE PRODUTO (estilo Shopify) ===== */
     body.shop-pdp #product-modal { align-items: stretch; background: rgba(9,9,11,.25); backdrop-filter: none; -webkit-backdrop-filter: none; }
     body.shop-pdp #product-modal .modal-box { max-width: none; width: 100%; height: 100dvh; max-height: none; border: 0; border-radius: 0; background: var(--bg); transform: translateY(18px); opacity: .6; transition: transform .35s cubic-bezier(.16,1,.3,1), opacity .35s; box-shadow: none; }
@@ -6020,6 +6030,21 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
   document.body.classList.add('shop-layout');
+  const SECURE_T = {
+    pt: { title: 'Pagamento 100% seguro pelo Mercado Pago', text: 'Pix e cartão são processados no ambiente seguro do Mercado Pago. Seus dados de cartão não passam pela Buy Club.', a: 'Site protegido (SSL)', b: 'Dados criptografados', c: 'Compra protegida' },
+    en: { title: '100% secure payment via Mercado Pago', text: 'Pix and card payments are processed in Mercado Pago’s secure environment. Your card details never pass through Buy Club.', a: 'Protected site (SSL)', b: 'Encrypted data', c: 'Protected purchase' },
+    es: { title: 'Pago 100% seguro por Mercado Pago', text: 'Pix y tarjeta se procesan en el entorno seguro de Mercado Pago. Los datos de tu tarjeta no pasan por Buy Club.', a: 'Sitio protegido (SSL)', b: 'Datos cifrados', c: 'Compra protegida' }
+  };
+  window.shopSecureHtml = function (compact) {
+    const x = SECURE_T[currentLang] || SECURE_T.pt;
+    const ok = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;margin:0"><path d="m5 12 5 5 9-10"/></svg>';
+    return `<div class="shop-secure" data-shop-secure><svg viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10.5" rx="2.2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.6" r="1.3"/></svg><div><strong>${x.title}</strong>${compact ? '' : x.text}<div class="shop-secure-list"><span>${ok}${x.a}</span><span>${ok}${x.b}</span><span>${ok}${x.c}</span></div></div></div>`;
+  };
+  function placeSecure(container, where, compact) {
+    if (!container) return;
+    container.querySelector(':scope > [data-shop-secure]')?.remove();
+    container.insertAdjacentHTML(where, window.shopSecureHtml(compact));
+  }
 
   /* idioma + câmbio vão para a barra superior */
   const controls = document.querySelector('.header .header-controls');
@@ -6270,6 +6295,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     const fw = $('shop-footer-wa');
     if (fw && typeof waLink === 'function') fw.href = waLink(typeof directWaMessage === 'string' ? directWaMessage : 'Olá!', WA_PHONE);
     const yr = $('shop-year'); if (yr) yr.textContent = String(new Date().getFullYear());
+    placeSecure(document.querySelector('.shop-footer .shop-pay')?.parentElement, 'beforeend', true);
+    const coErr = $('checkout-error');
+    if (coErr) { document.querySelector('.checkout-form > [data-shop-secure]')?.remove(); coErr.insertAdjacentHTML('beforebegin', window.shopSecureHtml(false)); }
     addShipNote();
   }
   function addShipNote() {
@@ -6281,6 +6309,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     note.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg><span>${esc(st('shipNote').replace('50', formatBRL(fee).replace(/,00$/, '')))}</span>`;
     const row = summary.querySelector('.cart-summary-row');
     if (row) row.after(note); else summary.prepend(note);
+    placeSecure(summary, 'beforeend', true);
   }
   function syncActiveNav() {
     document.querySelectorAll('.shop-nav [data-shop-tab]').forEach(el => el.classList.toggle('is-active', el.dataset.shopTab === currentTab));
@@ -6476,6 +6505,7 @@ const SHOP_REVIEWS = {};
     });
     qInput.addEventListener('change', () => setQty(qInput.value));
 
+    if (window.shopSecureHtml) info.insertAdjacentHTML('beforeend', window.shopSecureHtml(false));
     if (pay) info.appendChild(pay);
     if (nl) info.appendChild(nl);
     if (share) info.appendChild(share);
