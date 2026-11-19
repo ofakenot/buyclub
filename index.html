@@ -2367,6 +2367,149 @@ position: absolute; top: .65rem; left: .65rem;
             .pcalc.has-dose .syr-drop { animation: none; }
         }
 
+
+    /* ===== LAYOUT DE LOJA (estilo Shopify) — mesmas cores e fontes do site ===== */
+    body.shop-layout { padding-top: 0 !important; }
+    body.shop-layout .bot-nav { display: none !important; }
+    body.shop-layout .header { display: none !important; }
+    body.shop-layout .info-sec > .footer { display: none !important; }
+    body.shop-layout .products-wrap { padding-bottom: 3rem !important; }
+    body.shop-layout .section-top { position: relative !important; top: auto !important; }
+    body.shop-layout .cart-toast { bottom: 1.4rem; }
+    body.shop-layout.nav-top-mobile .hero { padding-top: 4.4rem !important; }
+
+    .shop-topbar { display: flex; align-items: center; justify-content: center; min-height: 40px; padding: .35rem 1rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .shop-topbar .header-controls { flex-direction: row !important; flex-wrap: wrap; justify-content: center; gap: .35rem 1.4rem !important; }
+    .shop-topbar .lang-selector { gap: .8rem !important; }
+
+    .shop-header { position: sticky; top: 0; z-index: 900; background: var(--bg-glass); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); border-bottom: 1px solid var(--border); }
+    .shop-header-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; max-width: 1320px; height: 64px; margin: 0 auto; padding: 0 1.5rem; }
+    .shop-logo { justify-self: start; display: inline-flex; align-items: baseline; gap: .35rem; color: var(--text); font-family: var(--font-display); font-size: 1.85rem; letter-spacing: .14em; line-height: 1; text-decoration: none; background: none; border: 0; cursor: pointer; }
+    .shop-logo small { font-size: .95rem; letter-spacing: .2em; color: var(--muted); }
+    .shop-nav { display: flex; align-items: center; gap: .25rem; }
+    .shop-nav-link { position: relative; display: inline-flex; align-items: center; gap: .3rem; padding: .55rem .8rem; border: 0; border-radius: .6rem; background: transparent; color: var(--muted-dark); font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .2s, color .2s; }
+    .shop-nav-link:hover { background: rgba(15,23,42,.06); color: var(--text); }
+    .shop-nav-link.is-active { color: var(--text); }
+    .shop-nav-link.is-active::after { content: ""; position: absolute; left: .8rem; right: .8rem; bottom: .2rem; height: 2px; border-radius: 2px; background: var(--text); }
+    .shop-nav-link svg { width: 12px; height: 12px; transition: transform .2s; }
+    .shop-nav-link[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .shop-actions { justify-self: end; display: flex; align-items: center; gap: .25rem; }
+    .shop-icon-btn { position: relative; display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem; padding: 0; border: 0; border-radius: 999px; background: transparent; color: var(--text); cursor: pointer; transition: background .2s; }
+    .shop-icon-btn:hover { background: rgba(15,23,42,.07); }
+    .shop-icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .shop-menu-btn { display: none; }
+    .shop-cart-count { position: absolute; top: .2rem; right: .1rem; min-width: 1.15rem; height: 1.15rem; padding: 0 .25rem; border-radius: 999px; background: #16a34a; color: #fff; font-size: .62rem; font-weight: 800; line-height: 1.15rem; text-align: center; }
+    .shop-cart-count[hidden] { display: none; }
+
+    .shop-mega { position: absolute; left: 0; right: 0; top: 100%; padding: 1.4rem 1.5rem 1.6rem; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: 0 18px 40px rgba(15,23,42,.08); }
+    .shop-mega[hidden] { display: none; }
+    .shop-mega-inner { max-width: 1220px; margin: 0 auto; }
+    .shop-mega-title { margin-bottom: .9rem; color: var(--muted); font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .shop-brand-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .6rem; }
+
+    .shop-brand-item { display: flex; align-items: center; gap: .75rem; width: 100%; padding: .6rem .75rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-card); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background .2s, border-color .2s, transform .2s; }
+    .shop-brand-item:hover { background: var(--bg-card-hover); border-color: var(--border-light); transform: translateY(-1px); }
+    .shop-brand-item.is-active { border-color: var(--text); background: #fff; }
+    .shop-brand-item .bm-logo { width: 3rem; height: 2.2rem; }
+    .shop-brand-copy { display: flex; flex-direction: column; min-width: 0; }
+    .shop-brand-copy strong { font-size: .8rem; font-weight: 700; line-height: 1.25; }
+    .shop-brand-copy span { color: var(--muted); font-size: .64rem; line-height: 1.35; }
+
+    .shop-collections { display: flex; gap: .5rem; margin: 0 auto 1.4rem; padding: .2rem .1rem .5rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+    .shop-collections::-webkit-scrollbar { display: none; }
+    @media (min-width: 1024px) { .shop-collections { flex-wrap: wrap; justify-content: center; overflow: visible; } }
+    .shop-chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: .5rem; height: 2.7rem; padding: 0 .95rem 0 .55rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-card); color: var(--muted-dark); font: inherit; font-size: .76rem; font-weight: 700; white-space: nowrap; cursor: pointer; scroll-snap-align: start; transition: background .2s, color .2s, border-color .2s; }
+    .shop-chip:hover { background: #fff; border-color: var(--border-light); color: var(--text); }
+    .shop-chip .bm-logo { width: 2.1rem; height: 1.6rem; }
+    .shop-chip.is-active { background: var(--text); border-color: var(--text); color: #fff; }
+    .shop-chip.is-active .bm-logo img { filter: brightness(0) invert(1); }
+    .shop-chip.is-active .bm-logo-mono { color: #fff !important; }
+    .shop-chip.is-active .nl-logo-crop { filter: brightness(0) invert(1); }
+
+    .shop-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: .6rem; margin: -.4rem 0 1rem; }
+    .shop-sort { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); font-size: .72rem; font-weight: 600; }
+    .shop-sort select { appearance: none; -webkit-appearance: none; height: 2.3rem; padding: 0 2rem 0 .85rem; border: 1px solid var(--border-light); border-radius: .65rem; background: var(--bg-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231e293b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right .65rem center / 12px; color: var(--text); font: inherit; font-size: .74rem; font-weight: 700; cursor: pointer; }
+
+    .shop-overlay { position: fixed; inset: 0; z-index: 1400; background: rgba(9,9,11,.35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .3s; }
+    .shop-overlay.is-open { opacity: 1; pointer-events: auto; }
+    .shop-drawer { position: fixed; top: 0; bottom: 0; z-index: 1500; display: flex; flex-direction: column; width: min(420px, 92vw); background: var(--bg); box-shadow: 0 0 40px rgba(15,23,42,.18); transition: transform .35s cubic-bezier(.16,1,.3,1), visibility .35s; visibility: hidden; }
+    .shop-drawer.is-open { transform: translateX(0) !important; visibility: visible; }
+    .shop-drawer-right { right: 0; transform: translateX(105%); }
+    .shop-drawer-left { left: 0; transform: translateX(-105%); width: min(360px, 88vw); }
+    .shop-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: 1rem 1.1rem; border-bottom: 1px solid var(--border); }
+    .shop-drawer-scroll { flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .shop-menu-links { display: grid; padding: .6rem .6rem .2rem; }
+    .shop-menu-links button, .shop-menu-links a { display: flex; align-items: center; justify-content: space-between; padding: .85rem .6rem; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); font: inherit; font-size: .95rem; font-weight: 600; text-align: left; text-decoration: none; cursor: pointer; }
+    .shop-menu-section { padding: 1rem 1.1rem 1.4rem; }
+    .shop-menu-section .shop-mega-title { margin-bottom: .6rem; }
+    .shop-menu-section .shop-brand-grid { grid-template-columns: 1fr; gap: .45rem; }
+
+    #shop-cart-drawer .cart-view { min-height: 0; padding: 0; background: transparent; }
+    #shop-cart-drawer .cart-container { max-width: none; margin: 0; padding: 0; }
+    #shop-cart-drawer .cart-header { position: sticky; top: 0; z-index: 2; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; padding: 1rem 1.1rem !important; text-align: left !important; background: var(--bg); }
+    #shop-cart-drawer .cart-kicker { display: none; }
+    #shop-cart-drawer .cart-title { font-size: 1.15rem; }
+    #shop-cart-drawer .cart-header-actions { display: flex; align-items: center; gap: .35rem; }
+    #shop-cart-drawer .cart-clear { padding: .45rem .6rem; font-size: .6rem; }
+    #shop-cart-drawer .cart-content-grid { grid-template-columns: 1fr; gap: .9rem; padding: 1rem 1.1rem 1.2rem; }
+    #shop-cart-drawer .cart-line { grid-template-columns: 4.2rem minmax(0,1fr) auto; gap: .7rem; }
+    #shop-cart-drawer .cart-line-image { width: 4.2rem; height: 4.2rem; }
+    #shop-cart-drawer .cart-summary { position: sticky; bottom: 0; top: auto; }
+    #shop-cart-drawer .cart-empty { min-height: 60vh; }
+    .shop-ship-note { display: flex; align-items: center; gap: .45rem; margin: .1rem 0 .7rem; color: var(--muted-dark); font-size: .66rem; font-weight: 600; }
+    .shop-ship-note svg { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .shop-search { position: fixed; inset: 0; z-index: 1600; display: flex; justify-content: center; align-items: flex-start; padding: 0; background: rgba(9,9,11,.35); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .shop-search[hidden] { display: none; }
+    .shop-search-panel { width: 100%; max-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: 0 18px 40px rgba(15,23,42,.12); animation: slideUp .3s cubic-bezier(.16,1,.3,1); }
+    .shop-search-bar { display: flex; align-items: center; gap: .6rem; width: 100%; max-width: 860px; margin: 0 auto; padding: .9rem 1.1rem; }
+    .shop-search-field { flex: 1; display: flex; align-items: center; gap: .55rem; height: 3rem; padding: 0 1rem; border: 1px solid var(--border-light); border-radius: .8rem; background: #fff; }
+    .shop-search-field svg { width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+    .shop-search-field input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; font-size: 16px; }
+    .shop-search-results { width: 100%; max-width: 860px; margin: 0 auto; padding: 0 1.1rem 1.2rem; overflow-y: auto; }
+    .shop-search-hint { padding: .4rem .2rem 1rem; color: var(--muted); font-size: .78rem; }
+    .shop-search-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .5rem; }
+    .shop-result { display: grid; grid-template-columns: 3.6rem minmax(0,1fr); align-items: center; gap: .75rem; padding: .55rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-card); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+    .shop-result:hover { background: #fff; border-color: var(--border-light); }
+    .shop-result-img { display: grid; place-items: center; width: 3.6rem; height: 3.6rem; overflow: hidden; border-radius: .6rem; background: #fff; border: 1px solid var(--border); }
+    .shop-result-img img { width: 86%; height: 86%; object-fit: contain; }
+    .shop-result strong { display: block; font-size: .76rem; font-weight: 800; line-height: 1.3; }
+    .shop-result span { display: block; color: var(--muted); font-size: .64rem; }
+    .shop-result em { display: block; margin-top: .15rem; color: var(--text); font-size: .74rem; font-style: normal; font-weight: 800; }
+
+    .shop-footer { margin-top: 0; padding: 3rem 1.5rem 1.5rem; background: var(--bg); border-top: 1px solid var(--border); }
+    .shop-footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.1fr; gap: 2rem; max-width: 1220px; margin: 0 auto; }
+    .shop-footer-logo { margin-bottom: .55rem; color: var(--text); font-family: var(--font-display); font-size: 1.6rem; letter-spacing: .16em; }
+    .shop-footer p { color: var(--muted); font-size: .76rem; line-height: 1.6; }
+    .shop-footer h4 { margin-bottom: .8rem; color: var(--text); font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .shop-footer ul { display: grid; gap: .45rem; list-style: none; }
+    .shop-footer li button, .shop-footer li a { padding: 0; border: 0; background: none; color: var(--muted-dark); font: inherit; font-size: .78rem; text-align: left; text-decoration: none; cursor: pointer; }
+    .shop-footer li button:hover, .shop-footer li a:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+    .shop-social { display: flex; gap: .45rem; margin-top: 1rem; }
+    .shop-social a { display: inline-grid; place-items: center; width: 2.3rem; height: 2.3rem; border: 1px solid var(--border-light); border-radius: 999px; color: var(--text); background: var(--bg-card); }
+    .shop-social a:hover { background: #fff; }
+    .shop-social svg { width: 17px; height: 17px; }
+    .shop-pay { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .8rem; }
+    .shop-pay span { padding: .35rem .6rem; border: 1px solid var(--border-light); border-radius: .45rem; background: var(--bg-card); color: var(--muted-dark); font-size: .66rem; font-weight: 800; }
+    .shop-footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; max-width: 1220px; margin: 2.2rem auto 0; padding-top: 1.1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .68rem; }
+
+    @media (max-width: 900px) {
+      .shop-nav { display: none; }
+      .shop-menu-btn { display: inline-grid; }
+      .shop-header-inner { grid-template-columns: auto 1fr auto; height: 58px; padding: 0 .6rem; gap: .25rem; }
+      .shop-logo { justify-self: center; font-size: 1.6rem; }
+      .shop-actions { gap: 0; }
+      .shop-footer-grid { grid-template-columns: 1fr 1fr; gap: 1.6rem 1.2rem; }
+      .shop-footer-grid > :first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .shop-topbar { min-height: 0; padding: .4rem .6rem; }
+      .shop-topbar .header-controls { gap: .2rem .9rem !important; }
+      .shop-collections { margin: 0 -.75rem 1rem; padding-left: .75rem; padding-right: .75rem; }
+      .shop-toolbar { margin: -.2rem 0 .8rem; }
+      .shop-footer { padding: 2.2rem 1.1rem 1.2rem; }
+      .shop-footer-grid > :last-child { grid-column: 1 / -1; }
+    }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
 </head>
@@ -2476,6 +2619,32 @@ position: absolute; top: .65rem; left: .65rem;
     <div class="pre-banner-footer" data-i18n="prePulseBottom">Representantes New Life · produtos à pronta entrega em São Paulo</div>
   </section>
 </div>
+<!-- LOJA: barra superior + cabeçalho (estilo Shopify) -->
+<div class="shop-topbar" id="shop-topbar"></div>
+<header class="shop-header" id="shop-header">
+  <div class="shop-header-inner">
+    <button class="shop-icon-btn shop-menu-btn" id="shop-menu-btn" type="button" aria-label="Menu" aria-controls="shop-menu-drawer" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <button class="shop-logo" id="shop-logo" type="button" aria-label="Buy Club US — início">BUY CLUB<small>US</small></button>
+    <nav class="shop-nav" aria-label="Menu principal">
+      <button class="shop-nav-link is-active" type="button" data-shop-tab="home" data-shop-t="home">Início</button>
+      <button class="shop-nav-link" type="button" id="shop-brands-btn" aria-expanded="false" aria-controls="shop-mega"><span data-shop-t="brands">Marcas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+      <button class="shop-nav-link" type="button" data-shop-tab="calc" data-shop-t="calc">Calculadora</button>
+      <button class="shop-nav-link" type="button" data-shop-tab="info" data-shop-t="info">Info</button>
+      <button class="shop-nav-link" type="button" data-shop-tab="profile" data-shop-t="contact">Contato</button>
+    </nav>
+    <div class="shop-actions">
+      <button class="shop-icon-btn" id="shop-search-btn" type="button" aria-label="Buscar" aria-controls="shop-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button class="shop-icon-btn" id="shop-cart-btn" type="button" aria-label="Carrinho" aria-controls="shop-cart-drawer"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="shop-cart-count" id="shop-cart-count" hidden>0</span></button>
+    </div>
+  </div>
+  <div class="shop-mega" id="shop-mega" hidden>
+    <div class="shop-mega-inner">
+      <div class="shop-mega-title" data-shop-t="brandsTitle">Compre por marca</div>
+      <div class="shop-brand-grid" data-shop-brands></div>
+    </div>
+  </div>
+</header>
+
 <div id="app">
 
   <!-- HOME VIEW -->
@@ -2869,6 +3038,76 @@ position: absolute; top: .65rem; left: .65rem;
   </div>
   <div class="pcalc" id="pep-calc"></div>
 </section>
+
+<!-- LOJA: rodapé, busca, menu e carrinho lateral (estilo Shopify) -->
+<footer class="shop-footer" id="shop-footer">
+  <div class="shop-footer-grid">
+    <div>
+      <div class="shop-footer-logo">BUY CLUB US</div>
+      <p data-shop-t="footerAbout">Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.</p>
+      <div class="shop-social">
+        <a href="https://whatsapp.com/channel/0029Vb8llzMI7Be87RGPxo3l" target="_blank" rel="noopener noreferrer" aria-label="Canal Buy Club no WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h4l9-5v12l-9-5H4z"/><path d="M8 13l1.5 6h3L11 13"/><path d="M20 9a4 4 0 0 1 0 6"/></svg></a>
+        <a href="https://chat.whatsapp.com/DGpMXz40qiT5CBh40SY2x5?mode=gi_t" target="_blank" rel="noopener noreferrer" aria-label="Grupo Buy Club no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.2-1.2-6.1-3.5-8.3ZM12.2 21.6h-.1c-1.7 0-3.4-.5-4.9-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.7 9.7 0 0 1-1.5-5.1c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.7 9.7 0 0 1 2.9 6.9c0 5.4-4.5 9.8-9.9 9.8Z"/></svg></a>
+        <a href="https://instagram.com/neewlifeus" target="_blank" rel="noopener noreferrer" aria-label="Instagram New Life"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4 data-shop-t="brands">Marcas</h4>
+      <ul id="shop-footer-brands"></ul>
+    </div>
+    <div>
+      <h4 data-shop-t="support">Atendimento</h4>
+      <ul>
+        <li><button type="button" data-shop-tab="info" data-shop-t="info">Info</button></li>
+        <li><button type="button" data-shop-tab="calc" data-shop-t="calc">Calculadora</button></li>
+        <li><button type="button" data-shop-tab="profile" data-shop-t="contact">Contato</button></li>
+        <li><a id="shop-footer-wa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 data-shop-t="payShip">Pagamento e entrega</h4>
+      <div class="shop-pay"><span>Pix</span><span data-shop-t="card12">Cartão 12x</span><span>USDT</span></div>
+      <p data-shop-t="shipText">Frete fixo de R$ 50 para todos os pedidos.</p>
+    </div>
+  </div>
+  <div class="shop-footer-bottom"><span>© <span id="shop-year">2026</span> Buy Club US. <span data-shop-t="rights">Todos os direitos reservados.</span></span><span data-shop-t="footerTag">Qualidade e tecnologia em peptídeos.</span></div>
+</footer>
+
+<div class="shop-search" id="shop-search" role="dialog" aria-modal="true" aria-label="Buscar produtos" hidden>
+  <div class="shop-search-panel">
+    <div class="shop-search-bar">
+      <label class="shop-search-field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="shop-search-input" type="search" autocomplete="off" placeholder="Buscar produtos"></label>
+      <button class="shop-icon-btn" id="shop-search-close" type="button" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="shop-search-results" id="shop-search-results"></div>
+  </div>
+</div>
+
+<div class="shop-overlay" id="shop-overlay"></div>
+
+<aside class="shop-drawer shop-drawer-left" id="shop-menu-drawer" aria-label="Menu" aria-hidden="true">
+  <div class="shop-drawer-head">
+    <span class="shop-logo" style="font-size:1.5rem">BUY CLUB<small>US</small></span>
+    <button class="shop-icon-btn" type="button" data-shop-close aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="shop-drawer-scroll">
+    <div class="shop-menu-links">
+      <button type="button" data-shop-tab="home" data-shop-t="home">Início</button>
+      <button type="button" data-shop-tab="calc" data-shop-t="calc">Calculadora</button>
+      <button type="button" data-shop-tab="info" data-shop-t="info">Info</button>
+      <button type="button" data-shop-tab="profile" data-shop-t="contact">Contato</button>
+    </div>
+    <div class="shop-menu-section">
+      <div class="shop-mega-title" data-shop-t="brandsTitle">Compre por marca</div>
+      <div class="shop-brand-grid" data-shop-brands></div>
+    </div>
+  </div>
+</aside>
+
+<aside class="shop-drawer shop-drawer-right" id="shop-cart-drawer" aria-label="Carrinho" aria-hidden="true">
+  <div class="shop-drawer-scroll" id="shop-cart-body"></div>
+</aside>
+
 
 <script>
 'use strict';
@@ -5563,6 +5802,288 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
             const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
             set('calc-title', t.title); set('calc-sub', t.sub); set('calc-nav-label', t.nav);
         }
+</script>
+<script>
+/* ===== LAYOUT DE LOJA (estilo Shopify) =====
+   Só reorganiza a estrutura: cabeçalho, coleções por marca, busca, carrinho lateral e rodapé.
+   Usa as mesmas funções de carrinho/checkout do site (addToCart, renderCart, openCartCheckout). */
+(function () {
+  const SHOP_T = {
+    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
+    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order.', shipNote: 'Flat R$ 50 shipping added at checkout', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
+    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
+  };
+  const st = k => (SHOP_T[currentLang] || SHOP_T.pt)[k] || SHOP_T.pt[k] || k;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+  document.body.classList.add('shop-layout');
+
+  /* idioma + câmbio vão para a barra superior */
+  const controls = document.querySelector('.header .header-controls');
+  if (controls && $('shop-topbar')) $('shop-topbar').appendChild(controls);
+
+  /* carrinho original vira a gaveta lateral */
+  const cartViewEl = $('cart-view');
+  const cartDrawer = $('shop-cart-drawer');
+  const menuDrawer = $('shop-menu-drawer');
+  const overlay = $('shop-overlay');
+  if (cartViewEl && $('shop-cart-body')) {
+    $('shop-cart-body').appendChild(cartViewEl);
+    cartViewEl.classList.remove('hidden');
+    const head = cartViewEl.querySelector('.cart-header');
+    const clear = $('cart-clear');
+    if (head && clear) {
+      const actions = document.createElement('div');
+      actions.className = 'cart-header-actions';
+      head.appendChild(actions);
+      actions.appendChild(clear);
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'shop-icon-btn';
+      closeBtn.setAttribute('data-shop-close', '');
+      closeBtn.setAttribute('aria-label', 'Fechar');
+      closeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+      actions.appendChild(closeBtn);
+    }
+  }
+
+  let lastFocus = null;
+  function openDrawer(el) {
+    if (!el) return;
+    closeMega();
+    [cartDrawer, menuDrawer].forEach(d => { if (d && d !== el) { d.classList.remove('is-open'); d.setAttribute('aria-hidden', 'true'); } });
+    lastFocus = document.activeElement;
+    el.classList.add('is-open');
+    el.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    if (el === menuDrawer) $('shop-menu-btn')?.setAttribute('aria-expanded', 'true');
+    document.body.classList.toggle('shop-cart-open', el === cartDrawer);
+    setTimeout(() => el.querySelector('[data-shop-close]')?.focus({ preventScroll: true }), 50);
+  }
+  function closeDrawers() {
+    const wasOpen = [cartDrawer, menuDrawer].some(d => d && d.classList.contains('is-open'));
+    [cartDrawer, menuDrawer].forEach(d => { if (d) { d.classList.remove('is-open'); d.setAttribute('aria-hidden', 'true'); } });
+    overlay.classList.remove('is-open');
+    document.body.classList.remove('shop-cart-open');
+    $('shop-menu-btn')?.setAttribute('aria-expanded', 'false');
+    if (wasOpen) {
+      if (!(modal && modal.classList.contains('active'))) document.body.style.overflow = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    }
+  }
+  function openCartDrawer() { renderCart(); openDrawer(cartDrawer); document.getElementById('cart-toast')?.classList.remove('is-visible'); }
+  window.openCartDrawer = openCartDrawer;
+  overlay.addEventListener('click', closeDrawers);
+  document.addEventListener('click', e => { if (e.target.closest('[data-shop-close]')) closeDrawers(); });
+
+  /* mega menu de marcas (computador) */
+  const mega = $('shop-mega');
+  const brandsBtn = $('shop-brands-btn');
+  function closeMega() { if (mega) mega.hidden = true; brandsBtn?.setAttribute('aria-expanded', 'false'); }
+  brandsBtn?.addEventListener('click', e => { e.stopPropagation(); const open = mega.hidden; mega.hidden = !open; brandsBtn.setAttribute('aria-expanded', String(open)); });
+  document.addEventListener('click', e => { if (mega && !mega.hidden && !mega.contains(e.target) && e.target !== brandsBtn) closeMega(); });
+
+  /* navegação */
+  function goTab(tab) {
+    closeDrawers(); closeMega();
+    switchTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-shop-tab]');
+    if (el) { e.preventDefault(); goTab(el.dataset.shopTab); }
+  });
+  $('shop-logo')?.addEventListener('click', () => goTab('home'));
+  $('shop-menu-btn')?.addEventListener('click', () => openDrawer(menuDrawer));
+  $('shop-cart-btn')?.addEventListener('click', openCartDrawer);
+
+  function selectBrand(id) {
+    if (!getCategories().some(c => c.id === id)) return;
+    currentCat = id;
+    closeDrawers(); closeMega();
+    if (currentTab !== 'home') switchTab('home');
+    renderCatBar(); renderProducts();
+    const wrap = document.querySelector('.products-wrap');
+    const headH = ($('shop-header')?.offsetHeight || 60) + 8;
+    if (wrap) window.scrollTo({ top: wrap.getBoundingClientRect().top + window.scrollY - headH, behavior: 'smooth' });
+  }
+
+  /* coleções (marcas) */
+  const productsWrap = document.querySelector('.products-wrap');
+  const sectionTop = productsWrap?.querySelector('.section-top');
+  const collections = document.createElement('div');
+  collections.className = 'shop-collections';
+  collections.id = 'shop-collections';
+  collections.setAttribute('role', 'tablist');
+  const toolbar = document.createElement('div');
+  toolbar.className = 'shop-toolbar';
+  toolbar.innerHTML = '<label class="shop-sort"><span data-shop-t="sort"></span><select id="shop-sort"></select></label>';
+  if (productsWrap && sectionTop) { productsWrap.insertBefore(collections, sectionTop); sectionTop.after(toolbar); }
+  const sortSel = toolbar.querySelector('select');
+  let sortMode = 'featured';
+  sortSel.addEventListener('change', () => { sortMode = sortSel.value; renderProducts(); });
+
+  function renderShopBrands() {
+    const cats = getCategories();
+    const item = c => {
+      const label = getCategoryLabel(c);
+      return `<button type="button" class="shop-brand-item${c.id === currentCat ? ' is-active' : ''}" data-shop-brand="${esc(c.id)}">${brandLogoHtml(c.id, label)}<span class="shop-brand-copy"><strong>${esc(label)}</strong><span>${esc(getOriginLabel(c.id))}</span></span></button>`;
+    };
+    document.querySelectorAll('[data-shop-brands]').forEach(el => { el.innerHTML = cats.map(item).join(''); });
+    collections.innerHTML = cats.map(c => {
+      const label = getCategoryLabel(c);
+      const active = c.id === currentCat;
+      return `<button type="button" role="tab" aria-selected="${active}" class="shop-chip${active ? ' is-active' : ''}" data-shop-brand="${esc(c.id)}">${brandLogoHtml(c.id, label)}<span>${esc(label)}</span></button>`;
+    }).join('');
+    const fb = $('shop-footer-brands');
+    if (fb) fb.innerHTML = cats.map(c => `<li><button type="button" data-shop-brand="${esc(c.id)}">${esc(getCategoryLabel(c))}</button></li>`).join('');
+    const activeChip = collections.querySelector('.is-active');
+    if (activeChip && collections.scrollWidth > collections.clientWidth) collections.scrollLeft += activeChip.getBoundingClientRect().left - collections.getBoundingClientRect().left - 12;
+  }
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-shop-brand]');
+    if (el) { e.preventDefault(); selectBrand(el.dataset.shopBrand); }
+  });
+
+  function applySort() {
+    if (sortMode === 'featured' || !gridEl) return;
+    const price = id => { const p = products.find(x => x.id === Number(id)); return p && typeof p.priceVarejo === 'number' ? p.priceVarejo : null; };
+    const name = id => { const p = products.find(x => x.id === Number(id)); return p ? norm(p.name) : ''; };
+    const cards = Array.from(gridEl.children);
+    cards.sort((a, b) => {
+      if (sortMode === 'name') return name(a.dataset.id).localeCompare(name(b.dataset.id));
+      const pa = price(a.dataset.id), pb = price(b.dataset.id);
+      if (pa === null && pb === null) return 0;
+      if (pa === null) return 1;
+      if (pb === null) return -1;
+      return sortMode === 'price-asc' ? pa - pb : pb - pa;
+    });
+    cards.forEach(c => gridEl.appendChild(c));
+  }
+
+  /* busca */
+  const search = $('shop-search');
+  const searchInput = $('shop-search-input');
+  const searchResults = $('shop-search-results');
+  function priceLabel(p) { return typeof p.priceVarejo === 'number' ? `R$ ${formatBRL(p.priceVarejo)}` : st('consult'); }
+  function renderSearch() {
+    const q = norm(searchInput.value.trim());
+    if (!q) { searchResults.innerHTML = `<p class="shop-search-hint">${esc(st('searchHint'))}</p>`; return; }
+    const cats = getCategories();
+    const ids = new Set(cats.map(c => c.id));
+    const words = q.split(/\s+/);
+    const found = products.filter(p => ids.has(p.category)).filter(p => {
+      const cat = cats.find(c => c.id === p.category);
+      const hay = norm([p.name, p.badge, cat ? getCategoryLabel(cat) : '', p.category].join(' '));
+      return words.every(w => hay.includes(w));
+    }).slice(0, 30);
+    if (!found.length) { searchResults.innerHTML = `<p class="shop-search-hint">${esc(st('noResults'))}</p>`; return; }
+    searchResults.innerHTML = `<p class="shop-search-hint">${found.length} ${esc(st('results'))}</p><div class="shop-search-list">` + found.map(p => {
+      const cat = cats.find(c => c.id === p.category);
+      const img = p.images && p.images[0] ? `<img src="${esc(p.images[0])}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : '';
+      return `<button type="button" class="shop-result" data-shop-product="${p.id}"><span class="shop-result-img">${img}</span><span><strong>${esc(p.name)}</strong><span>${esc(cat ? getCategoryLabel(cat) : '')}</span><em>${esc(priceLabel(p))}</em></span></button>`;
+    }).join('') + '</div>';
+  }
+  function openSearch() {
+    closeDrawers(); closeMega();
+    search.hidden = false;
+    document.body.style.overflow = 'hidden';
+    renderSearch();
+    setTimeout(() => searchInput.focus(), 30);
+  }
+  function closeSearch() {
+    if (search.hidden) return;
+    search.hidden = true;
+    if (!(modal && modal.classList.contains('active'))) document.body.style.overflow = '';
+  }
+  $('shop-search-btn')?.addEventListener('click', openSearch);
+  $('shop-search-close')?.addEventListener('click', closeSearch);
+  search.addEventListener('click', e => { if (e.target === search) closeSearch(); });
+  searchInput.addEventListener('input', renderSearch);
+  searchResults.addEventListener('click', e => {
+    const el = e.target.closest('[data-shop-product]');
+    if (!el) return;
+    const p = products.find(x => x.id === Number(el.dataset.shopProduct));
+    closeSearch();
+    if (!p) return;
+    currentCat = p.category;
+    if (currentTab !== 'home') switchTab('home');
+    renderCatBar(); renderProducts();
+    setTimeout(() => openModal(p.id), 120);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (!search.hidden) closeSearch();
+    else { closeDrawers(); closeMega(); }
+  });
+
+  /* textos */
+  function applyShopText() {
+    document.querySelectorAll('[data-shop-t]').forEach(el => { el.textContent = st(el.dataset.shopT); });
+    searchInput.placeholder = st('search');
+    sortSel.innerHTML = [['featured', 'sortFeatured'], ['price-asc', 'sortPriceAsc'], ['price-desc', 'sortPriceDesc'], ['name', 'sortName']]
+      .map(([v, k]) => `<option value="${v}"${v === sortMode ? ' selected' : ''}>${esc(st(k))}</option>`).join('');
+    $('shop-search-btn')?.setAttribute('aria-label', st('search'));
+    $('shop-cart-btn')?.setAttribute('aria-label', st('cart'));
+    $('shop-menu-btn')?.setAttribute('aria-label', st('menu'));
+    const fw = $('shop-footer-wa');
+    if (fw && typeof waLink === 'function') fw.href = waLink(typeof directWaMessage === 'string' ? directWaMessage : 'Olá!', WA_PHONE);
+    const yr = $('shop-year'); if (yr) yr.textContent = String(new Date().getFullYear());
+    addShipNote();
+  }
+  function addShipNote() {
+    const summary = cartViewEl?.querySelector('.cart-summary');
+    if (!summary || summary.querySelector('.shop-ship-note')) return;
+    const fee = typeof SHIPPING_FEE === 'number' ? SHIPPING_FEE : 50;
+    const note = document.createElement('p');
+    note.className = 'shop-ship-note';
+    note.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg><span>${esc(st('shipNote').replace('50', formatBRL(fee).replace(/,00$/, '')))}</span>`;
+    const row = summary.querySelector('.cart-summary-row');
+    if (row) row.after(note); else summary.prepend(note);
+  }
+  function syncActiveNav() {
+    document.querySelectorAll('.shop-nav [data-shop-tab]').forEach(el => el.classList.toggle('is-active', el.dataset.shopTab === currentTab));
+  }
+  function syncCount() {
+    const el = $('shop-cart-count');
+    if (!el) return;
+    const n = cartCount();
+    el.textContent = String(n);
+    el.hidden = n === 0;
+  }
+
+  /* liga o novo layout às funções existentes do site (sem mudar a lógica delas) */
+  const _switchTab = switchTab;
+  switchTab = function (tab) {
+    if (tab === 'cart') { openCartDrawer(); return; }
+    _switchTab(tab);
+    if (cartViewEl) cartViewEl.classList.remove('hidden');
+    syncActiveNav();
+  };
+  const _renderCatBar = renderCatBar;
+  renderCatBar = function () { _renderCatBar.apply(this, arguments); renderShopBrands(); };
+  const _renderProducts = renderProducts;
+  renderProducts = function () { _renderProducts.apply(this, arguments); applySort(); };
+  const _renderCart = renderCart;
+  renderCart = function () { _renderCart.apply(this, arguments); addShipNote(); syncCount(); };
+  const _updateCartBadge = updateCartBadge;
+  updateCartBadge = function () { _updateCartBadge.apply(this, arguments); syncCount(); };
+  const _addToCart = addToCart;
+  addToCart = function (product) { _addToCart.apply(this, arguments); if (product) setTimeout(openCartDrawer, 180); };
+  const _openCartCheckout = openCartCheckout;
+  openCartCheckout = function () { closeDrawers(); _openCartCheckout.apply(this, arguments); };
+  const _setLang = setLang;
+  setLang = function () { _setLang.apply(this, arguments); applyShopText(); renderShopBrands(); };
+
+  applyShopText();
+  renderShopBrands();
+  renderCart();
+  syncActiveNav();
+})();
 </script>
 </body>
 </html>
