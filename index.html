@@ -2388,12 +2388,14 @@ position: absolute; top: .65rem; left: .65rem;
     .shop-logo small { font-size: .95rem; letter-spacing: .2em; color: var(--muted); }
     .bc-logo { display: inline-flex; align-items: baseline; font-family: var(--font-body); letter-spacing: 0; line-height: 1; color: var(--text); }
     .bc-buy { font-size: 1.12em; font-weight: 800; letter-spacing: -.045em; }
-    .bc-y { display: inline-block; width: .74em; height: 1.25em; margin-left: .02em; vertical-align: -.25em; overflow: visible; fill: currentColor; }
-    .bc-tag { transform-box: view-box; transform-origin: 5px 34px; animation: bcSwing 3.6s ease-in-out infinite; }
+    .bc-y { display: inline-block; width: .71em; height: 1.25em; margin-left: .05em; vertical-align: -.25em; overflow: visible; fill: currentColor; }
+    .bc-tag { /* balanço via SMIL (animateTransform) — funciona no Safari/iOS */ }
     .shop-logo:hover .bc-tag { animation: bcSwingFast .9s ease-in-out infinite; }
     .bc-logo-hero { font-size: 2.9rem; color: #09090b; filter: drop-shadow(0 1px 1px rgba(255,255,255,.8)); margin: 0 auto; }
     @media (max-width: 620px) { .bc-logo-hero { font-size: 2.45rem; } }
     .bc-tag-body { stroke: var(--bg); stroke-width: 3.5; paint-order: stroke; }
+    .bc-verified { align-self: baseline; width: .4em; height: .4em; margin-left: .04em; transform: translateY(.04em); }
+    #section-origin:empty, .bm-sub:empty, .bm-featured-sub:empty, .shop-brand-copy span:empty { display: none; }
     .bc-club { margin-left: .3em; font-size: .52em; font-weight: 800; letter-spacing: .26em; color: var(--muted-dark); }
     @keyframes bcSwing { 0%, 55%, 100% { transform: rotate(0deg); } 62% { transform: rotate(16deg); } 70% { transform: rotate(-11deg); } 78% { transform: rotate(7deg); } 86% { transform: rotate(-3deg); } 93% { transform: rotate(1deg); } }
     @keyframes bcSwingFast { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
@@ -2801,7 +2803,10 @@ position: absolute; top: .65rem; left: .65rem;
         
         <p class="hero-subline" data-i18n="heroSubline">Original Products.</p>
         <h1 class="hero-title">
-          <span class="bc-logo bc-logo-hero" role="img" aria-label="Buy Club"><span class="bc-buy">Bu<svg class="bc-y" viewBox="-8 0 74 125"><path d="M43 47h19L31 123H12z"/><g class="bc-tag"><path d="M5 34L9 47" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path class="bc-tag-body" transform="translate(9 47) rotate(-32)" fill-rule="evenodd" d="M0 0l13 13v38H-13V13z M3 14a3 3 0 1 0-6 0a3 3 0 1 0 6 0z"/></g></svg></span><span class="bc-club">CLUB</span></span>
+          <span class="bc-logo bc-logo-hero" role="img" aria-label="Buy Club"><span class="bc-buy">Bu<svg class="bc-y" viewBox="-7 0 71 125"><path d="M43 47h19L31 123H12z"/><g class="bc-tag"><animateTransform attributeName="transform" type="rotate" dur="3.6s" repeatCount="indefinite" values="0 -4 30;0 -4 30;16 -4 30;-11 -4 30;7 -4 30;-3 -4 30;1 -4 30;0 -4 30" keyTimes="0;.55;.62;.7;.78;.86;.93;1" calcMode="spline" keySplines=".42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1"/><path d="M-4 30L-1 43" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path class="bc-tag-body" transform="translate(-1 43) rotate(-35)" fill-rule="evenodd" d="M0 0l13 13v27H-13V13z M3 14a3 3 0 1 0-6 0a3 3 0 1 0 6 0z"/></g></svg></span><span class="bc-club">CLUB</span><svg class="hero-verified bc-verified" role="img" aria-label="Verificado" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C11.5 2 10.9 2.2 10.5 2.6L9.3 3.8C8.9 4.2 8.3 4.4 7.8 4.4L6.1 4.3C4.9 4.3 3.9 5.3 3.9 6.5L3.8 8.2C3.8 8.7 3.6 9.3 3.2 9.7L2.0 10.9C1.2 11.7 1.2 12.9 2.0 13.7L3.2 14.9C3.6 15.3 3.8 15.9 3.8 16.4L3.9 18.1C3.9 19.3 4.9 20.3 6.1 20.3L7.8 20.2C8.3 20.2 8.9 20.4 9.3 20.8L10.5 22.0C11.3 22.8 12.7 22.8 13.5 22.0L14.7 20.8C15.1 20.4 15.7 20.2 16.2 20.2L17.9 20.3C19.1 20.3 20.1 19.3 20.1 18.1L20.2 16.4C20.2 15.9 20.4 15.3 20.8 14.9L22.0 13.7C22.8 12.9 22.8 11.7 22.0 10.9L20.8 9.7C20.4 9.3 20.2 8.7 20.2 8.2L20.1 6.5C20.1 5.3 19.1 4.3 17.9 4.3L16.2 4.4C15.7 4.4 15.1 4.2 14.7 3.8L13.5 2.6C13.1 2.2 12.5 2 12 2Z" fill="#0095F6"/>
+            <path d="M9.8 15.3L6.7 12.2C6.3 11.8 6.3 11.2 6.7 10.8C7.1 10.4 7.7 10.4 8.1 10.8L10.5 13.2L15.9 7.8C16.3 7.4 16.9 7.4 17.3 7.8C17.7 8.2 17.7 8.8 17.3 9.2L11.2 15.3C10.8 15.7 10.2 15.7 9.8 15.3Z" fill="white"/>
+          </svg></span>
         </h1>
       </div>
       <div class="hero-footer">
@@ -5023,9 +5028,9 @@ function hideBotNavWhileScrolling() {
 window.addEventListener('scroll', hideBotNavWhileScrolling, { passive: true });
 
 const ORIGIN_LABELS = {
-  pt: { newlife: 'Fabricado nos EUA', synedica: 'Fabricado na Alemanha', alluvi: 'Fabricado no Reino Unido', elevia: 'Pronta entrega em São Paulo', mounjaro: 'Pronta entrega em São Paulo', cosmeticos: 'Pronta entrega em São Paulo', usapeptides: 'Fabricado nos EUA', zphc: 'Fabricado na China', tg: 'Fabricado no Paraguai', tirzec: 'Fabricado no Paraguai', lipoless: 'Fabricado no Paraguai', dysport: 'Fabricado na França', estetica: 'Pronta entrega em São Paulo', celimax: 'Pronta entrega em São Paulo', gluconex: 'Pronta entrega em São Paulo' },
-  en: { newlife: 'Made in the USA', synedica: 'Made in Germany', alluvi: 'Made in the UK', elevia: 'Ready in São Paulo', mounjaro: 'Ready in São Paulo', cosmeticos: 'Ready in São Paulo', usapeptides: 'Made in the USA', zphc: 'Made in China', tg: 'Made in Paraguay', tirzec: 'Made in Paraguay', lipoless: 'Made in Paraguay', dysport: 'Made in France', estetica: 'Ready in São Paulo', celimax: 'Ready in São Paulo', gluconex: 'Ready in São Paulo' },
-  es: { newlife: 'Fabricado en EE. UU.', synedica: 'Fabricado en Alemania', alluvi: 'Fabricado en el Reino Unido', elevia: 'Entrega disponible en São Paulo', mounjaro: 'Entrega disponible en São Paulo', cosmeticos: 'Entrega disponible en São Paulo', usapeptides: 'Fabricado en EE. UU.', zphc: 'Fabricado en China', tg: 'Fabricado en Paraguay', tirzec: 'Fabricado en Paraguay', lipoless: 'Fabricado en Paraguay', dysport: 'Fabricado en Francia', estetica: 'Entrega disponible en São Paulo', celimax: 'Entrega disponible en São Paulo', gluconex: 'Entrega disponible en São Paulo' }
+  pt: { newlife: 'Fabricado nos EUA', synedica: 'Fabricado na Alemanha', alluvi: 'Fabricado no Reino Unido', elevia: '', mounjaro: '', cosmeticos: '', usapeptides: 'Fabricado nos EUA', zphc: 'Fabricado na China', tg: 'Fabricado no Paraguai', tirzec: 'Fabricado no Paraguai', lipoless: 'Fabricado no Paraguai', dysport: 'Fabricado na França', estetica: '', celimax: '', gluconex: '' },
+  en: { newlife: 'Made in the USA', synedica: 'Made in Germany', alluvi: 'Made in the UK', elevia: '', mounjaro: '', cosmeticos: '', usapeptides: 'Made in the USA', zphc: 'Made in China', tg: 'Made in Paraguay', tirzec: 'Made in Paraguay', lipoless: 'Made in Paraguay', dysport: 'Made in France', estetica: '', celimax: '', gluconex: '' },
+  es: { newlife: 'Fabricado en EE. UU.', synedica: 'Fabricado en Alemania', alluvi: 'Fabricado en el Reino Unido', elevia: '', mounjaro: '', cosmeticos: '', usapeptides: 'Fabricado en EE. UU.', zphc: 'Fabricado en China', tg: 'Fabricado en Paraguay', tirzec: 'Fabricado en Paraguay', lipoless: 'Fabricado en Paraguay', dysport: 'Fabricado en Francia', estetica: '', celimax: '', gluconex: '' }
 };
 function getOriginLabel(categoryId) {
   return (ORIGIN_LABELS[currentLang] || ORIGIN_LABELS.pt)[categoryId] || '';
