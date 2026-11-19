@@ -6,15 +6,16 @@
  *                     preços oficiais do site e cria uma preferência no Mercado Pago
  *                     (Checkout Pro com Pix ou cartão). Devolve o link de pagamento.
  *   POST /webhook   → recebe a notificação do Mercado Pago, consulta o pagamento na API
- *                     e, quando aprovado, envia nome + endereço + itens para o Telegram.
+ *                     e, quando aprovado, envia nome + endereço + itens para o seu WhatsApp.
  *   GET  /          → teste rápido ("ok").
  *
  * Variáveis (Cloudflare → Worker → Settings → Variables and Secrets):
  *   MP_ACCESS_TOKEN     (secret, obrigatório)  Access Token de produção do Mercado Pago
  *   SITE_URL            (obrigatório)          ex.: https://buyclub.us
  *   CATALOG_URL         (opcional)             de onde ler os preços; padrão: index.html do GitHub
- *   TELEGRAM_BOT_TOKEN  (secret, opcional)     bot que avisa quando um pagamento é aprovado
- *   TELEGRAM_CHAT_ID    (opcional)             seu chat id no Telegram
+ *   WHATSAPP_PHONE      (obrigatório p/ aviso) seu WhatsApp com DDI e DDD, ex.: 5541987439214
+ *   CALLMEBOT_APIKEY    (secret, obrigatório p/ aviso) chave do CallMeBot que libera mensagens para esse número
+ *   SHIPPING_FEE        (opcional)             frete fixo em reais; padrão 50
  *   MP_WEBHOOK_SECRET   (secret, opcional)     "assinatura secreta" dos webhooks do Mercado Pago
  *   ORDERS              (KV, opcional)         evita aviso duplicado e guarda os pedidos pagos
  */
@@ -23,6 +24,7 @@ const DEFAULT_CATALOG_URL = 'https://raw.githubusercontent.com/ofakenot/buyclub/
 const WHOLESALE_MIN = { atacado5: 5, atacado10: 10 };
 const TYPE_LABEL = { varejo: 'Varejo', atacado5: 'Atacado (mín. 5)', atacado10: 'Atacado (mín. 10)' };
 const CATALOG_TTL_MS = 5 * 60 * 1000;
+const DEFAULT_SHIPPING_FEE = 50;
 
 let catalogCache = { at: 0, url: '', products: null };
 
@@ -164,7 +166,9 @@ async function createCheckout(request, env) {
     if (typeof unit !== 'number' || unit <= 0) throw new UserError(`${product.name}: valor sob consulta. Finalize pelo WhatsApp.`);
     lines.push({ product, type, qty, unit });
   }
-  const total = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
+  const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
+  const shipping = round2(Number(env.SHIPPING_FEE ?? DEFAULT_SHIPPING_FEE) || 0);
+  const total = round2(subtotal + shipping);
 
   const orderId = `BC${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
@@ -179,15 +183,15 @@ async function createCheckout(request, env) {
   const preference = {
     external_reference: orderId,
     statement_descriptor: 'BUYCLUB',
-    items: lines.map(l => ({
-      id: String(l.product.id),
-      title: `${l.product.badge} — ${l.product.name}`.slice(0, 250),
-      description: TYPE_LABEL[l.type],
+    // No Mercado Pago aparece só o valor total do pedido (produtos + frete), sem o nome dos produtos.
+    items: [{
+      id: orderId,
+      title: `Pedido Buy Club ${orderId}`,
       category_id: 'others',
-      quantity: l.qty,
+      quantity: 1,
       currency_id: 'BRL',
-      unit_price: l.unit
-    })),
+      unit_price: total
+    }],
     payer: {
       name: firstName,
       surname: rest.join(' '),
@@ -210,6 +214,8 @@ async function createCheckout(request, env) {
     metadata: {
       order_id: orderId,
       method,
+      subtotal: String(subtotal),
+      shipping: String(shipping),
       total: String(total),
       recipient: customer.recipient,
       phone: customer.phone,
@@ -287,13 +293,15 @@ async function handleWebhook(request, env, url, ctx) {
     neighborhood: m.neighborhood || '',
     city: m.city || '',
     cep: m.cep || '',
-    items: m.items || ''
+    items: m.items || '',
+    subtotal: m.subtotal || '',
+    shipping: m.shipping || ''
   };
 
   if (env.ORDERS) {
     await env.ORDERS.put(key, JSON.stringify(order), { expirationTtl: 60 * 60 * 24 * 365 });
   }
-  await notifyTelegram(env, order);
+  await notifyWhatsApp(env, order);
 }
 
 async function validSignature(request, secret, dataId) {
@@ -308,17 +316,14 @@ async function validSignature(request, secret, dataId) {
   return hex === parts.v1;
 }
 
-async function notifyTelegram(env, o) {
-  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
-    console.log('Pagamento aprovado (Telegram não configurado):', JSON.stringify(o));
-    return;
-  }
-  const text = [
-    `✅ PAGAMENTO APROVADO — pedido ${o.orderId}`,
-    `Valor: R$ ${brl(o.amount)} (${o.method})`,
+export function buildOrderMessage(o) {
+  return [
+    `✅ *PAGAMENTO APROVADO* — pedido ${o.orderId}`,
+    `Valor pago: R$ ${brl(o.amount)} (${o.method})`,
+    o.subtotal ? `Produtos: R$ ${brl(o.subtotal)} + frete R$ ${brl(o.shipping || 0)}` : null,
     `ID Mercado Pago: ${o.paymentId}`,
     '',
-    '📦 ENVIAR PARA',
+    '📦 *ENVIAR PARA*',
     `Nome: ${o.recipient}`,
     `WhatsApp: ${o.phone}`,
     o.email ? `E-mail: ${o.email}` : null,
@@ -328,16 +333,20 @@ async function notifyTelegram(env, o) {
     `Cidade/UF: ${o.city}`,
     `CEP: ${o.cep}`,
     '',
-    '🛒 ITENS',
-    ...String(o.items).split(' | ').map(i => `• ${i}`)
+    '🛒 *ITENS*',
+    ...String(o.items).split(' | ').filter(Boolean).map(i => `• ${i}`)
   ].filter(l => l !== null).join('\n');
+}
 
-  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text })
-  });
-  if (!res.ok) console.error('telegram error', res.status, await res.text());
+async function notifyWhatsApp(env, o) {
+  const text = buildOrderMessage(o);
+  if (!env.WHATSAPP_PHONE || !env.CALLMEBOT_APIKEY) {
+    console.log('Pagamento aprovado (WhatsApp não configurado):\n' + text);
+    return;
+  }
+  const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(digits(env.WHATSAPP_PHONE))}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(env.CALLMEBOT_APIKEY)}`;
+  const res = await fetch(url);
+  if (!res.ok) console.error('whatsapp (callmebot) error', res.status, await res.text());
 }
 
 /* ------------------------------------------------------------------ */

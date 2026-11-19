@@ -4,9 +4,9 @@ Como funciona:
 
 1. O cliente monta o carrinho, preenche nome, WhatsApp e endereço e escolhe **Pix** ou **Cartão**.
 2. O site manda o carrinho para o *Worker* (um pequeno servidor gratuito na Cloudflare).
-3. O Worker **recalcula o total com os preços do `index.html`** (o cliente não consegue alterar o valor), cria o pedido no Mercado Pago e devolve o link de pagamento.
+3. O Worker **recalcula o total com os preços do `index.html` + frete fixo de R$ 50** (o cliente não consegue alterar o valor), cria o pedido no Mercado Pago e devolve o link de pagamento. No Mercado Pago aparece só "Pedido Buy Club" e o valor total, sem o nome dos produtos.
 4. O cliente paga no Mercado Pago (Pix ou cartão em até 12x) e volta para o site com a mensagem "Pagamento aprovado".
-5. Quando o pagamento é aprovado, o Mercado Pago avisa o Worker, e o Worker manda para o seu **Telegram** o nome, WhatsApp, CPF, endereço completo e os itens do pedido.
+5. Quando o pagamento é aprovado, o Mercado Pago avisa o Worker, e o Worker manda para o seu **WhatsApp** o nome, WhatsApp do cliente, CPF, endereço completo e os itens do pedido.
 
 USDT e Criptomoeda continuam indo para o WhatsApp como antes.
 
@@ -35,23 +35,26 @@ USDT e Criptomoeda continuam indo para o WhatsApp como antes.
 
 5. Copie o endereço do Worker (algo como `https://buyclub-pagamentos.SEU-USUARIO.workers.dev`). Abrindo esse endereço no navegador deve aparecer `ok`.
 
-## Passo 3 — Receber os pedidos pagos no Telegram
+## Passo 3 — Receber os pedidos pagos no seu WhatsApp
 
-1. No Telegram, fale com **@BotFather** → `/newbot` → escolha um nome → ele te dá um **token** do bot.
-2. Abra o seu bot e mande qualquer mensagem (ex.: "oi").
-3. No navegador, abra `https://api.telegram.org/botSEU_TOKEN/getUpdates` e procure `"chat":{"id": 123456789` — esse número é o seu **chat id**.
+O aviso chega no seu WhatsApp por meio do **CallMeBot**, um serviço gratuito que só manda mensagem para o número que autorizou.
+
+1. Abra <https://www.callmebot.com/blog/free-api-whatsapp-messages/> e salve nos contatos o número do CallMeBot que aparece lá.
+2. Pelo WhatsApp que vai receber os pedidos, mande para esse contato a mensagem: `I allow callmebot to send me messages`
+3. Ele responde com a sua **apikey** (um número).
 4. No Worker, adicione mais duas variáveis:
 
    | Nome | Tipo | Valor |
    |---|---|---|
-   | `TELEGRAM_BOT_TOKEN` | Secret | token do BotFather |
-   | `TELEGRAM_CHAT_ID` | Text | o número do chat id |
+   | `WHATSAPP_PHONE` | Text | seu WhatsApp com 55 + DDD, ex.: `5541987439214` |
+   | `CALLMEBOT_APIKEY` | Secret | a apikey que o CallMeBot mandou |
 
 Exemplo do aviso que chega:
 
 ```
-✅ PAGAMENTO APROVADO — pedido BCMWMWO74DX6Y
-Valor: R$ 2.444,00 (Pix)
+✅ PAGAMENTO APROVADO — pedido BCMWMWVA9BGKN
+Valor pago: R$ 2.494,00 (Pix)
+Produtos: R$ 2.444,00 + frete R$ 50,00
 
 📦 ENVIAR PARA
 Nome: Ana Maria Souza
@@ -66,7 +69,7 @@ CEP: 01001000
 • 1x LIPOLESS — Lipoless 15mg - 4 vials (Varejo) R$ 650,00
 ```
 
-Os mesmos dados também ficam no painel do Mercado Pago, dentro de cada venda.
+Além disso, quando o cliente volta ao site depois de pagar, aparece o botão verde **Enviar pedido no WhatsApp**, que abre a conversa com você já com o pedido e os dados de entrega. Os mesmos dados também ficam guardados no pagamento dentro do Mercado Pago.
 
 ### Opcional — evitar aviso repetido
 
@@ -91,7 +94,7 @@ Suba o `index.html` no GitHub. Em cerca de 1 minuto o site já mostra o botão a
 
 ## Passo 5 — Testar
 
-Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado Pago, voltou ao site com "Pagamento aprovado" e recebeu o aviso no Telegram. Depois é só estornar pelo painel do Mercado Pago, se quiser.
+Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado Pago, voltou ao site com "Pagamento aprovado" e recebeu o aviso no seu WhatsApp. Depois é só estornar pelo painel do Mercado Pago, se quiser.
 
 ---
 
@@ -99,5 +102,5 @@ Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado 
 
 - **Preços**: o Worker lê os preços direto do `index.html` do GitHub (atualiza a cada ~5 minutos). Mudou o preço no site, mudou no pagamento. Produtos com valor "sob consulta" não podem ser pagos pelo Mercado Pago (o site pede para finalizar pelo WhatsApp).
 - **Atacado**: o preço de 5 un / 10 un exige pelo menos 5 / 10 unidades daquele produto no carrinho.
-- **Frete**: continua "a combinar" e não entra no valor cobrado.
+- **Frete**: fixo de R$ 50,00 para qualquer endereço, já somado no total. Para mudar, altere `SHIPPING_FEE` no `index.html` e crie a variável `SHIPPING_FEE` no Worker com o mesmo valor.
 - **Parcelamento**: até 12x; os juros das parcelas seguem a configuração da sua conta Mercado Pago.
