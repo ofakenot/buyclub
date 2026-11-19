@@ -2410,7 +2410,12 @@ position: absolute; top: .65rem; left: .65rem;
     .shop-brand-item { display: flex; align-items: center; gap: .75rem; width: 100%; padding: .6rem .75rem; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-card); color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background .2s, border-color .2s, transform .2s; }
     .shop-brand-item:hover { background: var(--bg-card-hover); border-color: var(--border-light); transform: translateY(-1px); }
     .shop-brand-item.is-active { border-color: var(--text); background: #fff; }
-    .shop-brand-item .bm-logo { width: 3rem; height: 2.2rem; }
+    .shop-brand-item .bm-logo, .shop-chip .bm-logo { display: flex !important; align-items: center; justify-content: center; flex: 0 0 auto; overflow: hidden; background: #fff; border: 1px solid var(--border); }
+    .shop-brand-item .bm-logo img, .shop-chip .bm-logo img { display: block; min-width: 0; min-height: 0; object-position: center; }
+    .shop-brand-item .bm-logo { width: 3.6rem; height: 2.7rem; padding: .3rem .4rem; border-radius: .6rem; }
+    .shop-brand-item .bm-logo img, .shop-chip .bm-logo img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; }
+    .shop-brand-item .bm-logo .nl-logo-crop { width: auto !important; height: 100%; }
+    .shop-brand-item.is-active .bm-logo { border-color: var(--border-light); }
     .shop-brand-copy { display: flex; flex-direction: column; min-width: 0; }
     .shop-brand-copy strong { font-size: .8rem; font-weight: 700; line-height: 1.25; }
     .shop-brand-copy span { color: var(--muted); font-size: .64rem; line-height: 1.35; }
@@ -2420,11 +2425,21 @@ position: absolute; top: .65rem; left: .65rem;
     @media (min-width: 1024px) { .shop-collections { flex-wrap: wrap; justify-content: center; overflow: visible; } }
     .shop-chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: .5rem; height: 2.7rem; padding: 0 .95rem 0 .55rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-card); color: var(--muted-dark); font: inherit; font-size: .76rem; font-weight: 700; white-space: nowrap; cursor: pointer; scroll-snap-align: start; transition: background .2s, color .2s, border-color .2s; }
     .shop-chip:hover { background: #fff; border-color: var(--border-light); color: var(--text); }
-    .shop-chip .bm-logo { width: 2.1rem; height: 1.6rem; }
+    .shop-chip .bm-logo { width: 2.3rem; height: 1.85rem; padding: .18rem .25rem; border-radius: 999px; }
+    .shop-chip .bm-logo .nl-logo-crop { width: auto !important; height: 100%; }
     .shop-chip.is-active { background: var(--text); border-color: var(--text); color: #fff; }
-    .shop-chip.is-active .bm-logo img { filter: brightness(0) invert(1); }
-    .shop-chip.is-active .bm-logo-mono { color: #fff !important; }
-    .shop-chip.is-active .nl-logo-crop { filter: brightness(0) invert(1); }
+    .shop-picker { display: none; margin: 0 0 1.2rem; }
+    .shop-pick-btn { display: flex; align-items: center; justify-content: center; gap: .6rem; width: min(100%, 340px); height: 3.1rem; margin: 0 auto; padding: 0 1.1rem; border: 0; border-radius: 999px; background: var(--text); color: #fff; font: inherit; font-size: .82rem; font-weight: 800; letter-spacing: .02em; cursor: pointer; box-shadow: 0 8px 22px rgba(15,23,42,.16); }
+    .shop-pick-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .25s; }
+    .shop-pick-btn[aria-expanded="true"] .shop-pick-chev { transform: rotate(180deg); }
+    .shop-pick-current { padding: .2rem .55rem; border-radius: 999px; background: rgba(255,255,255,.16); font-size: .66rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 9rem; }
+    .shop-pick-panel { margin-top: .8rem; padding: .8rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-card); box-shadow: 0 14px 30px rgba(15,23,42,.08); animation: slideUp .3s cubic-bezier(.16,1,.3,1); }
+    .shop-pick-panel[hidden] { display: none; }
+    .shop-pick-panel .shop-brand-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+    .shop-pick-panel .shop-brand-item { flex-direction: column; justify-content: flex-start; gap: .45rem; padding: .65rem .5rem; text-align: center; }
+    .shop-pick-panel .shop-brand-item .bm-logo { width: 100%; height: 3.2rem; padding: .35rem .6rem; }
+    .shop-pick-panel .shop-brand-copy { align-items: center; }
+    @media (max-width: 760px) { .shop-collections { display: none !important; } .shop-picker { display: block; } }
 
     .shop-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: .6rem; margin: -.4rem 0 1rem; }
     .shop-sort { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); font-size: .72rem; font-weight: 600; }
@@ -5809,9 +5824,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
    Usa as mesmas funções de carrinho/checkout do site (addToCart, renderCart, openCartCheckout). */
 (function () {
   const SHOP_T = {
-    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
-    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order.', shipNote: 'Flat R$ 50 shipping added at checkout', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
-    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
+    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
+    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order.', shipNote: 'Flat R$ 50 shipping added at checkout', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
+    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
   };
   const st = k => (SHOP_T[currentLang] || SHOP_T.pt)[k] || SHOP_T.pt[k] || k;
   const $ = id => document.getElementById(id);
@@ -5903,7 +5918,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   function selectBrand(id) {
     if (!getCategories().some(c => c.id === id)) return;
     currentCat = id;
-    closeDrawers(); closeMega();
+    closeDrawers(); closeMega(); setPicker(false);
     if (currentTab !== 'home') switchTab('home');
     renderCatBar(); renderProducts();
     const wrap = document.querySelector('.products-wrap');
@@ -5921,7 +5936,14 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   const toolbar = document.createElement('div');
   toolbar.className = 'shop-toolbar';
   toolbar.innerHTML = '<label class="shop-sort"><span data-shop-t="sort"></span><select id="shop-sort"></select></label>';
-  if (productsWrap && sectionTop) { productsWrap.insertBefore(collections, sectionTop); sectionTop.after(toolbar); }
+  const picker = document.createElement('div');
+  picker.className = 'shop-picker';
+  picker.innerHTML = '<button type="button" class="shop-pick-btn" id="shop-pick-btn" aria-expanded="false" aria-controls="shop-pick-panel"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span data-shop-t="chooseBrand"></span><span class="shop-pick-current" id="shop-pick-current"></span><svg class="shop-pick-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><div class="shop-pick-panel" id="shop-pick-panel" hidden><div class="shop-brand-grid" data-shop-brands></div></div>';
+  if (productsWrap && sectionTop) { productsWrap.insertBefore(collections, sectionTop); productsWrap.insertBefore(picker, collections); sectionTop.after(toolbar); }
+  const pickBtn = picker.querySelector('#shop-pick-btn');
+  const pickPanel = picker.querySelector('#shop-pick-panel');
+  function setPicker(open) { pickPanel.hidden = !open; pickBtn.setAttribute('aria-expanded', String(open)); }
+  pickBtn.addEventListener('click', () => setPicker(pickPanel.hidden));
   const sortSel = toolbar.querySelector('select');
   let sortMode = 'featured';
   sortSel.addEventListener('change', () => { sortMode = sortSel.value; renderProducts(); });
@@ -5938,6 +5960,8 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       const active = c.id === currentCat;
       return `<button type="button" role="tab" aria-selected="${active}" class="shop-chip${active ? ' is-active' : ''}" data-shop-brand="${esc(c.id)}">${brandLogoHtml(c.id, label)}<span>${esc(label)}</span></button>`;
     }).join('');
+    const activeCat = cats.find(c => c.id === currentCat);
+    const pc = $('shop-pick-current'); if (pc) pc.textContent = activeCat ? getCategoryLabel(activeCat) : '';
     const fb = $('shop-footer-brands');
     if (fb) fb.innerHTML = cats.map(c => `<li><button type="button" data-shop-brand="${esc(c.id)}">${esc(getCategoryLabel(c))}</button></li>`).join('');
     const activeChip = collections.querySelector('.is-active');
