@@ -1,0 +1,3 @@
+Ícones de bandeiras (visa, mastercard, elo, amex, hipercard): pacote "payment-icons" v1.2.1
+(https://github.com/activemerchant/payment_icons), licença Mozilla Public License 2.0, arquivos sem alteração.
+pix.svg: símbolo do Pix (Banco Central do Brasil) montado para este site.
