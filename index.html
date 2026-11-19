@@ -6084,6 +6084,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   const _switchTab = switchTab;
   switchTab = function (tab) {
     if (tab === 'cart') { openCartDrawer(); return; }
+    closeDrawers();
     _switchTab(tab);
     if (cartViewEl) cartViewEl.classList.remove('hidden');
     syncActiveNav();
