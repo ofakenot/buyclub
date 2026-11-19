@@ -2505,7 +2505,7 @@ position: absolute; top: .65rem; left: .65rem;
     .shop-result em { display: block; margin-top: .15rem; color: var(--text); font-size: .74rem; font-style: normal; font-weight: 800; }
 
     .shop-footer { margin-top: 0; padding: 3rem 1.5rem 1.5rem; background: var(--bg); border-top: 1px solid var(--border); }
-    .shop-footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.1fr; gap: 2rem; max-width: 1220px; margin: 0 auto; }
+    .shop-footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.1fr; gap: 2rem; max-width: 1220px; margin: 0 auto; }
     .shop-footer-logo { margin-bottom: .55rem; color: var(--text); font-family: var(--font-display); font-size: 1.6rem; letter-spacing: .16em; }
     .shop-footer p { color: var(--muted); font-size: .76rem; line-height: 1.6; }
     .shop-footer h4 { margin-bottom: .8rem; color: var(--text); font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
@@ -2535,8 +2535,26 @@ position: absolute; top: .65rem; left: .65rem;
       .shop-collections { margin: 0 -.75rem 1rem; padding-left: .75rem; padding-right: .75rem; }
       .shop-toolbar { margin: -.2rem 0 .8rem; }
       .shop-footer { padding: 2.2rem 1.1rem 1.2rem; }
-      .shop-footer-grid > :last-child { grid-column: 1 / -1; }
+      .shop-footer-grid { grid-template-columns: 1fr; gap: 1.8rem; text-align: center; }
+      .shop-footer-grid > :first-child, .shop-footer-grid > :last-child { grid-column: auto; }
+      .shop-footer ul { justify-items: center; }
+      #shop-footer-brands { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem .9rem; }
+      .shop-social, .shop-pay { justify-content: center; }
+      .shop-footer li button, .shop-footer li a { text-align: center; }
+      .shop-footer-bottom { flex-direction: column; align-items: center; text-align: center; }
     }
+    body.shop-layout .card-cta { height: 36px !important; padding: 0 .5rem !important; font-size: .62rem !important; letter-spacing: .04em !important; white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 480px) { body.shop-layout .card-cta { height: 34px !important; font-size: .54rem !important; letter-spacing: .01em !important; padding: 0 .35rem !important; } }
+    .shop-policy { position: fixed; inset: 0; z-index: 1700; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(9,9,11,.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .shop-policy[hidden] { display: none; }
+    .shop-policy-box { display: flex; flex-direction: column; width: min(720px, 100%); max-height: min(86dvh, 900px); overflow: hidden; border-radius: var(--radius-lg); background: var(--bg); box-shadow: 0 24px 60px rgba(15,23,42,.25); animation: slideUp .3s cubic-bezier(.16,1,.3,1); }
+    .shop-policy-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); }
+    .shop-policy-head h2 { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+    .shop-policy-body { padding: 1.1rem 1.4rem 1.6rem; overflow-y: auto; -webkit-overflow-scrolling: touch; color: var(--muted-dark); font-size: .82rem; line-height: 1.65; }
+    .shop-policy-body h3 { margin: 1.1rem 0 .3rem; color: var(--text); font-size: .86rem; font-weight: 800; }
+    .shop-policy-body p { margin-bottom: .5rem; }
+    .shop-policy-date { color: var(--muted); font-size: .7rem; }
+    @media (max-width: 620px) { .shop-policy { padding: 0; align-items: flex-end; } .shop-policy-box { max-height: 92dvh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; } }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
 </head>
@@ -3092,6 +3110,14 @@ position: absolute; top: .65rem; left: .65rem;
       </ul>
     </div>
     <div>
+      <h4 data-shop-t="policies">Políticas</h4>
+      <ul>
+        <li><button type="button" data-shop-policy="terms" data-shop-t="terms">Termos de uso</button></li>
+        <li><button type="button" data-shop-policy="returns" data-shop-t="returns">Trocas e devoluções</button></li>
+        <li><button type="button" data-shop-policy="shipping" data-shop-t="shipping">Frete e entrega</button></li>
+      </ul>
+    </div>
+    <div>
       <h4 data-shop-t="payShip">Pagamento e entrega</h4>
       <div class="shop-pay"><span>Pix</span><span data-shop-t="card12">Cartão 12x</span><span>USDT</span></div>
       <p data-shop-t="shipText">Frete fixo de R$ 50 para todos os pedidos.</p>
@@ -3134,6 +3160,68 @@ position: absolute; top: .65rem; left: .65rem;
 <aside class="shop-drawer shop-drawer-right" id="shop-cart-drawer" aria-label="Carrinho" aria-hidden="true">
   <div class="shop-drawer-scroll" id="shop-cart-body"></div>
 </aside>
+
+<div class="shop-policy" id="shop-policy" role="dialog" aria-modal="true" aria-labelledby="shop-policy-title" hidden>
+  <div class="shop-policy-box">
+    <div class="shop-policy-head">
+      <h2 id="shop-policy-title"></h2>
+      <button class="shop-icon-btn" type="button" id="shop-policy-close" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="shop-policy-body">
+      <article data-policy="terms" data-title="Termos de uso" hidden>
+        <p class="shop-policy-date">Última atualização: novembro de 2026</p>
+        <p>Bem-vindo à Buy Club US. Ao acessar este site e fazer um pedido, você concorda com os termos abaixo. Se não concordar com alguma condição, não utilize o site.</p>
+        <h3>1. Sobre o site</h3>
+        <p>Este site é um catálogo on-line de produtos. As informações, fotos e descrições têm caráter informativo e podem ser alteradas sem aviso prévio. Fazemos o possível para manter tudo correto, mas podem ocorrer erros de digitação, de preço ou de disponibilidade. Nesses casos, entraremos em contato antes de confirmar o pedido.</p>
+        <h3>2. Cadastro e dados do pedido</h3>
+        <p>Para finalizar uma compra, você informa nome, WhatsApp, endereço e, opcionalmente, e-mail e CPF. Você é responsável pela veracidade desses dados. Endereços incompletos ou incorretos podem atrasar ou impedir a entrega.</p>
+        <h3>3. Preços e pagamento</h3>
+        <p>Os preços são exibidos em reais (R$) e podem mudar sem aviso, valendo o preço mostrado no momento da finalização do pedido. Aceitamos Pix, cartão de crédito (parcelado em até 12x, conforme condições do Mercado Pago), USDT e criptomoedas. Pagamentos com Pix e cartão são processados pelo Mercado Pago; não armazenamos dados de cartão.</p>
+        <h3>4. Confirmação do pedido</h3>
+        <p>O pedido é confirmado após a aprovação do pagamento. Podemos cancelar pedidos em caso de falta de estoque, suspeita de fraude ou dados inconsistentes, com devolução integral do valor pago.</p>
+        <h3>5. Uso dos produtos</h3>
+        <p>As informações do site não substituem a orientação de um profissional de saúde. O uso de qualquer produto é de responsabilidade do comprador, que deve seguir as orientações do fabricante e de um profissional habilitado.</p>
+        <h3>6. Propriedade intelectual</h3>
+        <p>Textos, layout e elementos visuais deste site pertencem à Buy Club US ou a seus parceiros. Marcas e logotipos de fabricantes pertencem aos seus respectivos donos.</p>
+        <h3>7. Privacidade</h3>
+        <p>Os dados informados são usados apenas para processar, entregar e dar suporte ao seu pedido, em conformidade com a Lei Geral de Proteção de Dados (LGPD). Não vendemos seus dados. Você pode pedir a correção ou exclusão dos seus dados pelo WhatsApp.</p>
+        <h3>8. Alterações e contato</h3>
+        <p>Estes termos podem ser atualizados a qualquer momento, e a versão publicada no site é a que vale. Dúvidas podem ser enviadas pelo nosso WhatsApp.</p>
+      </article>
+      <article data-policy="returns" data-title="Trocas e devoluções" hidden>
+        <p class="shop-policy-date">Última atualização: novembro de 2026</p>
+        <p>Queremos que você fique satisfeito com sua compra. Esta política segue o Código de Defesa do Consumidor (CDC).</p>
+        <h3>1. Direito de arrependimento</h3>
+        <p>Em compras feitas pela internet, você pode desistir da compra em até 7 (sete) dias corridos após o recebimento, conforme o artigo 49 do CDC. O produto deve ser devolvido lacrado, sem sinais de uso e na embalagem original, com todos os acessórios.</p>
+        <h3>2. Produto com defeito ou avaria</h3>
+        <p>Se o produto chegar danificado, violado ou diferente do pedido, avise-nos pelo WhatsApp em até 7 dias após o recebimento, com fotos da embalagem e do produto. Após análise, faremos a troca pelo mesmo item ou a devolução do valor. Defeitos não aparentes podem ser comunicados em até 90 dias, conforme o artigo 26 do CDC.</p>
+        <h3>3. Produtos que não podem ser trocados</h3>
+        <p>Por motivos de segurança e higiene, não aceitamos devolução de produtos abertos, com lacre rompido, usados, armazenados de forma inadequada ou fora da embalagem original, exceto em caso de defeito de fabricação.</p>
+        <h3>4. Como solicitar</h3>
+        <p>Fale com nossa equipe pelo WhatsApp informando o número do pedido, o motivo e fotos do produto. Vamos passar as instruções de envio. Não envie o produto sem antes falar conosco.</p>
+        <h3>5. Frete da devolução</h3>
+        <p>Em caso de arrependimento dentro do prazo legal ou de defeito, o custo do frete de devolução é nosso. Nos demais casos, o frete é por conta do cliente.</p>
+        <h3>6. Reembolso</h3>
+        <p>Depois que o produto chegar e for conferido, o reembolso é feito em até 10 dias úteis, pelo mesmo meio de pagamento usado na compra. Em compras no cartão, o estorno aparece na fatura conforme o prazo da operadora. Pagamentos em Pix, USDT ou criptomoeda são devolvidos por Pix ou na mesma moeda, conforme combinado.</p>
+      </article>
+      <article data-policy="shipping" data-title="Política de frete e entrega" hidden>
+        <p class="shop-policy-date">Última atualização: novembro de 2026</p>
+        <h3>1. Valor do frete</h3>
+        <p>Cobramos frete fixo de R$ 50,00 por pedido, para qualquer endereço do Brasil, independentemente da quantidade de produtos. O valor é somado ao total no checkout.</p>
+        <h3>2. Prazo de envio</h3>
+        <p>Os pedidos são separados e enviados em até 2 dias úteis após a confirmação do pagamento. Pedidos pagos aos fins de semana ou feriados começam a ser processados no próximo dia útil.</p>
+        <h3>3. Prazo de entrega</h3>
+        <p>O prazo de entrega depende da transportadora e da região. Em geral, varia de 2 a 10 dias úteis após o envio. Produtos com pronta entrega em São Paulo podem chegar antes. Em períodos de alta demanda, greves ou eventos climáticos, podem ocorrer atrasos.</p>
+        <h3>4. Rastreamento</h3>
+        <p>Assim que o pedido for enviado, mandamos o código de rastreio pelo WhatsApp informado na compra.</p>
+        <h3>5. Endereço e recebimento</h3>
+        <p>Confira o endereço antes de finalizar o pedido. Se a entrega não for concluída por endereço incorreto, ausência do destinatário ou recusa, um novo envio pode ter custo adicional. Ao receber, confira a embalagem. Se houver sinais de violação, recuse a entrega ou registre fotos e fale conosco.</p>
+        <h3>6. Extravio</h3>
+        <p>Se o pedido for extraviado pela transportadora, enviamos um novo produto ou devolvemos o valor integral, após a confirmação do extravio.</p>
+      </article>
+    </div>
+  </div>
+</div>
 
 
 <script>
@@ -5836,9 +5924,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
    Usa as mesmas funções de carrinho/checkout do site (addToCart, renderCart, openCartCheckout). */
 (function () {
   const SHOP_T = {
-    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
-    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order.', shipNote: 'Flat R$ 50 shipping added at checkout', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
-    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
+    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', policies: 'Políticas', terms: 'Termos de uso', returns: 'Trocas e devoluções', shipping: 'Frete e entrega', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
+    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', policies: 'Policies', terms: 'Terms of use', returns: 'Returns & exchanges', shipping: 'Shipping & delivery', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order.', shipNote: 'Flat R$ 50 shipping added at checkout', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
+    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', policies: 'Políticas', terms: 'Términos de uso', returns: 'Cambios y devoluciones', shipping: 'Envío y entrega', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
   };
   const st = k => (SHOP_T[currentLang] || SHOP_T.pt)[k] || SHOP_T.pt[k] || k;
   const $ = id => document.getElementById(id);
@@ -6051,8 +6139,35 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     setTimeout(() => openModal(p.id), 120);
   });
 
+  /* políticas (termos, trocas, frete) */
+  const policy = $('shop-policy');
+  function openPolicy(key) {
+    const art = policy.querySelector(`[data-policy="${key}"]`);
+    if (!art) return;
+    closeDrawers(); closeMega();
+    policy.querySelectorAll('[data-policy]').forEach(a => { a.hidden = a !== art; });
+    $('shop-policy-title').textContent = art.dataset.title;
+    policy.hidden = false;
+    policy.querySelector('.shop-policy-body').scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => $('shop-policy-close').focus({ preventScroll: true }), 30);
+  }
+  function closePolicy() {
+    if (policy.hidden) return false;
+    policy.hidden = true;
+    document.body.style.overflow = '';
+    return true;
+  }
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-shop-policy]');
+    if (el) { e.preventDefault(); openPolicy(el.dataset.shopPolicy); }
+  });
+  $('shop-policy-close').addEventListener('click', closePolicy);
+  policy.addEventListener('click', e => { if (e.target === policy) closePolicy(); });
+
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    if (closePolicy()) return;
     if (!search.hidden) closeSearch();
     else { closeDrawers(); closeMega(); }
   });
