@@ -2649,6 +2649,89 @@ position: absolute; top: .65rem; left: .65rem;
     }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
+<style id="checkout-apple">
+/* ===== CHECKOUT estilo Apple: fundo cinza claro, cartões brancos, tipografia do sistema, botão azul em pílula ===== */
+#checkout-modal { --ap-bg: #f5f5f7; --ap-card: #fff; --ap-text: #1d1d1f; --ap-muted: #6e6e73; --ap-line: #d2d2d7; --ap-blue: #0071e3; --ap-blue-h: #0077ed; }
+#checkout-modal .co-shell { background: var(--ap-bg); color: var(--ap-text); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Plus Jakarta Sans", Arial, sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -.012em; }
+#checkout-modal .co-header { grid-template-columns: 2.25rem 1fr 2.25rem; padding: .55rem 1rem; padding-top: max(.55rem, env(safe-area-inset-top)); background: rgba(251,251,253,.82); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-back { width: 2.25rem; height: 2.25rem; border: 0; background: rgba(0,0,0,.05); color: var(--ap-text); }
+#checkout-modal .co-back:hover { background: rgba(0,0,0,.09); }
+#checkout-modal .co-brand { font-family: inherit; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; }
+#checkout-modal .co-secure { justify-self: end; color: var(--ap-muted); font-size: .74rem; font-weight: 500; }
+#checkout-modal .co-summary-toggle { padding: .9rem 1.1rem; background: var(--ap-card); border-bottom: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-summary-toggle-label { color: var(--ap-blue); font-size: .9rem; font-weight: 500; }
+#checkout-modal .co-summary-toggle strong { font-size: 1.05rem; font-weight: 600; }
+#checkout-modal .co-aside { background: var(--ap-bg); border-bottom: 0; }
+#checkout-modal .co-aside-inner, #checkout-modal .co-main-inner { padding: 1.25rem 1rem; }
+#checkout-modal .co-card { background: var(--ap-card); border-radius: 18px; padding: 1.25rem; }
+#checkout-modal .co-title { font-family: inherit; font-size: 2rem; font-weight: 700; letter-spacing: -.028em; line-height: 1.1; margin: .35rem 0 .4rem; }
+#checkout-modal .co-subtitle { color: var(--ap-muted); font-size: .95rem; line-height: 1.45; margin-bottom: 1.4rem; }
+#checkout-modal .checkout-form { gap: 1rem; }
+#checkout-modal .co-section { gap: .75rem; padding: 1.35rem 1.15rem; background: var(--ap-card); border-radius: 18px; }
+#checkout-modal .co-section-title { font-size: 1.32rem; font-weight: 600; letter-spacing: -.022em; color: var(--ap-text); margin-bottom: .2rem; }
+#checkout-modal .co-float input { height: 3.5rem; padding: 1.3rem 1rem .4rem; border: 1px solid var(--ap-line); border-radius: 12px; background: #fff; color: var(--ap-text); font-size: 1.0625rem; transition: border-color .2s, box-shadow .2s; }
+#checkout-modal .co-float label { left: 1.02rem; top: .5rem; color: var(--ap-muted); font-size: .72rem; font-weight: 400; }
+#checkout-modal .co-float input::placeholder { color: #a1a1a6; }
+#checkout-modal .co-float input:focus { border-color: var(--ap-blue); box-shadow: 0 0 0 4px rgba(0,113,227,.18); }
+#checkout-modal .co-float input[readonly] { background: var(--ap-bg); border-color: transparent; color: var(--ap-text); }
+#checkout-modal .co-float input[readonly]:focus { border-color: transparent; box-shadow: none; }
+#checkout-modal .checkout-lookup-status { color: #248a3d; font-weight: 500; font-size: .75rem; }
+#checkout-modal .checkout-shipping-notice { padding: .8rem .95rem; border: 0; border-radius: 12px; background: var(--ap-bg); color: var(--ap-muted); font-size: .76rem; }
+#checkout-modal .checkout-shipping-notice strong { color: var(--ap-text); font-weight: 600; }
+#checkout-modal .co-ship-title { font-size: .95rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .co-ship-msg { color: var(--ap-muted); font-size: .82rem; }
+#checkout-modal .co-ship-opt { padding: .85rem 1rem; border: 1px solid var(--ap-line); border-radius: 12px; transition: border-color .2s, box-shadow .2s; }
+#checkout-modal .co-ship-opt:has(input:checked) { border-color: var(--ap-blue); box-shadow: 0 0 0 1px var(--ap-blue); }
+#checkout-modal .co-ship-opt input { accent-color: var(--ap-blue); }
+#checkout-modal .co-ship-opt b { font-size: .9rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .co-ship-opt small { color: var(--ap-muted); font-size: .78rem; }
+#checkout-modal .co-ship-opt em { font-size: .9rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .checkout-payment { display: grid; gap: .6rem; border: 0; border-radius: 0; overflow: visible; }
+#checkout-modal .checkout-payment label { min-height: 3.6rem; padding: .85rem 1rem; border: 1px solid var(--ap-line); border-radius: 12px; font-size: 1rem; font-weight: 500; color: var(--ap-text); transition: border-color .2s, box-shadow .2s; }
+#checkout-modal .checkout-payment label + label { border-top: 1px solid var(--ap-line); }
+#checkout-modal .checkout-payment label:has(input:checked) { background: #fff; border-color: var(--ap-blue); box-shadow: 0 0 0 1px var(--ap-blue); }
+#checkout-modal .checkout-payment input { accent-color: var(--ap-blue); }
+#checkout-modal .co-pay-name small { color: var(--ap-muted); font-size: .8rem; font-weight: 400; }
+#checkout-modal .checkout-form .shop-secure { margin: .2rem 0 .4rem; border: 0; border-radius: 14px; background: var(--ap-bg); color: var(--ap-muted); font-size: .78rem; }
+#checkout-modal .checkout-form .shop-secure strong { color: var(--ap-text); font-weight: 600; font-size: .85rem; }
+#checkout-modal .checkout-mp-note { margin-top: .2rem; padding: .8rem .95rem; border: 0; border-radius: 12px; background: #eef5ff; color: #0b4f9c; font-size: .8rem; }
+#checkout-modal .checkout-error { border-radius: 12px; border: 0; background: #fff2f2; color: #d70015; font-weight: 500; }
+#checkout-modal .checkout-actions { gap: .35rem; padding-top: .4rem; }
+#checkout-modal .checkout-action.submit { min-height: 3.5rem; border-radius: 980px; background: var(--ap-text); color: #fff; font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; box-shadow: none; transition: background .2s, transform .15s; }
+#checkout-modal .checkout-action.submit:hover { background: #000; }
+#checkout-modal .checkout-action.submit:active { transform: scale(.985); }
+#checkout-modal .checkout-action.submit.is-mp { background: var(--ap-blue); box-shadow: none; }
+#checkout-modal .checkout-action.submit.is-mp:hover { background: var(--ap-blue-h); }
+#checkout-modal .checkout-action.cancel { color: var(--ap-blue); font-size: .92rem; font-weight: 400; }
+#checkout-modal .co-items { gap: 1rem; }
+#checkout-modal .co-item { grid-template-columns: 4.25rem minmax(0,1fr) auto; gap: .9rem; }
+#checkout-modal .co-thumb { width: 4.25rem; height: 4.25rem; border: 0; border-radius: 12px; background: var(--ap-bg); }
+#checkout-modal .co-thumb img { border-radius: 12px; padding: .35rem; mix-blend-mode: multiply; }
+#checkout-modal .co-qty { background: var(--ap-text); font-weight: 600; }
+#checkout-modal .co-item-name { font-size: .92rem; font-weight: 600; line-height: 1.3; color: var(--ap-text); }
+#checkout-modal .co-item-meta { color: var(--ap-muted); font-size: .78rem; margin-top: .2rem; }
+#checkout-modal .co-item-price { font-size: .92rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .co-consult-pill { display: inline-block; padding: .28rem .6rem; border-radius: 980px; background: #fff4e5; color: #b25000; font-size: .72rem; font-weight: 600; letter-spacing: 0; }
+#checkout-modal .co-consult-note { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1.1rem; padding: .85rem .95rem; border-radius: 12px; background: #f0fbf3; color: #1d5e2e; font-size: .8rem; line-height: 1.45; }
+#checkout-modal .co-consult-note svg { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; margin-top: .05rem; color: #25d366; }
+#checkout-modal .co-consult-note p { margin: 0; }
+#checkout-modal .co-totals { gap: .6rem; margin-top: 1.2rem; padding-top: 1.1rem; border-top: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-row { color: var(--ap-muted); font-size: .9rem; }
+#checkout-modal .co-row span:last-child { color: var(--ap-text); font-weight: 500; }
+#checkout-modal .co-row.co-total { margin-top: .45rem; padding-top: .9rem; border-top: 1px solid rgba(0,0,0,.08); color: var(--ap-text); font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; }
+#checkout-modal .co-row.co-total span:last-child { font-weight: 700; }
+#checkout-modal .co-row.co-total small { color: var(--ap-muted); font-size: .72rem; font-weight: 500; }
+#checkout-modal .co-total-note { color: var(--ap-muted); font-size: .76rem; margin-top: .85rem; }
+@media (min-width: 900px) {
+  #checkout-modal .co-grid { min-height: calc(100dvh - 3.5rem); }
+  #checkout-modal .co-main { border-right: 0; }
+  #checkout-modal .co-aside, #checkout-modal .co-aside.is-open { background: var(--ap-bg); }
+  #checkout-modal .co-main-inner { max-width: 38rem; padding: 2.5rem 1.5rem 3rem 2.5rem; }
+  #checkout-modal .co-aside-inner { top: 3.5rem; max-width: 27rem; padding: 2.5rem 2.5rem 2.5rem 1.5rem; }
+  #checkout-modal .co-title { font-size: 2.5rem; }
+  #checkout-modal .co-section { padding: 1.6rem 1.5rem; }
+}
+</style>
 </head>
 <body>
 <!-- PRÉ-LOAD NEW LIFE + QUIZ -->
@@ -4544,7 +4627,8 @@ function buildCartWhatsAppMessage(items, order) {
   let message = `Olá! Gostaria de fazer um pedido.\n\n*PRODUTOS SELECIONADOS*\n${lines}`;
   const cpfLine = order.cpf ? `\nCPF: ${order.cpf}` : '';
   const orderSubtotal = checkoutSubtotalValue(items);
-  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos: R$ ${formatBRL(orderSubtotal)}\nFrete${shipQuote.selected ? ` (${shipOptionLabel(shipQuote.selected)})` : ''}: ${currentShippingFee() === null ? 'a calcular' : `R$ ${formatBRL(currentShippingFee())}`}\nTotal: R$ ${formatBRL(orderSubtotal + (currentShippingFee() || 0))}`;
+  const consultCount = splitCheckoutItems(items).consult.length;
+  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos${consultCount ? ' com preço' : ''}: R$ ${formatBRL(orderSubtotal)}${consultCount ? `\nItens sob consulta: ${consultCount} (preciso saber o valor)` : ''}\nFrete${shipQuote.selected ? ` (${shipOptionLabel(shipQuote.selected)})` : ''}: ${currentShippingFee() === null ? 'a calcular' : `R$ ${formatBRL(currentShippingFee())}`}\nTotal: R$ ${formatBRL(orderSubtotal + (currentShippingFee() || 0))}`;
   message += `\n\n*DADOS DE ENTREGA*\nWhatsApp: ${order.phone || 'Não informado'}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nBloco/Apartamento: ${order.complement || 'Não informado'}\nCEP: ${order.cep}\nDestinatário: ${order.recipient}${cpfLine}\n\n*PAGAMENTO*\nForma de pagamento: ${order.payment}\n\nAguardo confirmação e instruções para finalizar.`;
   return message;
 }
@@ -4764,7 +4848,11 @@ function renderShipOptions(message, isError) {
 }
 async function refreshShippingQuote() {
   const cep = (checkoutCep && checkoutCep.value || '').replace(/\D/g, '');
-  const items = getCheckoutItems();
+  const items = splitCheckoutItems(getCheckoutItems()).paid;
+  if (!items.length && shipQuote.enabled !== false) {
+    shipQuote = { enabled: null, key: '', options: [], selected: null, loading: false };
+    renderShipOptions(getCheckoutItems().length ? consultT('shipWa') : '', false); renderCheckoutSummary(); return;
+  }
   if (cep.length !== 8 || !items.length || shipQuote.enabled === false || !MP_API_URL) return;
   const payloadItems = items.map(({ product, type, qty }) => ({ id: product.id, type, qty }));
   const key = cep + JSON.stringify(payloadItems);
@@ -4797,10 +4885,31 @@ document.addEventListener('change', e => {
 function getCheckoutItems() {
   return checkoutItems.length ? checkoutItems : (selectedProduct ? [{ product: selectedProduct, type: modalPriceType, qty: WHOLESALE_MIN_QTY[modalPriceType] || 1 }] : []);
 }
+// Itens "sob consulta" não entram no pagamento: o cliente paga os demais e pede o preço pelo WhatsApp.
+function splitCheckoutItems(items) {
+  const paid = [], consult = [];
+  (items || []).forEach(item => (getCartPriceValue(item.product, item.type) === null ? consult : paid).push(item));
+  return { paid, consult };
+}
+const CONSULT_T = {
+  pt: { pill: 'Sob consulta', row: 'Sob consulta', rowVal: n => `${n} ${n === 1 ? 'item' : 'itens'} · WhatsApp`, note: n => `${n === 1 ? 'O item sob consulta não entra' : `Os ${n} itens sob consulta não entram`} no pagamento. Ao finalizar, abrimos o WhatsApp para você receber o preço.`, mpMixed: 'Você paga agora só os itens com preço, pelo Mercado Pago. Os itens sob consulta abrem no WhatsApp para você receber o valor.', ask: 'Consultar preço no WhatsApp', shipWa: 'Frete combinado pelo WhatsApp junto com o preço.', shipRow: 'Pelo WhatsApp', none: '—' },
+  en: { pill: 'Price on request', row: 'Price on request', rowVal: n => `${n} ${n === 1 ? 'item' : 'items'} · WhatsApp`, note: n => `${n === 1 ? 'The price-on-request item is' : `The ${n} price-on-request items are`} not charged now. When you finish, WhatsApp opens so you can get the price.`, mpMixed: 'You pay only the priced items now, via Mercado Pago. Price-on-request items open in WhatsApp so you can get the price.', ask: 'Ask for price on WhatsApp', shipWa: 'Shipping agreed on WhatsApp together with the price.', shipRow: 'Via WhatsApp', none: '—' },
+  es: { pill: 'Bajo consulta', row: 'Bajo consulta', rowVal: n => `${n} ${n === 1 ? 'ítem' : 'ítems'} · WhatsApp`, note: n => `${n === 1 ? 'El ítem bajo consulta no entra' : `Los ${n} ítems bajo consulta no entran`} en el pago. Al finalizar, abrimos WhatsApp para que recibas el precio.`, mpMixed: 'Ahora pagas solo los ítems con precio, por Mercado Pago. Los ítems bajo consulta se abren en WhatsApp para que recibas el valor.', ask: 'Consultar precio por WhatsApp', shipWa: 'Envío acordado por WhatsApp junto con el precio.', shipRow: 'Por WhatsApp', none: '—' }
+};
+function consultT(key) { const d = CONSULT_T[currentLang] || CONSULT_T.pt; return d[key]; }
+function conditionLabelPt(type) { return type === 'atacado5' ? 'Atacado — mínimo de 5 unidades' : type === 'atacado10' ? 'Atacado — mínimo de 10 unidades' : 'Varejo'; }
+function buildConsultWhatsAppMessage(consult, order, payingRest) {
+  const lines = consult.map(({ product, type, qty }) => `• ${formatBrandLabel(product.badge)} — ${product.name}\n  Quantidade: ${qty}\n  Condição: ${conditionLabelPt(type)}`).join('\n\n');
+  let message = `Olá! Tenho interesse ${consult.length === 1 ? 'neste produto' : 'nestes produtos'}, mas preciso saber o preço:\n\n${lines}`;
+  if (payingRest) message += `\n\n(Os outros itens do pedido estou pagando agora pelo Mercado Pago via ${order.payment}.)`;
+  message += `\n\n*MEUS DADOS*\nNome: ${order.recipient}\nWhatsApp: ${order.phone}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}${order.complement ? ` (${order.complement})` : ''}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nCEP: ${order.cep}\n\nPode me passar o valor${consult.length === 1 ? '' : 'es'} e o frete?`;
+  return message;
+}
+function waPhoneFor(items) { return items.some(item => item.type === 'atacado5' || item.type === 'atacado10') ? WA_PHONES[1] : WA_PHONES[0]; }
 function checkoutSubtotalValue(items) {
-  const values = items.map(({product, type}) => getCartPriceValue(product, type));
-  if (values.some(value => value === null)) return null;
-  return values.reduce((sum, value, index) => sum + value * items[index].qty, 0);
+  const { paid } = splitCheckoutItems(items);
+  if (!paid.length) return null;
+  return paid.reduce((sum, { product, type, qty }) => sum + getCartPriceValue(product, type) * qty, 0);
 }
 function checkoutTotalText(items) {
   const subtotal = checkoutSubtotalValue(items);
@@ -4824,16 +4933,23 @@ function renderCheckoutSummary() {
   const items = getCheckoutItems();
   const totalMobile = document.getElementById('co-total-mobile');
   if (!items.length) { checkoutSummary.innerHTML = ''; if (totalMobile) totalMobile.textContent = ''; return; }
-  const subtotalText = checkoutTotalText(items);
-  const total = checkoutGrandTotalText(items);
+  const { paid, consult } = splitCheckoutItems(items);
+  const subtotal = checkoutSubtotalValue(items);
+  const subtotalText = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal)}`;
+  const total = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal + (currentShippingFee() || 0))}`;
+  const shipText = !paid.length ? consultT('shipRow') : currentShippingFee() === null ? shipT('enterCep') : shipPriceText(currentShippingFee());
   const lines = items.map(({product, type, qty}) => {
     const unit = getCartPriceValue(product, type);
-    const lineTotal = unit === null ? t('cartConsult') : `R$ ${formatBRL(unit * qty)}`;
+    const lineTotal = unit === null ? `<span class="co-consult-pill">${consultT('pill')}</span>` : `R$ ${formatBRL(unit * qty)}`;
     const condition = type === 'atacado5' ? t('wholesale5Label') : type === 'atacado10' ? t('wholesale10Label') : t('retailLabel');
     return `<div class="co-item"><div class="co-thumb"><img src="${product.images[0]}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.style.visibility='hidden'"><span class="co-qty">${qty}</span></div><div><div class="co-item-name">${product.name}</div><div class="co-item-meta">${formatBrandLabel(product.badge)} · ${condition}</div></div><div class="co-item-price">${lineTotal}</div></div>`;
   }).join('');
-  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>${currentShippingFee() === null ? shipT('enterCep') : shipPriceText(currentShippingFee())}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
-  if (totalMobile) totalMobile.textContent = total;
+  const waIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Z"/></svg>';
+  const consultNote = consult.length ? `<div class="co-consult-note">${waIcon}<p>${consultT('note')(consult.length)}</p></div>` : '';
+  const consultRow = consult.length ? `<div class="co-row"><span>${consultT('row')}</span><span>${consultT('rowVal')(consult.reduce((n, i) => n + i.qty, 0))}</span></div>` : '';
+  checkoutSummary.innerHTML = `<div class="co-card"><div class="co-items">${lines}</div>${consultNote}<div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div>${consultRow}<div class="co-row"><span>${t('coShipping')}</span><span>${shipText}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span>${subtotal === null ? '' : '<small>BRL</small>'}${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p></div>`;
+  if (totalMobile) totalMobile.textContent = subtotal === null ? consultT('pill') : total;
+  updateCheckoutMode(true);
 }
 function showCheckout() {
   renderCheckoutSummary();
@@ -4898,7 +5014,15 @@ function submitCheckout(event) {
     return;
   }
   if (order.phone.replace(/\D/g, '').length < 10) { showCheckoutError(t('phoneInvalid')); return; }
-  if (isMercadoPagoPayment(order.payment)) { startMercadoPagoPayment(items, order); return; }
+  const { paid, consult } = splitCheckoutItems(items);
+  if (isMercadoPagoPayment(order.payment)) {
+    if (paid.length) { startMercadoPagoPayment(paid, order, consult); return; }
+    window.open(waLink(buildConsultWhatsAppMessage(consult, order, false), waPhoneFor(consult)), '_blank');
+    if (cartItems.length) { cartItems = []; persistCart(); updateCartBadge(); renderCart(); }
+    checkoutItems = [];
+    closeCheckout();
+    return;
+  }
   const orderMessage = buildCartWhatsAppMessage(items, order);
   const selectedPhone = items.some(item => item.type === 'atacado5' || item.type === 'atacado10') ? WA_PHONES[1] : WA_PHONES[0];
   window.open(waLink(orderMessage, selectedPhone), '_blank');
@@ -4921,19 +5045,21 @@ function showCheckoutError(message) {
   box.hidden = !message;
   if (message) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
-function updateCheckoutMode() {
+function updateCheckoutMode(keepError) {
   const selected = checkoutForm ? checkoutForm.querySelector('input[name="payment"]:checked') : null;
   const payment = selected ? selected.value : '';
-  const mp = isMercadoPagoPayment(payment);
+  const { paid, consult } = splitCheckoutItems(getCheckoutItems());
+  const onlyConsult = !paid.length && consult.length > 0;
+  const mp = isMercadoPagoPayment(payment) && !onlyConsult;
   const button = document.getElementById('checkout-submit');
   const label = document.getElementById('checkout-submit-label');
   const note = document.getElementById('checkout-mp-note');
   if (button) button.classList.toggle('is-mp', mp);
-  if (label && !(button && button.disabled)) label.textContent = t(mp ? 'payWithMp' : 'sendWhatsapp');
-  if (note) { note.hidden = !mp; note.textContent = mp ? t(payment === 'Pix' ? 'mpNotePix' : 'mpNoteCard') : ''; }
-  showCheckoutError('');
+  if (label && !(button && button.disabled)) label.textContent = onlyConsult ? consultT('ask') : t(mp ? 'payWithMp' : 'sendWhatsapp');
+  if (note) { note.hidden = !mp; note.textContent = mp ? (consult.length ? consultT('mpMixed') : t(payment === 'Pix' ? 'mpNotePix' : 'mpNoteCard')) : ''; }
+  if (!keepError) showCheckoutError('');
 }
-async function startMercadoPagoPayment(items, order) {
+async function startMercadoPagoPayment(items, order, consult = []) {
   for (const { product, type, qty } of items) {
     const min = WHOLESALE_MIN_QTY[type] || 1;
     if (getCartPriceValue(product, type) === null) { showCheckoutError(fillTemplate(t('mpConsult'), { name: product.name })); return; }
@@ -4941,6 +5067,8 @@ async function startMercadoPagoPayment(items, order) {
   }
   if (shipQuote.loading) { showCheckoutError(shipT('loading')); return; }
   if (shipQuote.enabled && !shipQuote.selected) { showCheckoutError(shipT('choose')); return; }
+  // ainda dentro do clique: abre o WhatsApp com os itens sob consulta antes de ir ao Mercado Pago
+  if (consult.length) window.open(waLink(buildConsultWhatsAppMessage(consult, order, true), waPhoneFor(consult)), '_blank');
   const button = document.getElementById('checkout-submit');
   const label = document.getElementById('checkout-submit-label');
   showCheckoutError('');
