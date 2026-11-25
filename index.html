@@ -2731,6 +2731,54 @@ position: absolute; top: .65rem; left: .65rem;
   #checkout-modal .co-title { font-size: 2.5rem; }
   #checkout-modal .co-section { padding: 1.6rem 1.5rem; }
 }
+/* 3 passos */
+#checkout-modal .co-steps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); margin: 0 0 1.1rem; padding: 0; list-style: none; }
+#checkout-modal .co-steps-bar { position: absolute; left: 16.66%; right: 16.66%; top: 1rem; height: 2px; border-radius: 2px; background: var(--ap-line); z-index: 0; }
+#checkout-modal .co-steps-bar b { display: block; height: 100%; border-radius: inherit; background: var(--ap-blue); transform: scaleX(0); transform-origin: 0 50%; transition: transform .55s cubic-bezier(.16,1,.3,1); }
+#checkout-modal .co-step-dot { position: relative; z-index: 1; display: flex; justify-content: center; }
+#checkout-modal .co-step-dot button { display: flex; flex-direction: column; align-items: center; gap: .4rem; padding: 0; border: 0; background: none; color: var(--ap-muted); font: inherit; font-size: .78rem; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#checkout-modal .co-step-dot i { position: relative; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--ap-bg); box-shadow: inset 0 0 0 2px var(--ap-line); color: var(--ap-muted); font-style: normal; font-size: .82rem; font-weight: 600; transition: background .35s, box-shadow .35s, color .35s, transform .35s cubic-bezier(.34,1.56,.64,1); }
+#checkout-modal .co-step-dot.is-active button { color: var(--ap-text); font-weight: 600; }
+#checkout-modal .co-step-dot.is-active i { background: var(--ap-blue); box-shadow: 0 0 0 5px rgba(0,113,227,.16); color: #fff; transform: scale(1.08); }
+#checkout-modal .co-step-dot.is-done button { color: var(--ap-text); }
+#checkout-modal .co-step-dot.is-done i { background: var(--ap-blue); box-shadow: none; color: transparent; }
+#checkout-modal .co-step-dot.is-done i::after { content: ""; position: absolute; width: .5rem; height: .85rem; margin-top: -.15rem; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg); animation: coCheck .35s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes coCheck { from { opacity: 0; transform: rotate(45deg) scale(.3); } to { opacity: 1; transform: rotate(45deg) scale(1); } }
+#checkout-modal .co-stage { position: relative; overflow: hidden; margin: -6px; padding: 6px; }
+#checkout-modal .co-step { display: none; flex-direction: column; gap: 1rem; }
+#checkout-modal .co-step.is-active { display: flex; }
+#checkout-modal .co-step.from-right { animation: coInR .5s cubic-bezier(.16,1,.3,1) both; }
+#checkout-modal .co-step.from-left { animation: coInL .5s cubic-bezier(.16,1,.3,1) both; }
+@keyframes coInR { from { opacity: 0; transform: translate3d(48px,0,0) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes coInL { from { opacity: 0; transform: translate3d(-48px,0,0) scale(.985); } to { opacity: 1; transform: none; } }
+#checkout-modal .co-step.is-active .co-section > * { animation: coRise .55s cubic-bezier(.16,1,.3,1) both; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(2) { animation-delay: .04s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(3) { animation-delay: .08s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(4) { animation-delay: .12s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(5) { animation-delay: .16s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(n+6) { animation-delay: .2s; }
+@keyframes coRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+#checkout-modal .co-next { gap: .35rem; }
+#checkout-modal .co-next svg { width: 1.05rem; height: 1.05rem; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+#checkout-modal .co-next:hover svg { transform: translateX(4px); }
+#checkout-modal .co-next.submit { background: var(--ap-blue); }
+#checkout-modal .co-next.submit:hover { background: var(--ap-blue-h); }
+#checkout-modal .co-shake { animation: coShake .42s cubic-bezier(.36,.07,.19,.97) both; }
+#checkout-modal .co-shake input { border-color: #ff3b30 !important; box-shadow: 0 0 0 4px rgba(255,59,48,.15) !important; }
+@keyframes coShake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-6px); } 40%, 60% { transform: translateX(6px); } }
+#checkout-modal .co-review { display: grid; gap: 0; padding: .35rem 1.15rem; background: var(--ap-card); border-radius: 18px; }
+#checkout-modal .co-review:empty { display: none; }
+#checkout-modal .co-review-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: .85rem 0; }
+#checkout-modal .co-review-row + .co-review-row { border-top: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-review-row small { display: block; margin-bottom: .2rem; color: var(--ap-muted); font-size: .74rem; }
+#checkout-modal .co-review-row p { margin: 0; color: var(--ap-text); font-size: .9rem; line-height: 1.45; }
+#checkout-modal .co-review-row button { flex: 0 0 auto; padding: .2rem 0; border: 0; background: none; color: var(--ap-blue); font: inherit; font-size: .88rem; cursor: pointer; }
+#checkout-modal .checkout-payment label { transition: border-color .2s, box-shadow .2s, transform .15s; }
+#checkout-modal .checkout-payment label:active { transform: scale(.985); }
+#checkout-modal .checkout-payment label:has(input:checked) .checkout-payment-icon { animation: coPop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes coPop { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { #checkout-modal .co-step, #checkout-modal .co-step .co-section > *, #checkout-modal .co-shake { animation: none !important; } }
+@media (min-width: 900px) { #checkout-modal .co-steps { margin-bottom: 1.4rem; } }
 </style>
 </head>
 <body>
@@ -3058,8 +3106,16 @@ position: absolute; top: .65rem; left: .65rem;
             <h2 class="co-title" id="co-title" data-i18n="checkoutTitle">Finalizar pedido</h2>
             <p class="co-subtitle" data-i18n="checkoutSubtitle">Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.</p>
             <form class="checkout-form" id="checkout-form" novalidate>
+              <ol class="co-steps" id="co-steps" aria-label="Etapas">
+                <li class="co-step-dot is-active" data-go="1"><button type="button"><i>1</i><span data-co-step-label="1">Contato</span></button></li>
+                <li class="co-step-dot" data-go="2"><button type="button"><i>2</i><span data-co-step-label="2">Entrega</span></button></li>
+                <li class="co-step-dot" data-go="3"><button type="button"><i>3</i><span data-co-step-label="3">Pagamento</span></button></li>
+                <span class="co-steps-bar" aria-hidden="true"><b id="co-steps-fill"></b></span>
+              </ol>
+              <div class="co-stage">
+              <div class="co-step is-active" data-step="1">
               <section class="co-section">
-                <h3 class="co-section-title" data-i18n="coDelivery">Entrega</h3>
+                <h3 class="co-section-title" data-co-step-title="1">Seus dados</h3>
                 <div class="checkout-field co-float">
                   <input id="checkout-recipient" name="recipient" type="text" autocomplete="name" placeholder="Nome completo" data-i18n-placeholder="fullNamePlaceholder" required>
                   <label for="checkout-recipient" data-i18n="fieldRecipient">Nome de quem vai receber</label>
@@ -3074,6 +3130,12 @@ position: absolute; top: .65rem; left: .65rem;
                     <label for="checkout-email" data-i18n="fieldEmail">E-mail</label>
                   </div>
                 </div>
+              </section>
+              <button class="checkout-action submit co-next" type="button" data-next="2"><span data-co-next>Continuar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+              </div>
+              <div class="co-step" data-step="2">
+              <section class="co-section">
+                <h3 class="co-section-title" data-i18n="coDelivery">Entrega</h3>
                 <div class="checkout-address-grid">
                   <div class="checkout-field co-float">
                     <input id="checkout-cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" required>
@@ -3110,6 +3172,10 @@ position: absolute; top: .65rem; left: .65rem;
                 </div>
                 <p class="checkout-shipping-notice" data-i18n="shippingNotice">O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.</p>
               </section>
+              <button class="checkout-action submit co-next" type="button" data-next="3"><span data-co-next>Continuar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+              </div>
+              <div class="co-step" data-step="3">
+              <div class="co-review" id="co-review"></div>
               <section class="co-section">
                 <h3 class="co-section-title checkout-payment-title" data-i18n="paymentTitle">Forma de pagamento</h3>
                 <div class="checkout-payment" role="radiogroup">
@@ -3124,6 +3190,8 @@ position: absolute; top: .65rem; left: .65rem;
               <div class="checkout-actions">
                 <button class="checkout-action submit" id="checkout-submit" type="submit"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.03c-.25.69-1.44 1.32-1.98 1.37-.51.05-1.15.07-1.85-.12a16.7 16.7 0 0 1-1.68-.62c-2.95-1.27-4.88-4.24-5.03-4.44-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.59-.37.79-.37h.57c.18 0 .43-.07.67.51.25.59.84 2.04.91 2.19.07.15.12.32.02.52-.1.2-.15.32-.3.49-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.49.22.57.35.07.12.07.71-.18 1.4Z"/></svg><span id="checkout-submit-label">Enviar para o WhatsApp</span></button>
                 <button class="checkout-action cancel" id="checkout-cancel" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span data-i18n="backButton">Voltar</span></button>
+              </div>
+              </div>
               </div>
             </form>
           </div>
@@ -4952,6 +5020,8 @@ function renderCheckoutSummary() {
   updateCheckoutMode(true);
 }
 function showCheckout() {
+  coStepLabels();
+  coGoStep(1, { force: true, noScroll: true, noFocus: true });
   renderCheckoutSummary();
   refreshShippingQuote();
   updateCheckoutMode();
@@ -4990,6 +5060,7 @@ function closeCheckout() {
 
 function submitCheckout(event) {
   event.preventDefault();
+  if (coStep < 3) { coGoStep(coStep + 1); return; }
   const items = getCheckoutItems();
   if (!items.length || !checkoutForm) return;
   const formData = new FormData(checkoutForm);
@@ -5574,6 +5645,85 @@ document.querySelectorAll('.nav-item[data-tab]').forEach(n=>n.addEventListener('
 document.getElementById('modal-close').addEventListener('click',closeModal);
 modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
 btnWa.addEventListener('click', e => { e.preventDefault(); addToCart(selectedProduct, modalPriceType); });
+/* ===== CHECKOUT EM 3 PASSOS (Contato → Entrega → Pagamento) ===== */
+const CO_STEP_T = {
+  pt: { labels: ['Contato', 'Entrega', 'Pagamento'], title1: 'Seus dados', next: 'Continuar', toPay: 'Ir para o pagamento', contact: 'Contato', ship: 'Entrega', edit: 'Alterar', wait: 'Aguarde o cálculo do frete.', steps: 'Etapa {n} de 3' },
+  en: { labels: ['Contact', 'Delivery', 'Payment'], title1: 'Your details', next: 'Continue', toPay: 'Continue to payment', contact: 'Contact', ship: 'Delivery', edit: 'Edit', wait: 'Please wait for the shipping quote.', steps: 'Step {n} of 3' },
+  es: { labels: ['Contacto', 'Entrega', 'Pago'], title1: 'Tus datos', next: 'Continuar', toPay: 'Ir al pago', contact: 'Contacto', ship: 'Entrega', edit: 'Cambiar', wait: 'Espera el cálculo del envío.', steps: 'Paso {n} de 3' }
+};
+function coStepT(k) { const d = CO_STEP_T[currentLang] || CO_STEP_T.pt; return d[k]; }
+let coStep = 1;
+function coStepLabels() {
+  coStepT('labels').forEach((txt, i) => { const el = document.querySelector(`[data-co-step-label="${i + 1}"]`); if (el) el.textContent = txt; });
+  const t1 = document.querySelector('[data-co-step-title="1"]'); if (t1) t1.textContent = coStepT('title1');
+  document.querySelectorAll('.co-next').forEach(btn => { const span = btn.querySelector('[data-co-next]'); if (span) span.textContent = btn.dataset.next === '3' ? coStepT('toPay') : coStepT('next'); });
+}
+function coField(name) { return checkoutForm ? checkoutForm.elements[name] : null; }
+function coValidateStep(n) {
+  showCheckoutError('');
+  const names = n === 1 ? ['recipient', 'phone', 'email'] : n === 2 ? ['cep', 'number', 'address', 'neighborhood', 'city'] : [];
+  for (const name of names) {
+    const el = coField(name);
+    if (!el) continue;
+    const empty = el.required && !String(el.value || '').trim();
+    if (empty || (el.type === 'email' && el.value && !el.checkValidity())) { coShake(el); el.focus({ preventScroll: false }); el.reportValidity && el.reportValidity(); return false; }
+  }
+  if (n === 1 && String(coField('phone').value || '').replace(/\D/g, '').length < 10) { coShake(coField('phone')); showCheckoutError(t('phoneInvalid')); return false; }
+  if (n === 2 && splitCheckoutItems(getCheckoutItems()).paid.length) {
+    if (shipQuote.loading) { showCheckoutError(coStepT('wait')); return false; }
+    if (shipQuote.enabled && !shipQuote.selected) { showCheckoutError(shipT('choose')); return false; }
+  }
+  return true;
+}
+function coShake(el) {
+  const box = el && el.closest('.checkout-field');
+  if (!box) return;
+  box.classList.remove('co-shake'); void box.offsetWidth; box.classList.add('co-shake');
+}
+function coReviewHtml() {
+  const v = name => String((coField(name) || {}).value || '').trim();
+  const esc = x => x.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const ship = shipQuote.enabled && shipQuote.selected ? ` · ${esc(shipOptionLabel(shipQuote.selected))}` : '';
+  return `<div class="co-review-row"><div><small>${coStepT('contact')}</small><p>${esc(v('recipient'))}<br>${esc(v('phone'))}${v('email') ? ` · ${esc(v('email'))}` : ''}</p></div><button type="button" data-go="1">${coStepT('edit')}</button></div>`
+    + `<div class="co-review-row"><div><small>${coStepT('ship')}</small><p>${esc(v('address'))}, ${esc(v('number'))}${v('complement') ? ` (${esc(v('complement'))})` : ''}<br>${esc(v('neighborhood'))} · ${esc(v('city'))} · ${esc(v('cep'))}${ship}</p></div><button type="button" data-go="2">${coStepT('edit')}</button></div>`;
+}
+function coGoStep(n, opts = {}) {
+  n = Math.max(1, Math.min(3, n));
+  const prev = coStep;
+  if (!opts.force && n > prev) { for (let k = prev; k < n; k++) if (!coValidateStep(k)) { coGoStep(k, { force: true, quiet: true }); return; } }
+  coStep = n;
+  const steps = document.querySelectorAll('#checkout-form .co-step');
+  steps.forEach(el => {
+    const k = Number(el.dataset.step);
+    el.classList.remove('is-active', 'from-left', 'from-right');
+    if (k === n) { el.classList.add('is-active', n >= prev ? 'from-right' : 'from-left'); }
+  });
+  document.querySelectorAll('#co-steps .co-step-dot').forEach(li => {
+    const k = Number(li.dataset.go);
+    li.classList.toggle('is-active', k === n);
+    li.classList.toggle('is-done', k < n);
+  });
+  const fill = document.getElementById('co-steps-fill');
+  if (fill) fill.style.transform = `scaleX(${(n - 1) / 2})`;
+  const err = document.getElementById('checkout-error');
+  const active = document.querySelector(`#checkout-form .co-step[data-step="${n}"]`);
+  if (err && active) { const anchor = n === 3 ? active.querySelector('.checkout-actions') : active.querySelector('.co-next'); if (anchor) anchor.before(err); }
+  if (!opts.quiet) showCheckoutError('');
+  if (n === 3) { const r = document.getElementById('co-review'); if (r) r.innerHTML = coReviewHtml(); updateCheckoutMode(); }
+  const shell = checkoutModal && checkoutModal.querySelector('.co-shell');
+  if (shell && prev !== n && !opts.noScroll) shell.scrollTo({ top: 0, behavior: 'smooth' });
+  if (prev !== n && !opts.noFocus) setTimeout(() => { const first = active && active.querySelector(n === 1 ? '#checkout-recipient' : n === 2 ? '#checkout-cep' : 'input[name="payment"]:checked, input[name="payment"]'); if (first && !first.value && window.matchMedia('(min-width: 900px)').matches) first.focus({ preventScroll: true }); }, 420);
+}
+document.addEventListener('click', e => {
+  const next = e.target.closest && e.target.closest('#checkout-form .co-next');
+  if (next) { e.preventDefault(); coGoStep(Number(next.dataset.next)); return; }
+  const go = e.target.closest && e.target.closest('#checkout-form [data-go]');
+  if (go) { const n = Number(go.dataset.go); if (n < coStep) coGoStep(n); else if (n > coStep) coGoStep(n); }
+});
+// voltar (seta do topo e "Voltar") anda uma etapa antes de fechar
+['checkout-close', 'checkout-cancel'].forEach(id => document.getElementById(id)?.addEventListener('click', e => {
+  if (coStep > 1 && checkoutModal && checkoutModal.classList.contains('active')) { e.stopImmediatePropagation(); coGoStep(coStep - 1); }
+}, true));
 document.getElementById('checkout-close').addEventListener('click',closeCheckout);
 document.getElementById('checkout-cancel').addEventListener('click',closeCheckout);
 checkoutModal.addEventListener('click',e=>{ if(e.target===checkoutModal) closeCheckout(); });
