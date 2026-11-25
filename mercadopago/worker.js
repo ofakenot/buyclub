@@ -376,6 +376,31 @@ async function mpOrder(env, orderId) {
   return results[0];
 }
 
+// Pedido de teste (criado pelo bot com /pedidoteste): fica só no KV, no mesmo formato de um pagamento do Mercado Pago.
+async function getOrder(env, orderId) {
+  if (env.ORDERS && /^BCTESTE/.test(orderId)) {
+    const t = await env.ORDERS.get(`teste:${orderId}`);
+    if (t) return JSON.parse(t);
+  }
+  return mpOrder(env, orderId);
+}
+
+async function createTestOrder(env, cpf, name) {
+  const orderId = 'BCTESTE' + Array.from(crypto.getRandomValues(new Uint8Array(4)), b => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('');
+  const now = new Date().toISOString();
+  const pay = {
+    status: 'approved', date_created: now, date_approved: now, transaction_amount: 0,
+    payment_type_id: 'bank_transfer', installments: 1, external_reference: orderId,
+    metadata: { cpf, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1 (pedido de teste, sem cobrança)', subtotal: 0, shipping: 0, shipping_label: 'Correios PAC (teste)', phone: '' }
+  };
+  const ttl = { expirationTtl: 60 * 60 * 24 * 7 };
+  await env.ORDERS.put(`teste:${orderId}`, JSON.stringify(pay), ttl);
+  const list = JSON.parse(await env.ORDERS.get(`cpfpedidos:${cpf}`) || '[]').filter(id => id !== orderId);
+  list.unshift(orderId);
+  await env.ORDERS.put(`cpfpedidos:${cpf}`, JSON.stringify(list.slice(0, 20)));
+  return orderId;
+}
+
 async function lookupOrder(request, env) {
   if (!env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado');
   const body = await request.json().catch(() => null) || {};
@@ -384,7 +409,7 @@ async function lookupOrder(request, env) {
   if (orderId.length < 6) throw new UserError('Digite o número do pedido (começa com BC).');
   if (!isValidCpf(cpf)) throw new UserError('Digite o CPF usado na compra.');
 
-  const p = await mpOrder(env, orderId);
+  const p = await getOrder(env, orderId);
   // A mesma resposta para "não existe" e "CPF não bate": não revela se o número existe.
   if (!p || paymentCpf(p) !== cpf) return { found: false };
   const m = p.metadata || {};
@@ -475,7 +500,8 @@ const TG_HELP = [
   'O código aparece na hora na página "Meu pedido" do cliente, com o link da transportadora.',
   '• Se o cliente tiver mais de um pedido, mande também o número (BC…).',
   '• A transportadora é reconhecida pelo código. Para escolher, escreva correios, jadlog ou loggi.',
-  '• Para apagar um rastreio: <code>/apagar BC…</code>'
+  '• Para apagar um rastreio: <code>/apagar BC…</code>',
+  '• Para criar um pedido de teste (sem cobrança, some em 7 dias): <code>/pedidoteste</code> (opcional: CPF e nome)'
 ].join('\n');
 
 // Liga o webhook do bot neste Worker (abrir https://<worker>/telegram/setup uma vez depois de criar os secrets).
@@ -517,6 +543,26 @@ export async function handleTelegram(request, env, parsed) {
     return;
   }
   if (/^\/(start|help|ajuda)\b/i.test(text)) return tgSend(env, chatId, TG_HELP);
+  if (/^\/pedidoteste\b/i.test(text)) {
+    if (!env.ORDERS) return tgSend(env, chatId, '⚠️ O armazenamento (KV ORDERS) não está ligado no Worker.');
+    const t = parseTrackingMessage(text.replace(/^\/pedidoteste\b/i, ''));
+    const cpf = t.cpf || '11144477735';
+    const name = (t.name || 'Cliente Teste').slice(0, 60);
+    const id = await createTestOrder(env, cpf, name);
+    const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
+    const cpfFmt = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    return tgSend(env, chatId, [
+      '🧪 <b>Pedido de teste criado</b> (pago, sem cobrança, some em 7 dias)',
+      `Pedido: <code>${h(id)}</code>`,
+      `CPF: <code>${h(cpfFmt)}</code>`,
+      `Nome: ${h(name)}`,
+      '',
+      `Ver no site: ${h(site)}/?pedido=${h(id)}`,
+      '',
+      'Agora teste o rastreio mandando:',
+      `<code>/rastreio AB123456789BR ${h(cpfFmt)} ${h(name)}</code>`
+    ].join('\n'));
+  }
   // no grupo, conversa normal é ignorada: o bot só age em /rastreio, /apagar ou numa mensagem que tenha código + CPF/pedido
   const cmd = text.match(/^\/(rastreio|apagar|remover)\b\s*/i);
   if (isCommand && !cmd) return;
@@ -547,7 +593,7 @@ export async function handleTelegram(request, env, parsed) {
     } else orderId = list[0];
   }
 
-  const pay = await mpOrder(env, orderId);
+  const pay = await getOrder(env, orderId);
   if (!pay) return tgSend(env, chatId, `❌ Pedido <b>${h(orderId)}</b> não encontrado no Mercado Pago.`);
   const m = pay.metadata || {};
   if (p.cpf && paymentCpf(pay) !== p.cpf) return tgSend(env, chatId, `❌ O CPF não confere com o pedido <b>${h(orderId)}</b>.`);
