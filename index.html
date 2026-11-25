@@ -4736,16 +4736,51 @@ function renderCart() {
   document.getElementById('cart-finalize')?.addEventListener('click', openCartCheckout);
   updateCartBadge();
 }
+// Mensagens de WhatsApp: títulos em negrito, sem emojis e sem hífens; números (CPF, CEP, telefone) sozinhos na linha para copiar fácil
+function waDigits(v) { return String(v || '').replace(/\D/g, ''); }
+function waField(label, value) { return value ? `*${label}*\n${value}` : ''; }
+function waConditionLabel(type) { return type === 'atacado5' ? 'Atacado, mínimo de 5 unidades' : type === 'atacado10' ? 'Atacado, mínimo de 10 unidades' : 'Varejo'; }
+function waItemLines(list, withPrice) {
+  return list.map(({ product, type, qty }) => {
+    const price = withPrice ? getCartPriceValue(product, type) : null;
+    return `*${qty}x ${formatBrandLabel(product.badge)} ${product.name}*\n${waConditionLabel(type)}${price !== null && price !== undefined ? ` · R$ ${formatBRL(price)} cada` : withPrice ? ' · preço sob consulta' : ''}`;
+  }).join('\n\n');
+}
+function waDeliveryBlock(order) {
+  const street = [order.address, order.number ? `nº ${order.number}` : ''].filter(Boolean).join(', ');
+  const place = [order.neighborhood, order.city].filter(Boolean).join(', ');
+  return [
+    '*DADOS DE ENTREGA*',
+    '',
+    waField('Nome', order.recipient),
+    waField('CPF', waDigits(order.cpf)),
+    waField('CEP', waDigits(order.cep)),
+    waField('Endereço', [street, order.complement, place].filter(Boolean).join('\n')),
+    waField('WhatsApp', waDigits(order.phone)),
+    waField('Email', order.email)
+  ].filter(Boolean).join('\n\n');
+}
 function buildCartWhatsAppMessage(items, order) {
-  const lines = items.map(({product, type, qty}) => `• ${formatBrandLabel(product.badge)} — ${product.name}\n  Quantidade: ${qty}\n  Condição: ${type === 'atacado5' ? 'Atacado — mínimo de 5 unidades' : type === 'atacado10' ? 'Atacado — mínimo de 10 unidades' : 'Varejo'}\n  Preço: ${getCartPriceText(product, type)}`).join('\n\n');
-  let message = `Olá! Gostaria de fazer um pedido.\n\n*PRODUTOS SELECIONADOS*\n${lines}`;
-  const cpfLine = order.cpf ? `\nCPF: ${order.cpf}` : '';
-  const orderSubtotal = checkoutSubtotalValue(items);
+  const sub = checkoutSubtotalValue(items);
   const consultCount = splitCheckoutItems(items).consult.length;
-  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos${consultCount ? ' com preço' : ''}: R$ ${formatBRL(orderSubtotal)}${consultCount ? `\nItens sob consulta: ${consultCount} (preciso saber o valor)` : ''}\nFrete${shipQuote.selected ? ` (${shipQuote.selected.express ? 'Entrega expressa SP, até 3 horas, rastreio pelo WhatsApp' : shipOptionLabel(shipQuote.selected)})` : ''}: ${currentShippingFee() === null ? 'a calcular' : `R$ ${formatBRL(currentShippingFee())}`}\nTotal: R$ ${formatBRL(orderSubtotal + (currentShippingFee() || 0))}`;
-  if (coCoupon && orderSubtotal !== null && couponDiscountValue(orderSubtotal) > 0) message += `\nCupom: ${coCoupon.code} (− R$ ${formatBRL(couponDiscountValue(orderSubtotal))})`;
-  message += `\n\n*DADOS DE ENTREGA*\nWhatsApp: ${order.phone || 'Não informado'}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nBloco/Apartamento: ${order.complement || 'Não informado'}\nCEP: ${order.cep}\nDestinatário: ${order.recipient}${cpfLine}\n\n*PAGAMENTO*\nForma de pagamento: ${order.payment}\n\nAguardo confirmação e instruções para finalizar.`;
-  return message;
+  const fee = currentShippingFee();
+  const discount = sub !== null && coCoupon ? couponDiscountValue(sub) : 0;
+  const shipName = shipQuote.selected ? (shipQuote.selected.express ? 'Entrega expressa SP, até 3 horas' : shipOptionLabel(shipQuote.selected)) : '';
+  const parts = ['Olá! Quero fazer um pedido.', '*PRODUTOS*\n\n' + waItemLines(items, true)];
+  if (sub !== null) {
+    parts.push([
+      '*VALORES*',
+      `Produtos: R$ ${formatBRL(sub)}`,
+      consultCount ? `Itens sob consulta: ${consultCount} (preciso saber o valor)` : null,
+      `Frete${shipName ? ` (${shipName})` : ''}: ${fee === null ? 'a calcular' : `R$ ${formatBRL(fee)}`}`,
+      discount > 0 ? `Cupom ${coCoupon.code}: R$ ${formatBRL(discount)} de desconto` : null,
+      `*Total: R$ ${formatBRL(sub - discount + (fee || 0))}*`
+    ].filter(Boolean).join('\n'));
+  }
+  parts.push(waField('PAGAMENTO', order.payment || 'A combinar'));
+  parts.push(waDeliveryBlock(order));
+  parts.push('Aguardo a confirmação para finalizar.');
+  return parts.filter(Boolean).join('\n\n');
 }
 
 function isWholesaleConsultProduct(product, type = null) {
@@ -4766,50 +4801,39 @@ function getWaMessage(product, type, order = null) {
   let modalityLine;
 
   if (type === 'atacado10') {
-    modalityLine = 'ATACADO — mínimo de 10 unidades';
+    modalityLine = 'Atacado, mínimo de 10 unidades';
     priceLine = isWholesaleConsultProduct(product, 'atacado10') ? 'Valor a consultar'
       : typeof product.priceAtacado10 === 'number'
       ? `R$ ${formatBRL(product.priceAtacado10)} por unidade`
       : 'Valor a combinar';
   } else if (type === 'atacado5') {
-    modalityLine = 'ATACADO — mínimo de 5 unidades';
+    modalityLine = 'Atacado, mínimo de 5 unidades';
     priceLine = isWholesaleConsultProduct(product, 'atacado5') ? 'Valor a consultar'
       : product.priceAtacado5 > 0
-      ? `R$ ${formatBRL(product.priceAtacado5)} por unidade — total mínimo: R$ ${formatBRL(product.priceAtacado5 * 5)}`
+      ? `R$ ${formatBRL(product.priceAtacado5)} por unidade, total mínimo de R$ ${formatBRL(product.priceAtacado5 * 5)}`
       : 'Valor a combinar';
   } else if (isRetailConsultProduct(product)) {
-    modalityLine = 'VAREJO';
+    modalityLine = 'Varejo';
     priceLine = 'Valor a consultar';
   } else if (isConsultProduct(product)) {
-    modalityLine = 'CONSULTA DE VALORES';
+    modalityLine = 'Consulta de valores';
     priceLine = 'Valores a combinar';
   } else {
-    modalityLine = 'VAREJO';
+    modalityLine = 'Varejo';
     priceLine = `R$ ${formatBRL(product.priceVarejo)} por unidade`;
   }
 
-  let message = `Olá! Gostaria de fazer um pedido.\n\n` +
-    `*PRODUTO*\n` +
-    `Marca: ${formatBrandLabel(product.badge)}\n` +
-    `Produto: ${product.name}\n\n` +
-    `*CONDIÇÃO COMERCIAL*\n` +
-    `Modalidade: ${modalityLine}\n` +
-    `Preço: ${priceLine}`;
-
+  const parts = [
+    'Olá! Quero fazer um pedido.',
+    `*PRODUTO*\n${formatBrandLabel(product.badge)} ${product.name}`,
+    `*CONDIÇÃO*\n${modalityLine}\n${priceLine}`
+  ];
   if (order) {
-    const cpfLine = order.cpf ? `\nCPF: ${order.cpf}` : '';
-    message += `\n\n*DADOS DE ENTREGA*\n` +
-      `Endereço: ${order.address}, nº ${order.number}\n` +
-      `Bairro: ${order.neighborhood}\n` +
-      `Cidade/UF: ${order.city}\n` +
-      `Bloco/Apartamento: ${order.complement || 'Não informado'}\n` +
-      `CEP: ${order.cep}\n` +
-      `Destinatário: ${order.recipient}${cpfLine}\n\n` +
-      `*PAGAMENTO*\n` +
-      `Forma de pagamento: ${order.payment}\n\n` +
-      `Aguardo confirmação e instruções para finalizar.`;
+    parts.push(waField('PAGAMENTO', order.payment || 'A combinar'));
+    parts.push(waDeliveryBlock(order));
+    parts.push('Aguardo a confirmação para finalizar.');
   }
-  return message;
+  return parts.filter(Boolean).join('\n\n');
 }
 
 function waLink(msg, phone = WA_PHONE){
@@ -5014,12 +5038,16 @@ const CONSULT_T = {
 function consultT(key) { const d = CONSULT_T[currentLang] || CONSULT_T.pt; return d[key]; }
 function conditionLabelPt(type) { return type === 'atacado5' ? 'Atacado — mínimo de 5 unidades' : type === 'atacado10' ? 'Atacado — mínimo de 10 unidades' : 'Varejo'; }
 function buildConsultWhatsAppMessage(consult, order, payingRest) {
-  const lines = consult.map(({ product, type, qty }) => `• ${formatBrandLabel(product.badge)} — ${product.name}\n  Quantidade: ${qty}\n  Condição: ${conditionLabelPt(type)}`).join('\n\n');
-  let message = `Olá! Tenho interesse ${consult.length === 1 ? 'neste produto' : 'nestes produtos'}, mas preciso saber o preço:\n\n${lines}`;
-  if (payingRest) message += `\n\n(Os outros itens do pedido estou pagando agora pelo Mercado Pago via ${order.payment}.)`;
-  message += `\n\n*MEUS DADOS*\nNome: ${order.recipient}\nWhatsApp: ${order.phone}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}${order.complement ? ` (${order.complement})` : ''}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nCEP: ${order.cep}\n\nPode me passar o valor${consult.length === 1 ? '' : 'es'} e o frete?`;
-  return message;
+  const parts = [
+    `Olá! Tenho interesse ${consult.length === 1 ? 'neste produto' : 'nestes produtos'} e preciso saber o preço.`,
+    '*PRODUTOS*\n\n' + waItemLines(consult, false)
+  ];
+  if (payingRest) parts.push(`Os outros itens do pedido estou pagando agora pelo Mercado Pago (${order.payment}).`);
+  parts.push(waDeliveryBlock(order));
+  parts.push(`Pode me passar ${consult.length === 1 ? 'o valor' : 'os valores'} e o frete?`);
+  return parts.filter(Boolean).join('\n\n');
 }
+
 function waPhoneFor(items) { return items.some(item => item.type === 'atacado5' || item.type === 'atacado10') ? WA_PHONES[1] : WA_PHONES[0]; }
 // Cupom aplicado no checkout (o Worker confere de novo antes de cobrar)
 let coCoupon = null;
