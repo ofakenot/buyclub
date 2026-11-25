@@ -528,6 +528,38 @@ async function setupTelegram(env, origin) {
 }
 
 // Cartão do pedido pago que o bot posta no grupo. Responder a ele com o código salva o rastreio.
+// Dados de comprovante do pagamento, direto da API do Mercado Pago
+export function paymentReceipt(p) {
+  const card = p.card && p.card.last_four_digits;
+  const brand = String(p.payment_method_id || '').replace(/^(deb|debit_?)/i, '');
+  const method = p.payment_type_id === 'bank_transfer' || p.payment_method_id === 'pix' ? 'Pix'
+    : `${p.payment_type_id === 'debit_card' ? 'Débito' : 'Cartão'}${brand ? ` ${brand.charAt(0).toUpperCase() + brand.slice(1)}` : ''}${card ? ` final ${card}` : ''}${p.installments > 1 ? `, ${p.installments}x` : ''}`;
+  const td = p.transaction_details || {};
+  const fees = (Array.isArray(p.fee_details) ? p.fee_details : []).reduce((sum, f) => sum + (Number(f.amount) || 0), 0);
+  return {
+    id: p.id, method,
+    at: p.date_approved || p.date_created || '',
+    amount: td.total_paid_amount || p.transaction_amount,
+    net: td.net_received_amount != null ? td.net_received_amount : null,
+    fees: fees || null,
+    payer: [p.payer && p.payer.first_name, p.payer && p.payer.last_name].filter(Boolean).join(' ')
+  };
+}
+function receiptLines(r) {
+  if (!r || !r.id) return [];
+  const when = r.at && !isNaN(new Date(r.at)) ? new Date(r.at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  return [
+    '',
+    '🧾 <b>Comprovante Mercado Pago</b>',
+    `Status: aprovado${when ? ` em ${h(when)}` : ''}`,
+    `Valor pago: R$ ${h(brl(r.amount))}`,
+    `Forma: ${h(r.method)}`,
+    r.net != null ? `Você recebe: R$ ${h(brl(r.net))}${r.fees ? ` (taxa R$ ${h(brl(r.fees))})` : ''}` : null,
+    r.payer ? `Pagador: ${h(r.payer)}` : null,
+    `ID do pagamento: <code>${h(r.id)}</code>`
+  ];
+}
+
 export function tgOrderCard(o, test) {
   const addr = [o.address && `${o.address}${o.number ? `, nº ${o.number}` : ''}${o.complement ? ` — ${o.complement}` : ''}`, o.neighborhood, o.city, o.cep && `CEP ${o.cep}`].filter(Boolean).join(' · ');
   const items = String(o.items || '').split(' | ').filter(Boolean);
@@ -539,6 +571,7 @@ export function tgOrderCard(o, test) {
     addr ? `Endereço: ${h(addr)}` : null,
     o.cpf ? `CPF: ${h(o.cpf)}` : null,
     o.phone ? `WhatsApp: ${h(o.phone)}` : null,
+    ...receiptLines(o.receipt),
     '',
     '↩️ <i>Responda esta mensagem só com o código de rastreio.</i>'
   ].filter(x => x !== null).join('\n');
@@ -583,7 +616,8 @@ export async function handleTelegram(request, env, parsed) {
     const id = await createTestOrder(env, cpf, name);
     const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
     const cpfFmt = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    const card = tgOrderCard({ orderId: id, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1', shippingLabel: 'Correios PAC (teste)', cpf: cpfFmt }, true);
+    const card = tgOrderCard({ orderId: id, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1', shippingLabel: 'Correios PAC (teste)', cpf: cpfFmt,
+      receipt: { id: 'TESTE', method: 'Pix', at: new Date().toISOString(), amount: 0, net: 0, payer: name } }, true);
     return tgSend(env, chatId, card + `\n\nNo site: ${h(site)}/?pedido=${h(id)} (CPF ${h(cpfFmt)}). Some em 7 dias.`);
   }
   // resposta a um cartão de pedido do bot: basta o código (o número do pedido vem da mensagem respondida)
@@ -842,7 +876,8 @@ async function handleWebhook(request, env, url, ctx) {
     shipping: m.shipping || '',
     shippingLabel: m.shipping_label || '',
     coupon: m.coupon || '',
-    discount: m.discount || ''
+    discount: m.discount || '',
+    receipt: paymentReceipt(payment)
   };
 
   if (env.ORDERS) {
