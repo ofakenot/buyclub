@@ -176,3 +176,7 @@ Para funcionar, o Worker precisa de um Cron: **Settings → Trigger events → C
 - **Indique e ganhe:** na primeira compra paga, o cliente ganha um cupom pessoal (ex.: `ANA7K2`), que dá 10% na primeira compra de quem ele indicar. Quando um amigo compra com esse cupom, quem indicou ganha um cupom `PREMIO…` de 10%, de uso único e válido por 90 dias, e o bot avisa no grupo com o link de WhatsApp. O cupom aparece em "Meu pedido" e na mensagem de rastreio.
 - **Influenciadores:** no Telegram, `/cupom NOME 10` cria o cupom, e `/cupons` mostra as vendas e o total por cupom. O link `buyclub.us/?cupom=NOME` já abre com o cupom aplicado.
 - **Recompra:** 25 dias depois que o rastreio é salvo, o bot lembra no grupo de chamar o cliente para repor, com o link de WhatsApp pronto. Usa o mesmo Cron do carrinho abandonado.
+
+### Número do pedido para o cliente
+
+O card de cada pedido pago no Telegram tem o link **Enviar o número do pedido ao cliente**. Ele abre o WhatsApp do cliente com a mensagem pronta (número do pedido e link da página Meu pedido); é só tocar em enviar. No /pedidoteste o link abre o WhatsApp da própria loja, para testar.

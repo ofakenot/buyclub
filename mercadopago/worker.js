@@ -465,7 +465,7 @@ async function createTestOrder(env, cpf, name) {
   const pay = {
     status: 'approved', date_created: now, date_approved: now, transaction_amount: 0,
     payment_type_id: 'bank_transfer', installments: 1, external_reference: orderId,
-    metadata: { cpf, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1 (pedido de teste, sem cobrança)', subtotal: 0, shipping: 0, shipping_label: 'Correios PAC (teste)', phone: '' }
+    metadata: { cpf, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1 (pedido de teste, sem cobrança)', subtotal: 0, shipping: 0, shipping_label: 'Correios PAC (teste)', phone: digits(env.WHATSAPP_PHONE || '') }
   };
   const ttl = { expirationTtl: 60 * 60 * 24 * 7 };
   await env.ORDERS.put(`teste:${orderId}`, JSON.stringify(pay), ttl);
@@ -676,7 +676,21 @@ function receiptLines(r) {
   ];
 }
 
-export function tgOrderCard(o, test) {
+// Mensagem pronta (WhatsApp) com o número do pedido para o cliente: negrito, números sozinhos na linha, sem emojis nem hífens
+export function orderNumberWaText(o, site) {
+  const first = String(o.recipient || '').split(/\s+/)[0] || '';
+  site = String(site || 'https://buyclub.us').replace(/\/+$/, '');
+  return [
+    `Olá${first ? `, ${first}` : ''}! Recebemos o pagamento do seu pedido na Buy Club.`,
+    `*Número do pedido*\n${o.orderId}`,
+    `*Acompanhe seu pedido*\n${site}/?pedido=${o.orderId}\nPara ver, informe o número do pedido e o seu CPF.`,
+    'Assim que o pedido for enviado, mandamos o código de rastreio por aqui.'
+  ].join('\n\n');
+}
+
+export function tgOrderCard(o, test, site) {
+  const phone = digits(o.phone);
+  const waPhone = phone.length === 10 || phone.length === 11 ? '55' + phone : phone;
   const addr = [o.address && `${o.address}${o.number ? `, nº ${o.number}` : ''}${o.complement ? ` — ${o.complement}` : ''}`, o.neighborhood, o.city, o.cep && `CEP ${o.cep}`].filter(Boolean).join(' · ');
   const items = String(o.items || '').split(' | ').filter(Boolean);
   return [
@@ -689,6 +703,7 @@ export function tgOrderCard(o, test) {
     o.phone ? `WhatsApp: ${h(o.phone)}` : null,
     ...receiptLines(o.receipt),
     '',
+    waPhone.length >= 12 ? `📲 <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(orderNumberWaText(o, site))}">Enviar o número do pedido ao cliente</a>` : null,
     '↩️ <i>Responda esta mensagem só com o código de rastreio.</i>'
   ].filter(x => x !== null).join('\n');
 }
@@ -779,7 +794,7 @@ async function tgSendDocument(env, chatId, bytes, filename, caption, replyTo, th
 // Posta o pedido e, logo abaixo (como resposta), o PDF do comprovante
 async function postOrderWithReceipt(env, chat, o, test, thread) {
   if (thread === undefined) thread = await topicFor(env, chat, 'pedidos').catch(() => undefined);
-  const out = await tgSend(env, chat, tgOrderCard(o, test), thread);
+  const out = await tgSend(env, chat, tgOrderCard(o, test, env.SITE_URL), thread);
   const sent = out && out.result;
   try {
     await tgSendDocument(env, (sent && sent.chat && sent.chat.id) || chat, receiptPdf(o, test), `comprovante-${o.orderId}.pdf`, `Comprovante do pedido ${o.orderId}`, sent && sent.message_id, sent && sent.message_thread_id);
