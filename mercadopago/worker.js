@@ -494,7 +494,9 @@ const h = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({ '&': '&amp;'
 const TG_HELP = [
   '📦 <b>Bot de rastreio Buy Club</b>',
   '',
-  'Mande numa mensagem só: <b>/rastreio</b> + código de rastreio, CPF e nome do cliente. Exemplo:',
+  'Quando um pedido é pago, eu posto ele aqui. Depois de postar o pacote, <b>responda a mensagem do pedido só com o código de rastreio</b>. Pronto.',
+  '',
+  'Também dá para mandar <b>/rastreio</b> + código, CPF e nome do cliente. Exemplo:',
   '<code>/rastreio AB123456789BR 529.982.247-25 Ana Silva</code>',
   '',
   'O código aparece na hora na página "Meu pedido" do cliente, com o link da transportadora.',
@@ -525,6 +527,36 @@ async function setupTelegram(env, origin) {
   };
 }
 
+// Cartão do pedido pago que o bot posta no grupo. Responder a ele com o código salva o rastreio.
+export function tgOrderCard(o, test) {
+  const addr = [o.address && `${o.address}${o.number ? `, nº ${o.number}` : ''}${o.complement ? ` — ${o.complement}` : ''}`, o.neighborhood, o.city, o.cep && `CEP ${o.cep}`].filter(Boolean).join(' · ');
+  const items = String(o.items || '').split(' | ').filter(Boolean);
+  return [
+    `${test ? '🧪' : '🛒'} <b>Pedido pago ${h(o.orderId)}</b>${test ? ' (TESTE, sem cobrança)' : ''}`,
+    `${h(o.recipient || '')}${o.city ? ` · ${h(o.city)}` : ''}`,
+    ...items.map(i => `• ${h(i)}`),
+    o.shippingLabel ? `Envio: ${h(o.shippingLabel)}` : null,
+    addr ? `Endereço: ${h(addr)}` : null,
+    o.cpf ? `CPF: ${h(o.cpf)}` : null,
+    o.phone ? `WhatsApp: ${h(o.phone)}` : null,
+    '',
+    '↩️ <i>Responda esta mensagem só com o código de rastreio.</i>'
+  ].filter(x => x !== null).join('\n');
+}
+
+function tgChats(env) {
+  const all = String(env.TELEGRAM_CHAT_IDS || '').split(',').map(x => x.trim()).filter(Boolean);
+  const groups = all.filter(id => id.startsWith('-'));
+  return groups.length ? groups : all;
+}
+
+async function notifyTelegramOrder(env, o) {
+  if (!env.TELEGRAM_BOT_TOKEN) return;
+  for (const chat of tgChats(env)) {
+    try { await tgSend(env, chat, tgOrderCard(o)); } catch (e) { console.error('telegram pedido', e && e.message); }
+  }
+}
+
 export async function handleTelegram(request, env, parsed) {
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_SECRET) return;
   if (!sameKey(request.headers.get('X-Telegram-Bot-Api-Secret-Token'), env.TELEGRAM_SECRET)) { console.warn('telegram: secret inválido'); return; }
@@ -551,22 +583,16 @@ export async function handleTelegram(request, env, parsed) {
     const id = await createTestOrder(env, cpf, name);
     const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
     const cpfFmt = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    return tgSend(env, chatId, [
-      '🧪 <b>Pedido de teste criado</b> (pago, sem cobrança, some em 7 dias)',
-      `Pedido: <code>${h(id)}</code>`,
-      `CPF: <code>${h(cpfFmt)}</code>`,
-      `Nome: ${h(name)}`,
-      '',
-      `Ver no site: ${h(site)}/?pedido=${h(id)}`,
-      '',
-      'Agora teste o rastreio mandando:',
-      `<code>/rastreio AB123456789BR ${h(cpfFmt)} ${h(name)}</code>`
-    ].join('\n'));
+    const card = tgOrderCard({ orderId: id, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1', shippingLabel: 'Correios PAC (teste)', cpf: cpfFmt }, true);
+    return tgSend(env, chatId, card + `\n\nNo site: ${h(site)}/?pedido=${h(id)} (CPF ${h(cpfFmt)}). Some em 7 dias.`);
   }
-  // no grupo, conversa normal é ignorada: o bot só age em /rastreio, /apagar ou numa mensagem que tenha código + CPF/pedido
-  const cmd = text.match(/^\/(rastreio|apagar|remover)\b\s*/i);
+  // resposta a um cartão de pedido do bot: basta o código (o número do pedido vem da mensagem respondida)
+  const replied = msg.reply_to_message;
+  const replyOrder = !isCommand && replied && replied.from && replied.from.is_bot && String(replied.text || '').match(/\bBC[A-Z0-9]{6,22}\b/);
+  // no grupo, conversa normal é ignorada: o bot só age em /rastreio, /apagar, numa resposta a um pedido ou numa mensagem que tenha código + CPF/pedido
+  const cmd = replyOrder ? ['', 'rastreio'] : text.match(/^\/(rastreio|apagar|remover)\b\s*/i);
   if (isCommand && !cmd) return;
-  const body = cmd ? text.slice(cmd[0].length) : text;
+  const body = replyOrder ? `${replyOrder[0]} ${text}` : cmd ? text.slice(cmd[0].length) : text;
   if (!cmd) { const q = parseTrackingMessage(body); if (!(q.code && (q.cpf || q.orderId))) return; }
   if (!env.ORDERS) return tgSend(env, chatId, '⚠️ O armazenamento (KV ORDERS) não está ligado no Worker. Sem ele não dá para salvar o rastreio.');
 
@@ -578,6 +604,7 @@ export async function handleTelegram(request, env, parsed) {
   }
 
   const p = parseTrackingMessage(body);
+  if (replyOrder) p.name = ''; // na resposta, o pedido já está identificado; palavras soltas não são nome
   if (!p.code || p.code.length < 8) return tgSend(env, chatId, '❌ Não achei o código de rastreio na mensagem.\n\n' + TG_HELP);
   if (!p.orderId && !p.cpf) return tgSend(env, chatId, '❌ Mande também o CPF do cliente (ou o número do pedido BC…).');
 
@@ -833,6 +860,7 @@ async function handleWebhook(request, env, url, ctx) {
     }
   }
   await notifyWhatsApp(env, order);
+  await notifyTelegramOrder(env, order);
 }
 
 async function validSignature(request, secret, dataId) {
