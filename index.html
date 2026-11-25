@@ -7446,6 +7446,10 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 .ord-ref-code button, .ord-ref-code a { min-height: 2.4rem; padding: 0 .9rem; border-radius: .6rem; border: 0; font-family: inherit; font-weight: 800; font-size: .8rem; line-height: 2.4rem; cursor: pointer; text-decoration: none; }
 .ord-ref-code button { background: #0071e3; color: #fff; }
 .ord-ref-code a { background: #25D366; color: #fff; display: inline-flex; align-items: center; }
+.ord-ref .ord-ref-count { margin: .75rem 0 0; font-size: .84rem; color: var(--text); }
+.ord-ref-prizes { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: .35rem; }
+.ord-ref-prizes code { font: 800 .9rem ui-monospace, SFMono-Regular, Menlo, monospace; color: #128C7E; background: #fff; border: 1px dashed #25D366; padding: .25rem .5rem; border-radius: .45rem; }
+.ord-ref-prizes span { font-size: .78rem; color: var(--muted-dark); }
 .ord-group { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin-top: .8rem; padding: .85rem 1rem; border-radius: .9rem; background: #f1fbf4; border: 1px solid #cdeed8; }
 .ord-group strong { display: block; font-size: .88rem; color: var(--text); }
 .ord-group span { font-size: .78rem; color: var(--muted-dark); }
@@ -7509,7 +7513,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 (function () {
   const ORD_T = {
     pt: {
-      refTitle: 'Indique e ganhe', refText: 'Seus amigos ganham {pct}% na primeira compra com o seu cupom. A cada amigo que comprar, você ganha {pct}% na próxima compra.', refCopy: 'Copiar cupom', refCopied: 'Copiado!', refShare: 'Enviar para amigos', refShareMsg: 'Conheci a Buy Club e gostei. Use o meu cupom {code} e ganhe {pct}% de desconto na primeira compra: {url}', groupTitle: 'Grupo de ofertas', groupText: 'Entre no grupo do WhatsApp para receber ofertas e reposições antes de todo mundo.', groupBtn: 'Entrar no grupo', groupJoin: 'Entrar no grupo de ofertas',
+      refTitle: 'Indique e ganhe', refText: 'Seus amigos ganham {pct}% na primeira compra com o seu cupom. A cada amigo que comprar, você ganha {pct}% na próxima compra.', refCount: n => n === 0 ? 'Nenhum amigo comprou com o seu cupom ainda.' : n === 1 ? '1 amigo já comprou com o seu cupom.' : `${n} amigos já compraram com o seu cupom.`, refPrizes: 'Seus cupons de prêmio (10% em uma compra):', refUntil: 'até', refCopy: 'Copiar cupom', refCopied: 'Copiado!', refShare: 'Enviar para amigos', refShareMsg: 'Conheci a Buy Club e gostei. Use o meu cupom {code} e ganhe {pct}% de desconto na primeira compra: {url}', groupTitle: 'Grupo de ofertas', groupText: 'Entre no grupo do WhatsApp para receber ofertas e reposições antes de todo mundo.', groupBtn: 'Entrar no grupo', groupJoin: 'Entrar no grupo de ofertas',
       nav: 'Meu pedido', faq: 'Perguntas frequentes', kicker: 'Acompanhe sua compra', title: 'Meu pedido',
       lead: 'Digite o número do pedido e o CPF usado na compra para ver o status.',
       number: 'Número do pedido', cpf: 'CPF', search: 'Consultar pedido', searching: 'Consultando…',
@@ -7535,7 +7539,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       cats: { emagrecimento: 'Emagrecimento', recuperacao: 'Recuperação', pele: 'Pele e beleza', gh: 'GH e performance', longevidade: 'Longevidade e foco' }
     },
     en: {
-      refTitle: 'Refer and earn', refText: 'Your friends get {pct}% off their first purchase with your code. For each friend who buys, you get {pct}% off your next purchase.', refCopy: 'Copy code', refCopied: 'Copied!', refShare: 'Send to friends', refShareMsg: 'I found Buy Club and liked it. Use my code {code} to get {pct}% off your first purchase: {url}', groupTitle: 'Deals group', groupText: 'Join the WhatsApp group to get deals and restocks first.', groupBtn: 'Join the group', groupJoin: 'Join the deals group',
+      refTitle: 'Refer and earn', refText: 'Your friends get {pct}% off their first purchase with your code. For each friend who buys, you get {pct}% off your next purchase.', refCount: n => n === 0 ? 'No friends have bought with your code yet.' : n === 1 ? '1 friend has bought with your code.' : `${n} friends have bought with your code.`, refPrizes: 'Your reward codes (10% off one purchase):', refUntil: 'until', refCopy: 'Copy code', refCopied: 'Copied!', refShare: 'Send to friends', refShareMsg: 'I found Buy Club and liked it. Use my code {code} to get {pct}% off your first purchase: {url}', groupTitle: 'Deals group', groupText: 'Join the WhatsApp group to get deals and restocks first.', groupBtn: 'Join the group', groupJoin: 'Join the deals group',
       nav: 'My order', faq: 'FAQ', kicker: 'Track your purchase', title: 'My order',
       lead: 'Enter your order number and the CPF used at checkout to see the status.',
       number: 'Order number', cpf: 'CPF', search: 'Check order', searching: 'Checking…',
@@ -7561,7 +7565,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       cats: { emagrecimento: 'Weight loss', recuperacao: 'Recovery', pele: 'Skin & beauty', gh: 'GH & performance', longevidade: 'Longevity & focus' }
     },
     es: {
-      refTitle: 'Recomienda y gana', refText: 'Tus amigos ganan {pct}% en la primera compra con tu cupón. Por cada amigo que compre, ganas {pct}% en tu próxima compra.', refCopy: 'Copiar cupón', refCopied: '¡Copiado!', refShare: 'Enviar a amigos', refShareMsg: 'Conocí Buy Club y me gustó. Usa mi cupón {code} y gana {pct}% de descuento en la primera compra: {url}', groupTitle: 'Grupo de ofertas', groupText: 'Únete al grupo de WhatsApp para recibir ofertas y reposiciones antes que nadie.', groupBtn: 'Entrar al grupo', groupJoin: 'Entrar al grupo de ofertas',
+      refTitle: 'Recomienda y gana', refText: 'Tus amigos ganan {pct}% en la primera compra con tu cupón. Por cada amigo que compre, ganas {pct}% en tu próxima compra.', refCount: n => n === 0 ? 'Ningún amigo compró con tu cupón todavía.' : n === 1 ? '1 amigo ya compró con tu cupón.' : `${n} amigos ya compraron con tu cupón.`, refPrizes: 'Tus cupones de premio (10% en una compra):', refUntil: 'hasta', refCopy: 'Copiar cupón', refCopied: '¡Copiado!', refShare: 'Enviar a amigos', refShareMsg: 'Conocí Buy Club y me gustó. Usa mi cupón {code} y gana {pct}% de descuento en la primera compra: {url}', groupTitle: 'Grupo de ofertas', groupText: 'Únete al grupo de WhatsApp para recibir ofertas y reposiciones antes que nadie.', groupBtn: 'Entrar al grupo', groupJoin: 'Entrar al grupo de ofertas',
       nav: 'Mi pedido', faq: 'Preguntas frecuentes', kicker: 'Sigue tu compra', title: 'Mi pedido',
       lead: 'Ingresa el número de pedido y el CPF usado en la compra para ver el estado.',
       number: 'Número de pedido', cpf: 'CPF', search: 'Consultar pedido', searching: 'Consultando…',
@@ -7651,7 +7655,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     // pedido de demonstração (para conhecer a página sem uma compra real)
     if (pedido === 'BCDEMO01' && cpf === '11144477735') {
       const now = Date.now();
-      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() }, referral: 'CLIENTE7K2', referralPct: 10 });
+      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() }, referral: 'CLIENTE7K2', referralPct: 10, referralCount: 2, prizes: [{ code: 'PREMIOK8Q2M', until: '2027-02-23' }, { code: 'PREMIO4TX9P', until: '2027-02-25' }] });
       return;
     }
     submitBtn.disabled = true; submitBtn.textContent = ot('searching');
@@ -7700,7 +7704,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       <dl class="ord-details">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}
         ${o.items && o.items.length ? `<div style="display:block"><dt>${esc(ot('items'))}</dt><dd style="text-align:left;font-weight:500"><ul class="ord-items">${o.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></dd></div>` : ''}
       </dl>
-      ${o.referral ? `<div class="ord-ref"><h4>${esc(ot('refTitle'))}</h4><p>${esc(fill(ot('refText'), { pct: o.referralPct || 10 }))}</p><div class="ord-ref-code"><code>${esc(o.referral)}</code><button type="button" data-ref-copy="${esc(o.referral)}">${esc(ot('refCopy'))}</button><a href="https://wa.me/?text=${encodeURIComponent(fill(ot('refShareMsg'), { code: o.referral, pct: o.referralPct || 10, url: location.origin + location.pathname + '?cupom=' + o.referral }))}" target="_blank" rel="noopener noreferrer">${esc(ot('refShare'))}</a></div></div>` : ''}
+      ${o.referral ? `<div class="ord-ref"><h4>${esc(ot('refTitle'))}</h4><p>${esc(fill(ot('refText'), { pct: o.referralPct || 10 }))}</p><div class="ord-ref-code"><code>${esc(o.referral)}</code><button type="button" data-ref-copy="${esc(o.referral)}">${esc(ot('refCopy'))}</button><a href="https://wa.me/?text=${encodeURIComponent(fill(ot('refShareMsg'), { code: o.referral, pct: o.referralPct || 10, url: location.origin + location.pathname + '?cupom=' + o.referral }))}" target="_blank" rel="noopener noreferrer">${esc(ot('refShare'))}</a></div><p class="ord-ref-count"><b>${esc(ot('refCount')(Number(o.referralCount) || 0))}</b></p>${o.prizes && o.prizes.length ? `<p class="ord-ref-count">${esc(ot('refPrizes'))}</p><ul class="ord-ref-prizes">${o.prizes.map(pz => `<li><code>${esc(pz.code)}</code>${pz.until ? ` <span>${esc(ot('refUntil'))} ${esc(String(pz.until).split('-').reverse().join('/'))}</span>` : ''}</li>`).join('')}</ul>` : ''}</div>` : ''}
       ${ok ? `<div class="ord-group"><div><strong>${esc(ot('groupTitle'))}</strong><span>${esc(ot('groupText'))}</span></div><a href="https://chat.whatsapp.com/DGpMXz40qiT5CBh40SY2x5?mode=gi_t" target="_blank" rel="noopener noreferrer">${esc(ot('groupBtn'))}</a></div>` : ''}
       <a class="ord-wa" href="${esc(wa(fill(ot('waMsg'), { id: o.orderId })))}" target="_blank" rel="noopener noreferrer">${WA_SVG}${esc(ot('wa'))}</a>`;
     const copyBtn = resultEl.querySelector('[data-ref-copy]');

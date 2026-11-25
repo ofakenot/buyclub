@@ -506,7 +506,7 @@ async function lookupOrder(request, env) {
     discount: m.discount || null,
     tracking: env.ORDERS ? JSON.parse(await env.ORDERS.get(`envio:${orderId}`) || 'null') : null,
     // cupom de indicação do cliente (só para pedido aprovado, que já passou pelo webhook)
-    referral: env.ORDERS && p.status === 'approved' ? (await env.ORDERS.get(`indicacao:${cpf}`)) || '' : '',
+    ...(await referralInfo(env, p.status === 'approved' ? cpf : '')),
     referralPct: REFERRAL_PCT
   };
 }
@@ -1130,6 +1130,9 @@ async function afterPaidGrowth(env, order) {
       const prize = 'PREMIO' + randCode(5);
       const until = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
       await env.ORDERS.put(`cupom:${prize}`, JSON.stringify({ pct: REFERRAL_PCT, uses: 1, kind: 'premio', owner: rule.owner, ownerName: rule.ownerName, until, label: 'Prêmio por indicação' }));
+      const prizes = JSON.parse(await env.ORDERS.get(`premios:${rule.owner}`) || '[]');
+      prizes.unshift({ code: prize, until });
+      await env.ORDERS.put(`premios:${rule.owner}`, JSON.stringify(prizes.slice(0, 30)));
       const first = String(rule.ownerName || '').split(/\s+/)[0];
       const p = rule.ownerPhone || '';
       const waPhone = p.length === 10 || p.length === 11 ? '55' + p : p;
@@ -1144,6 +1147,21 @@ async function afterPaidGrowth(env, order) {
     }
   }
   return referralCodeFor(env, cpf, order.recipient, order.phone);
+}
+
+// Para a página "Meu pedido": cupom do cliente, quantos amigos compraram e prêmios ainda disponíveis
+async function referralInfo(env, cpf) {
+  if (!env.ORDERS || !cpf) return { referral: '', referralCount: 0, prizes: [] };
+  const referral = (await env.ORDERS.get(`indicacao:${cpf}`)) || '';
+  if (!referral) return { referral: '', referralCount: 0, prizes: [] };
+  const st = JSON.parse(await env.ORDERS.get(`stats:cupom:${referral}`) || 'null');
+  const today = new Date().toISOString().slice(0, 10);
+  const prizes = [];
+  for (const pz of JSON.parse(await env.ORDERS.get(`premios:${cpf}`) || '[]').slice(0, 10)) {
+    const rule = JSON.parse(await env.ORDERS.get(`cupom:${pz.code}`) || 'null');
+    if (rule && rule.uses > 0 && (!rule.until || rule.until >= today)) prizes.push({ code: pz.code, until: rule.until });
+  }
+  return { referral, referralCount: st ? st.orders : 0, prizes };
 }
 
 // Lembrete de recompra: agendado quando o rastreio é salvo
