@@ -28,6 +28,8 @@
  *   ME_EXTRA_FEE        (opcional)             valor somado a cada opção de frete (embalagem/manuseio); padrão 0
  *   ME_CONTACT          (opcional)             contato técnico enviado no User-Agent, ex.: um e-mail seu
  *   ME_SANDBOX          (opcional)             "1" para usar o ambiente de testes do Melhor Envio
+ *   FREE_SHIP_CATEGORY  (opcional)             marca com frete grátis; padrão "newlife"
+ *   FREE_SHIP_MIN_UNITS (opcional)             unidades dessa marca para ganhar frete grátis; padrão 3 (0 desliga)
  *   MP_WEBHOOK_SECRET   (secret, opcional)     "assinatura secreta" dos webhooks do Mercado Pago
  *   ORDERS              (KV, opcional)         evita aviso duplicado e guarda os pedidos pagos
  */
@@ -275,6 +277,18 @@ async function buildLines(items, env) {
 /* Frete: Melhor Envio                                                  */
 /* ------------------------------------------------------------------ */
 
+// Frete grátis: a partir de N unidades da marca (New Life). No frete fixo zera o valor;
+// no Melhor Envio a opção mais barata sai de graça e as outras mantêm o preço.
+export function hasFreeShipping(env, lines) {
+  const category = env.FREE_SHIP_CATEGORY || 'newlife';
+  const min = Number(env.FREE_SHIP_MIN_UNITS ?? 3);
+  if (!(min > 0)) return false;
+  return lines.filter(l => l.product.category === category).reduce((s, l) => s + l.qty, 0) >= min;
+}
+function applyFreeShipping(options) {
+  return options.map((o, i) => (i === 0 ? { ...o, price: 0, free: true } : o));
+}
+
 function shippingEnabled(env) { return !!(env.MELHOR_ENVIO_TOKEN && digits(env.ME_FROM_CEP).length === 8); }
 function flatShipping(env) { return round2(Number(env.SHIPPING_FEE ?? DEFAULT_SHIPPING_FEE) || 0); }
 
@@ -286,19 +300,22 @@ async function quoteShipping(request, env) {
   if (!body || !Array.isArray(body.items) || !body.items.length || body.items.length > 50) throw new UserError('Carrinho vazio.');
   const lines = await buildLines(body.items, env);
   const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
-  const options = await melhorEnvioQuote(env, cep, lines, subtotal);
+  let options = await melhorEnvioQuote(env, cep, lines, subtotal);
+  if (options.length && hasFreeShipping(env, lines)) options = applyFreeShipping(options);
   if (!options.length) throw new UserError('Não encontramos frete para esse CEP. Fale com a gente pelo WhatsApp.');
   return { enabled: true, options };
 }
 
 // No checkout o preço do frete é sempre recalculado aqui, nunca aceito do navegador.
 async function resolveShipping(env, cep, lines, subtotal, service) {
-  if (!shippingEnabled(env)) return { price: flatShipping(env), label: 'Frete fixo' };
+  const free = hasFreeShipping(env, lines);
+  if (!shippingEnabled(env)) return free ? { price: 0, label: 'Frete grátis (New Life)' } : { price: flatShipping(env), label: 'Frete fixo' };
   if (!service) throw new UserError('Escolha uma opção de frete.');
-  const options = await melhorEnvioQuote(env, cep, lines, subtotal);
+  let options = await melhorEnvioQuote(env, cep, lines, subtotal);
+  if (free) options = applyFreeShipping(options);
   const chosen = options.find(o => String(o.id) === String(service));
   if (!chosen) throw new UserError('Essa opção de frete não está disponível para o CEP. Escolha outra.');
-  return { price: chosen.price, label: `${chosen.company} ${chosen.name} (${chosen.days} dias úteis)` };
+  return { price: chosen.price, label: `${chosen.company} ${chosen.name} (${chosen.days} dias úteis)${chosen.free ? ' — grátis' : ''}` };
 }
 
 export function shippingPackage(env, lines) {

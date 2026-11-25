@@ -3276,7 +3276,7 @@ position: absolute; top: .65rem; left: .65rem;
       <article data-policy="shipping" data-title="Política de frete e entrega" hidden>
         <p class="shop-policy-date">Última atualização: novembro de 2026</p>
         <h3>1. Valor do frete</h3>
-        <p>Cobramos frete fixo de R$ 50,00 por pedido, para qualquer endereço do Brasil, independentemente da quantidade de produtos. O valor é somado ao total no checkout.</p>
+        <p>Cobramos frete fixo de R$ 50,00 por pedido, para qualquer endereço do Brasil, independentemente da quantidade de produtos. O valor é somado ao total no checkout. Pedidos com 3 ou mais unidades de produtos New Life têm frete grátis.</p>
         <h3>2. Prazo de envio</h3>
         <p>Os pedidos são separados e enviados em até 2 dias úteis após a confirmação do pagamento. Pedidos pagos aos fins de semana ou feriados começam a ser processados no próximo dia útil.</p>
         <h3>3. Prazo de entrega</h3>
@@ -3305,6 +3305,11 @@ const MP_API_URL = 'https://buyclub-pagamentos.charleswilly-digital.workers.dev'
 const WHOLESALE_MIN_QTY = { varejo: 1, atacado5: 5, atacado10: 10 };
 /* FRETE — valor fixo para qualquer endereço (o Worker do Mercado Pago usa o mesmo valor). */
 const SHIPPING_FEE = 50;
+// Frete grátis a partir de 3 unidades New Life (mesma regra no Worker: FREE_SHIP_CATEGORY / FREE_SHIP_MIN_UNITS).
+const FREE_SHIP_CATEGORY = 'newlife';
+const FREE_SHIP_MIN_UNITS = 3;
+function freeShippingUnits(items) { return (items || []).reduce((s, i) => { const p = i.product || (typeof products !== 'undefined' ? products.find(x => x.id === i.id) : null); return s + (p && p.category === FREE_SHIP_CATEGORY ? (Number(i.qty) || 0) : 0); }, 0); }
+function hasFreeShipping(items) { return FREE_SHIP_MIN_UNITS > 0 && freeShippingUnits(items) >= FREE_SHIP_MIN_UNITS; }
 
 /* Autoplay robusto para Safari iOS: vídeo sempre silencioso e inline. */
 const heroVideo = document.getElementById('hero-video');
@@ -4741,7 +4746,11 @@ const SHIP_T = {
 };
 function shipT(key) { const d = SHIP_T[currentLang] || SHIP_T.pt; return d[key]; }
 let shipQuote = { enabled: null, key: '', options: [], selected: null, loading: false };
-function currentShippingFee() { return shipQuote.enabled && shipQuote.selected ? shipQuote.selected.price : SHIPPING_FEE; }
+function currentShippingFee() {
+  if (shipQuote.enabled && shipQuote.selected) return shipQuote.selected.price;
+  return hasFreeShipping(getCheckoutItems()) ? 0 : SHIPPING_FEE;
+}
+function shipPriceText(value) { return value === 0 ? ({ pt: 'Grátis', en: 'Free', es: 'Gratis' }[currentLang] || 'Grátis') : `R$ ${formatBRL(value)}`; }
 function shipOptionLabel(o) { return [o.company, o.name].filter(Boolean).join(' '); }
 function escShip(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function renderShipOptions(message, isError) {
@@ -4750,7 +4759,7 @@ function renderShipOptions(message, isError) {
   if (!shipQuote.enabled && !shipQuote.loading && !message) { box.hidden = true; box.innerHTML = ''; return; }
   box.hidden = false;
   if (shipQuote.loading || message) { box.innerHTML = `<p class="co-ship-msg${isError ? ' is-error' : ''}">${escShip(message || shipT('loading'))}</p>`; return; }
-  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${escShip(shipOptionLabel(o))}</b>${o.days ? `<small>${escShip(shipT('days')(o.days))}</small>` : ''}</span><em>R$ ${formatBRL(o.price)}</em></label>`).join('');
+  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${escShip(shipOptionLabel(o))}</b>${o.days ? `<small>${escShip(shipT('days')(o.days))}</small>` : ''}</span><em>${shipPriceText(o.price)}</em></label>`).join('');
 }
 async function refreshShippingQuote() {
   const cep = (checkoutCep && checkoutCep.value || '').replace(/\D/g, '');
@@ -4822,7 +4831,7 @@ function renderCheckoutSummary() {
     const condition = type === 'atacado5' ? t('wholesale5Label') : type === 'atacado10' ? t('wholesale10Label') : t('retailLabel');
     return `<div class="co-item"><div class="co-thumb"><img src="${product.images[0]}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.style.visibility='hidden'"><span class="co-qty">${qty}</span></div><div><div class="co-item-name">${product.name}</div><div class="co-item-meta">${formatBrandLabel(product.badge)} · ${condition}</div></div><div class="co-item-price">${lineTotal}</div></div>`;
   }).join('');
-  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>${shipQuote.enabled && !shipQuote.selected ? shipT('enterCep') : `R$ ${formatBRL(currentShippingFee())}`}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
+  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>${shipQuote.enabled && !shipQuote.selected ? shipT('enterCep') : shipPriceText(currentShippingFee())}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
   if (totalMobile) totalMobile.textContent = total;
 }
 function showCheckout() {
@@ -6049,9 +6058,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
    Usa as mesmas funções de carrinho/checkout do site (addToCart, renderCart, openCartCheckout). */
 (function () {
   const SHOP_T = {
-    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', policies: 'Políticas', terms: 'Termos de uso', returns: 'Trocas e devoluções', shipping: 'Frete e entrega', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
-    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', policies: 'Policies', terms: 'Terms of use', returns: 'Returns & exchanges', shipping: 'Shipping & delivery', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order.', shipNote: 'Flat R$ 50 shipping added at checkout', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
-    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', policies: 'Políticas', terms: 'Términos de uso', returns: 'Cambios y devoluciones', shipping: 'Envío y entrega', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
+    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', policies: 'Políticas', terms: 'Termos de uso', returns: 'Trocas e devoluções', shipping: 'Frete e entrega', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete fixo de R$ 50 para todos os pedidos. Frete grátis a partir de 3 produtos New Life.', shipNote: 'Frete fixo de R$ 50 calculado no checkout', freeShipOk: 'Frete grátis! Você tem 3 ou mais produtos New Life.', freeShipHint: 'Frete grátis a partir de {min} produtos New Life. Faltam: {n}.', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
+    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', policies: 'Policies', terms: 'Terms of use', returns: 'Returns & exchanges', shipping: 'Shipping & delivery', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Flat R$ 50 shipping on every order. Free shipping from 3 New Life products.', shipNote: 'Flat R$ 50 shipping added at checkout', freeShipOk: 'Free shipping! You have 3 or more New Life products.', freeShipHint: 'Free shipping from {min} New Life products ({n} to go).', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
+    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', policies: 'Políticas', terms: 'Términos de uso', returns: 'Cambios y devoluciones', shipping: 'Envío y entrega', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío fijo de R$ 50 en todos los pedidos. Envío gratis desde 3 productos New Life.', shipNote: 'Envío fijo de R$ 50 calculado en el checkout', freeShipOk: '¡Envío gratis! Tienes 3 o más productos New Life.', freeShipHint: 'Envío gratis desde {min} productos New Life (faltan {n}).', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
   };
   const st = k => (SHOP_T[currentLang] || SHOP_T.pt)[k] || SHOP_T.pt[k] || k;
   const $ = id => document.getElementById(id);
@@ -6333,11 +6342,15 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   }
   function addShipNote() {
     const summary = cartViewEl?.querySelector('.cart-summary');
-    if (!summary || summary.querySelector('.shop-ship-note')) return;
+    if (!summary) return;
+    summary.querySelector('.shop-ship-note')?.remove();
     const fee = typeof SHIPPING_FEE === 'number' ? SHIPPING_FEE : 50;
+    const nlUnits = typeof freeShippingUnits === 'function' ? freeShippingUnits(cartItems) : 0;
+    const min = typeof FREE_SHIP_MIN_UNITS === 'number' ? FREE_SHIP_MIN_UNITS : 0;
+    const freeText = !min ? '' : nlUnits >= min ? st('freeShipOk') : st('freeShipHint').replace('{n}', min - nlUnits).replace('{min}', min);
     const note = document.createElement('p');
     note.className = 'shop-ship-note';
-    note.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg><span>${esc(st('shipNote').replace('50', formatBRL(fee).replace(/,00$/, '')))}</span>`;
+    note.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg><span>${nlUnits >= min && min ? `<b>${esc(freeText)}</b>` : `${esc(st('shipNote').replace('50', formatBRL(fee).replace(/,00$/, '')))}${freeText ? `<br>${esc(freeText)}` : ''}`}</span>`;
     const row = summary.querySelector('.cart-summary-row');
     if (row) row.after(note); else summary.prepend(note);
     placeSecure(summary, 'beforeend', true);
@@ -6624,7 +6637,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 
   const FAQ = [
     { id: 'frete', label: 'Frete e prazo', keys: ['frete', 'entrega', 'prazo', 'chega', 'demora', 'envio', 'enviar', 'correio', 'transportadora', 'dias'],
-      text: `O frete é <b>fixo de R$ ${fee}</b> para todo o Brasil, não importa a quantidade.\n\nEnviamos em até 2 dias úteis depois da confirmação do pagamento, e a entrega costuma levar de 2 a 10 dias úteis, conforme a região. O código de rastreio chega pelo WhatsApp.`, policy: 'shipping' },
+      text: `O frete é <b>fixo de R$ ${fee}</b> para todo o Brasil, não importa a quantidade. Comprando <b>3 ou mais produtos New Life</b>, o frete é <b>grátis</b>.\n\nEnviamos em até 2 dias úteis depois da confirmação do pagamento, e a entrega costuma levar de 2 a 10 dias úteis, conforme a região. O código de rastreio chega pelo WhatsApp.`, policy: 'shipping' },
     { id: 'pagamento', label: 'Formas de pagamento', keys: ['pagamento', 'pagar', 'pix', 'cartao', 'credito', 'usdt', 'cripto', 'bitcoin', 'boleto', 'forma'],
       text: 'Aceitamos <b>Pix</b>, <b>cartão de crédito em até 12x</b> (pelo Mercado Pago), <b>USDT</b> e <b>criptomoedas</b>.\n\nNo checkout é só escolher a forma de pagamento. Pix e cartão abrem a página segura do Mercado Pago. USDT e cripto são combinados pelo WhatsApp.' },
     { id: 'parcelas', label: 'Parcelamento tem juros?', keys: ['parcela', 'parcelamento', 'parcelar', 'juros', '12x', 'vezes'],
