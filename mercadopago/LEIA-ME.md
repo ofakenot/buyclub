@@ -164,3 +164,15 @@ Configuração (uma vez):
 4. Adicione o bot ao grupo e mande `/start`. O bot responde com o ID do grupo.
 5. Crie a variável `TELEGRAM_CHAT_IDS` com esse ID (vários separados por vírgula).
 Precisa do KV `ORDERS` ligado. Pedidos pagos antes do bot existir precisam do número `BC…` na mensagem.
+
+## Carrinho abandonado
+
+Quando alguém chega a abrir o pagamento do Mercado Pago e, depois de 40 minutos, não pagou, o bot avisa no grupo do Telegram. O aviso traz o nome, o total, os itens e um link pronto para chamar a pessoa no WhatsApp.
+
+Para funcionar, o Worker precisa de um Cron: **Settings → Trigger events → Cron**, `*/15 * * * *` (a cada 15 minutos). Cada carrinho é avisado uma vez só. Se a pessoa pagar, o aviso não sai.
+
+## Indique e ganhe, cupons de influenciador e recompra
+
+- **Indique e ganhe:** na primeira compra paga, o cliente ganha um cupom pessoal (ex.: `ANA7K2`), que dá 10% na primeira compra de quem ele indicar. Quando um amigo compra com esse cupom, quem indicou ganha um cupom `PREMIO…` de 10%, de uso único e válido por 90 dias, e o bot avisa no grupo com o link de WhatsApp. O cupom aparece em "Meu pedido" e na mensagem de rastreio.
+- **Influenciadores:** no Telegram, `/cupom NOME 10` cria o cupom, e `/cupons` mostra as vendas e o total por cupom. O link `buyclub.us/?cupom=NOME` já abre com o cupom aplicado.
+- **Recompra:** 25 dias depois que o rastreio é salvo, o bot lembra no grupo de chamar o cliente para repor, com o link de WhatsApp pronto. Usa o mesmo Cron do carrinho abandonado.
