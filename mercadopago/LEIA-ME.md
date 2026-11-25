@@ -148,3 +148,17 @@ Link de influenciador: `https://buyclub.us/?cupom=JOAO10` já deixa o cupom pree
 
 `POST /pedido` com `{ pedido, cpf }` consulta o pagamento no Mercado Pago pelo número do pedido e só responde quando o CPF bate.
 Link direto: `https://buyclub.us/?meu-pedido` ou `https://buyclub.us/?pedido=BC...`.
+
+## Bot de rastreio no Telegram
+
+No grupo do Telegram, mande `/rastreio CÓDIGO CPF NOME` (ex.: `/rastreio AB123456789BR 529.982.247-25 Ana Silva`).
+O bot acha o último pedido pago desse CPF, confere o nome, salva o código e a página "Meu pedido" passa a mostrar "Pedido enviado" com o botão para o site da transportadora (Correios, Jadlog ou Loggi, reconhecida pelo código). Ele responde com um link pronto para avisar o cliente no WhatsApp.
+Se o CPF tiver mais de um pedido, mande também o número `BC…`. Para apagar: `/apagar BC…`.
+
+Configuração (uma vez):
+1. No Telegram, fale com o @BotFather, mande `/newbot` e siga os passos. Ele entrega o token do bot.
+2. No Worker (Settings → Variables and Secrets), crie os secrets `TELEGRAM_BOT_TOKEN` (o token) e `TELEGRAM_SECRET` (um texto longo qualquer).
+3. Abra `https://<seu-worker>/telegram/setup` no navegador. Deve aparecer `"ok": true`.
+4. Adicione o bot ao grupo e mande `/start`. O bot responde com o ID do grupo.
+5. Crie a variável `TELEGRAM_CHAT_IDS` com esse ID (vários separados por vírgula).
+Precisa do KV `ORDERS` ligado. Pedidos pagos antes do bot existir precisam do número `BC…` na mensagem.

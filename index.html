@@ -7391,6 +7391,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 @keyframes ordPulse { 50% { box-shadow: 0 0 0 10px rgba(0,113,227,.06); } }
 .ord-step strong { display: block; color: var(--text); font-size: .9rem; line-height: 2rem; }
 .ord-step p { margin: -.2rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+.ord-track { display: inline-flex; align-items: center; gap: .3rem; margin-top: .5rem; padding: .5rem .85rem; border-radius: .65rem; background: #0071e3; color: #fff; font-size: .8rem; font-weight: 700; text-decoration: none; }
 .ord-note { margin: 0 0 1rem; padding: .75rem .9rem; border-radius: .75rem; background: #f8fafc; color: var(--muted-dark); font-size: .82rem; line-height: 1.5; }
 .ord-details { display: grid; gap: .5rem; margin: 0; padding: 1rem 0 0; border-top: 1px solid #eef0f3; }
 .ord-details div { display: flex; justify-content: space-between; gap: 1rem; font-size: .84rem; }
@@ -7468,7 +7469,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       notFound: 'Não encontramos um pagamento com esse número e CPF. Confira os dados. Se você acabou de pagar, aguarde alguns minutos e tente de novo.',
       error: 'Não foi possível consultar agora. Tente de novo em instantes ou fale com a gente no WhatsApp.',
       order: 'Pedido', placed: 'Feito em {d}',
-      st_approved: 'Pagamento aprovado', st_pending: 'Aguardando pagamento', st_rejected: 'Pagamento não aprovado', st_refunded: 'Pagamento devolvido', st_cancelled: 'Pagamento cancelado',
+      st_shipped: 'Pedido enviado', s3done: 'Enviado em {d}.', s4code: '{carrier} · código {code}', trackGo: 'Rastrear na transportadora', st_approved: 'Pagamento aprovado', st_pending: 'Aguardando pagamento', st_rejected: 'Pagamento não aprovado', st_refunded: 'Pagamento devolvido', st_cancelled: 'Pagamento cancelado',
       step1: 'Pedido recebido', step2: 'Pagamento', step3: 'Separação e envio', step4: 'Rastreio',
       s2ok: 'Aprovado em {d}.', s2wait: 'Ainda não identificamos o pagamento.', s2bad: 'O pagamento não foi aprovado.',
       s3wait: 'Começa depois da aprovação do pagamento.', s3exp: 'Entrega expressa em até 3 horas após a aprovação.', s3std: 'Enviamos em até 2 dias úteis após a aprovação.',
@@ -7493,7 +7494,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       notFound: 'We couldn’t find a payment with this number and CPF. Please check the details. If you just paid, wait a few minutes and try again.',
       error: 'We couldn’t check right now. Try again shortly or talk to us on WhatsApp.',
       order: 'Order', placed: 'Placed on {d}',
-      st_approved: 'Payment approved', st_pending: 'Awaiting payment', st_rejected: 'Payment declined', st_refunded: 'Payment refunded', st_cancelled: 'Payment cancelled',
+      st_shipped: 'Order shipped', s3done: 'Shipped on {d}.', s4code: '{carrier} · code {code}', trackGo: 'Track with the carrier', st_approved: 'Payment approved', st_pending: 'Awaiting payment', st_rejected: 'Payment declined', st_refunded: 'Payment refunded', st_cancelled: 'Payment cancelled',
       step1: 'Order received', step2: 'Payment', step3: 'Packing and shipping', step4: 'Tracking',
       s2ok: 'Approved on {d}.', s2wait: 'We haven’t identified the payment yet.', s2bad: 'The payment was not approved.',
       s3wait: 'Starts once the payment is approved.', s3exp: 'Express delivery within 3 hours after approval.', s3std: 'We ship within 2 business days after approval.',
@@ -7518,7 +7519,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       notFound: 'No encontramos un pago con ese número y CPF. Revisa los datos. Si acabas de pagar, espera unos minutos e inténtalo de nuevo.',
       error: 'No fue posible consultar ahora. Inténtalo en unos instantes o háblanos por WhatsApp.',
       order: 'Pedido', placed: 'Hecho el {d}',
-      st_approved: 'Pago aprobado', st_pending: 'Esperando el pago', st_rejected: 'Pago no aprobado', st_refunded: 'Pago devuelto', st_cancelled: 'Pago cancelado',
+      st_shipped: 'Pedido enviado', s3done: 'Enviado el {d}.', s4code: '{carrier} · código {code}', trackGo: 'Seguir en la transportadora', st_approved: 'Pago aprobado', st_pending: 'Esperando el pago', st_rejected: 'Pago no aprobado', st_refunded: 'Pago devuelto', st_cancelled: 'Pago cancelado',
       step1: 'Pedido recibido', step2: 'Pago', step3: 'Preparación y envío', step4: 'Seguimiento',
       s2ok: 'Aprobado el {d}.', s2wait: 'Aún no identificamos el pago.', s2bad: 'El pago no fue aprobado.',
       s3wait: 'Empieza después de la aprobación del pago.', s3exp: 'Entrega exprés en hasta 3 horas tras la aprobación.', s3std: 'Enviamos en hasta 2 días hábiles tras la aprobación.',
@@ -7599,7 +7600,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     // pedido de demonstração (para conhecer a página sem uma compra real)
     if (pedido === 'BCDEMO01' && cpf === '11144477735') {
       const now = Date.now();
-      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7' });
+      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() } });
       return;
     }
     submitBtn.disabled = true; submitBtn.textContent = ot('searching');
@@ -7626,12 +7627,13 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     const ok = st === 'approved' || st === 'authorized';
     const wait = st === 'pending' || st === 'in_process' || st === 'in_mediation';
     const kind = ok ? 'ok' : wait ? 'wait' : 'bad';
-    const label = ok ? ot('st_approved') : wait ? ot('st_pending') : st === 'refunded' || st === 'charged_back' ? ot('st_refunded') : st === 'cancelled' ? ot('st_cancelled') : ot('st_rejected');
+    const tr = ok && o.tracking && o.tracking.code ? o.tracking : null;
+    const label = tr ? ot('st_shipped') : ok ? ot('st_approved') : wait ? ot('st_pending') : st === 'refunded' || st === 'charged_back' ? ot('st_refunded') : st === 'cancelled' ? ot('st_cancelled') : ot('st_rejected');
     const steps = [
       { cls: 'done', icon: '✓', title: ot('step1'), text: o.createdAt ? fmtDate(o.createdAt) : '' },
       { cls: ok ? 'done' : wait ? 'now' : 'bad', icon: ok ? '✓' : wait ? '2' : '!', title: ot('step2'), text: ok ? fill(ot('s2ok'), { d: fmtDate(o.paidAt) }) : wait ? ot('s2wait') : ot('s2bad') },
-      { cls: ok ? 'now' : '', icon: '3', title: ot('step3'), text: ok ? (o.express ? ot('s3exp') : ot('s3std')) : ot('s3wait') },
-      { cls: '', icon: '4', title: ot('step4'), text: ot('s4') }
+      { cls: tr ? 'done' : ok ? 'now' : '', icon: tr ? '✓' : '3', title: ot('step3'), text: tr ? fill(ot('s3done'), { d: fmtDate(tr.at) }) : ok ? (o.express ? ot('s3exp') : ot('s3std')) : ot('s3wait') },
+      { cls: tr ? 'now' : '', icon: '4', title: ot('step4'), text: tr ? fill(ot('s4code'), { carrier: tr.name || '', code: tr.code }) : ot('s4'), link: tr && /^https:\/\//.test(tr.url || '') ? tr.url : '' }
     ];
     const discount = Number(o.discount) || 0;
     const rows = [
@@ -7642,7 +7644,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     ].filter(r => r && r[1]);
     resultEl.innerHTML = `
       <div class="ord-top"><h3>${esc(ot('order'))} ${esc(o.orderId)}<small>${o.name ? esc(o.name) + ' · ' : ''}${esc(o.city || '')}</small></h3><span class="ord-pill ${kind}">${esc(label)}</span></div>
-      <ol class="ord-steps">${steps.map(s => `<li class="ord-step ${s.cls}"><span class="ord-dot">${s.icon}</span><div><strong>${esc(s.title)}</strong>${s.text ? `<p>${esc(s.text)}</p>` : ''}</div></li>`).join('')}</ol>
+      <ol class="ord-steps">${steps.map(s => `<li class="ord-step ${s.cls}"><span class="ord-dot">${s.icon}</span><div><strong>${esc(s.title)}</strong>${s.text ? `<p>${esc(s.text)}</p>` : ''}${s.link ? `<a class="ord-track" href="${esc(s.link)}" target="_blank" rel="noopener noreferrer">${esc(ot('trackGo'))} →</a>` : ''}</div></li>`).join('')}</ol>
       ${wait ? `<p class="ord-note">${esc(ot('pendingNote'))}</p>` : ''}${kind === 'bad' ? `<p class="ord-note">${esc(ot('badNote'))}</p>` : ''}
       <dl class="ord-details">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}
         ${o.items && o.items.length ? `<div style="display:block"><dt>${esc(ot('items'))}</dt><dd style="text-align:left;font-weight:500"><ul class="ord-items">${o.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></dd></div>` : ''}
