@@ -64,7 +64,10 @@ let catalogCache = { at: 0, url: '', products: null };
 export default {
   // Cron do Worker (Settings > Trigger events > Cron, a cada 15 min): avisa carrinhos abandonados
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(checkAbandoned(env).catch(e => console.error('abandono', e && e.stack || e)));
+    ctx.waitUntil(Promise.all([
+      checkAbandoned(env).catch(e => console.error('abandono', e && e.stack || e)),
+      checkRebuy(env).catch(e => console.error('recompra', e && e.stack || e))
+    ]));
   },
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -377,11 +380,23 @@ export function couponDiscount(rule, subtotal) {
   return round2(Math.max(0, Math.min(raw, subtotal)));
 }
 
+// Cupons criados pelo bot (influenciador, indicação, prêmio) ficam no KV como cupom:<CÓDIGO>
+async function getCouponRule(env, code) {
+  if (env.ORDERS) {
+    const kv = await env.ORDERS.get(`cupom:${code}`);
+    if (kv) return JSON.parse(kv);
+  }
+  return couponTable(env)[code] || null;
+}
+const couponCode = raw => String(raw || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 30);
+
 async function evaluateCoupon(env, rawCode, cpf, subtotal, now = new Date()) {
-  const code = String(rawCode || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 30);
+  const code = couponCode(rawCode);
   if (!code) throw new UserError('Digite o cupom.');
-  const rule = couponTable(env)[code];
-  if (!rule || rule.active === false) throw new UserError('Cupom inválido ou expirado.');
+  const rule = await getCouponRule(env, code);
+  if (!rule || rule.active === false || rule.uses === 0) throw new UserError('Cupom inválido ou expirado.');
+  if (rule.kind === 'indicacao' && cpf && rule.owner === cpf) throw new UserError('Este é o seu cupom de indicação. Ele vale para os seus amigos.');
+  if (rule.kind === 'premio' && cpf && rule.owner && rule.owner !== cpf) throw new UserError('Este cupom é pessoal e vale só para quem ganhou.');
   if (rule.until && now.toISOString().slice(0, 10) > String(rule.until)) throw new UserError('Cupom inválido ou expirado.');
   const min = Number(rule.min) || 0;
   if (min && subtotal < min) throw new UserError(`Este cupom vale para pedidos a partir de R$ ${brl(min)} em produtos.`);
@@ -489,7 +504,10 @@ async function lookupOrder(request, env) {
     express: /expressa/i.test(String(m.shipping_label || '')),
     coupon: m.coupon || '',
     discount: m.discount || null,
-    tracking: env.ORDERS ? JSON.parse(await env.ORDERS.get(`envio:${orderId}`) || 'null') : null
+    tracking: env.ORDERS ? JSON.parse(await env.ORDERS.get(`envio:${orderId}`) || 'null') : null,
+    // cupom de indicação do cliente (só para pedido aprovado, que já passou pelo webhook)
+    referral: env.ORDERS && p.status === 'approved' ? (await env.ORDERS.get(`indicacao:${cpf}`)) || '' : '',
+    referralPct: REFERRAL_PCT
   };
 }
 
@@ -562,7 +580,14 @@ const TG_HELP = [
   '• Se o cliente tiver mais de um pedido, mande também o número (BC…).',
   '• A transportadora é reconhecida pelo código. Para escolher, escreva correios, jadlog ou loggi.',
   '• Para apagar um rastreio: <code>/apagar BC…</code>',
-  '• Para criar um pedido de teste (sem cobrança, some em 7 dias): <code>/pedidoteste</code> (opcional: CPF e nome)'
+  '• Para criar um pedido de teste (sem cobrança, some em 7 dias): <code>/pedidoteste</code> (opcional: CPF e nome)',
+  '',
+  '<b>Cupons</b>',
+  '• Criar cupom de influenciador: <code>/cupom JULIA 10</code> (10%). Só na primeira compra: <code>/cupom JULIA 10 primeira</code>',
+  '• Apagar: <code>/cupom JULIA apagar</code>',
+  '• Ver vendas por cupom: <code>/cupons</code>',
+  '',
+  'Também aviso aqui os carrinhos abandonados, as indicações e a hora da recompra de cada cliente.'
 ].join('\n');
 
 // Liga o webhook do bot neste Worker (abrir https://<worker>/telegram/setup uma vez depois de criar os secrets).
@@ -752,6 +777,8 @@ export async function handleTelegram(request, env, parsed) {
     return;
   }
   if (/^\/(start|help|ajuda)\b/i.test(text)) return tgSend(env, chatId, TG_HELP);
+  if (/^\/cupons\b/i.test(text)) return tgSend(env, chatId, env.ORDERS ? await couponReport(env) : '⚠️ KV ORDERS não ligado.');
+  if (/^\/cupom\b/i.test(text)) return tgSend(env, chatId, env.ORDERS ? await couponCommand(env, text.replace(/^\/cupom\b/i, '')) : '⚠️ KV ORDERS não ligado.');
   if (/^\/pedidoteste\b/i.test(text)) {
     if (!env.ORDERS) return tgSend(env, chatId, '⚠️ O armazenamento (KV ORDERS) não está ligado no Worker.');
     const t = parseTrackingMessage(text.replace(/^\/pedidoteste\b/i, ''));
@@ -812,12 +839,20 @@ export async function handleTelegram(request, env, parsed) {
   const carrier = detectCarrier(p.code, p.carrier);
   const info = { code: p.code, carrier, name: CARRIERS[carrier].name, url: CARRIERS[carrier].url(p.code), at: new Date().toISOString() };
   await env.ORDERS.put(`envio:${orderId}`, JSON.stringify(info), { expirationTtl: 60 * 60 * 24 * 365 });
+  if (!/^BCTESTE/.test(orderId)) await scheduleRebuy(env, orderId, m).catch(e => console.error('recompra put', e && e.message));
+  const refCode = await env.ORDERS.get(`indicacao:${digits(m.cpf)}`).catch(() => null);
 
   const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
   const phone = digits(m.phone);
   const waPhone = phone.length === 10 || phone.length === 11 ? '55' + phone : phone;
   const firstName = String(m.recipient || '').split(/\s+/)[0] || '';
-  const waText = `Olá, ${firstName}! Seu pedido ${orderId} da Buy Club foi enviado (${info.name}).\nCódigo de rastreio: ${info.code}\nAcompanhe: ${info.url}\n\nVocê também vê tudo em ${site}/?pedido=${orderId}`;
+  const waText = [
+    `Olá, ${firstName}! Seu pedido ${orderId} da Buy Club foi enviado pela ${info.name}.`,
+    `*Código de rastreio*\n${info.code}`,
+    info.url ? `*Acompanhe a entrega*\n${info.url}` : '',
+    `*Seu pedido no site*\n${site}/?pedido=${orderId}`,
+    refCode ? `*Indique e ganhe*\nSeus amigos ganham ${REFERRAL_PCT}% na primeira compra com o seu cupom ${refCode}, e você ganha ${REFERRAL_PCT}% na próxima compra a cada amigo que comprar.\n${site}/?cupom=${refCode}` : ''
+  ].filter(Boolean).join('\n\n');
   return tgSend(env, chatId, [
     `✅ Rastreio salvo no pedido <b>${h(orderId)}</b>`,
     `Cliente: ${h(m.recipient || '')}${m.city ? ` · ${h(m.city)}` : ''}`,
@@ -1040,8 +1075,153 @@ async function handleWebhook(request, env, url, ctx) {
       }
     }
   }
+  if (env.ORDERS) {
+    try { order.referral = await afterPaidGrowth(env, order); } catch (e) { console.error('growth', e && e.stack || e); }
+  }
   await notifyWhatsApp(env, order);
   await notifyTelegramOrder(env, order);
+}
+
+/* ------------------------------------------------------------------ */
+/* Indique e ganhe, cupons de influenciador e recompra                  */
+/* ------------------------------------------------------------------ */
+
+const REFERRAL_PCT = 10;        // desconto do amigo (primeira compra) e prêmio de quem indicou
+const REBUY_DAYS = 25;          // lembrete de recompra depois do envio
+const randCode = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('');
+const nameCode = name => String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z]/g, ' ').trim().split(/\s+/)[0].slice(0, 8) || 'AMIGO';
+
+// Cupom de indicação do cliente (cria na primeira compra paga)
+export async function referralCodeFor(env, cpf, name, phone) {
+  if (!env.ORDERS || String(cpf || '').length !== 11) return '';
+  const have = await env.ORDERS.get(`indicacao:${cpf}`);
+  if (have) return have;
+  let code = '';
+  for (let i = 0; i < 5 && !code; i++) {
+    const c = nameCode(name) + randCode(3);
+    if (!(await env.ORDERS.get(`cupom:${c}`))) code = c;
+  }
+  if (!code) return '';
+  await env.ORDERS.put(`cupom:${code}`, JSON.stringify({ pct: REFERRAL_PCT, first: true, kind: 'indicacao', label: `Indicação de ${String(name || '').split(/\s+/)[0]}`, owner: cpf, ownerName: name || '', ownerPhone: digits(phone) }));
+  await env.ORDERS.put(`indicacao:${cpf}`, code);
+  return code;
+}
+
+async function bumpCouponStats(env, code, amount) {
+  const key = `stats:cupom:${code}`;
+  const st = JSON.parse(await env.ORDERS.get(key) || '{"orders":0,"total":0}');
+  st.orders += 1; st.total = round2(st.total + (Number(amount) || 0)); st.last = new Date().toISOString();
+  await env.ORDERS.put(key, JSON.stringify(st));
+}
+
+// Roda quando um pagamento é aprovado. Devolve o cupom de indicação do comprador.
+async function afterPaidGrowth(env, order) {
+  const cpf = digits(order.cpf);
+  const code = couponCode(order.coupon);
+  if (code) {
+    await bumpCouponStats(env, code, order.amount);
+    const rule = JSON.parse(await env.ORDERS.get(`cupom:${code}`) || 'null');
+    if (rule && rule.kind === 'premio' && rule.uses > 0) {
+      rule.uses -= 1;
+      await env.ORDERS.put(`cupom:${code}`, JSON.stringify(rule));
+    }
+    if (rule && rule.kind === 'indicacao' && rule.owner && rule.owner !== cpf) {
+      // quem indicou ganha um cupom de uso único
+      const prize = 'PREMIO' + randCode(5);
+      const until = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+      await env.ORDERS.put(`cupom:${prize}`, JSON.stringify({ pct: REFERRAL_PCT, uses: 1, kind: 'premio', owner: rule.owner, ownerName: rule.ownerName, until, label: 'Prêmio por indicação' }));
+      const first = String(rule.ownerName || '').split(/\s+/)[0];
+      const p = rule.ownerPhone || '';
+      const waPhone = p.length === 10 || p.length === 11 ? '55' + p : p;
+      const waText = `Olá, ${first}! Uma pessoa que você indicou acabou de comprar na Buy Club. Como agradecimento, você ganhou ${REFERRAL_PCT}% de desconto na próxima compra com o cupom ${prize} (válido até ${until.split('-').reverse().join('/')}).`;
+      for (const chat of tgChats(env)) {
+        await tgSend(env, chat, [
+          `🎁 <b>Indicação</b>: ${h(order.recipient)} comprou com o cupom <code>${h(code)}</code> de ${h(rule.ownerName)}.`,
+          `${h(first)} ganhou o cupom <code>${h(prize)}</code> (${REFERRAL_PCT}% em uma compra, até ${h(until.split('-').reverse().join('/'))}).`,
+          waPhone.length >= 12 ? `📲 <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}">Avisar ${h(first)} no WhatsApp</a>` : null
+        ].filter(Boolean).join('\n')).catch(() => {});
+      }
+    }
+  }
+  return referralCodeFor(env, cpf, order.recipient, order.phone);
+}
+
+// Lembrete de recompra: agendado quando o rastreio é salvo
+async function scheduleRebuy(env, orderId, m) {
+  const phone = digits(m.phone);
+  if (!env.ORDERS || phone.length < 10) return;
+  await env.ORDERS.put(`recompra:${orderId}`, JSON.stringify({ orderId, due: Date.now() + REBUY_DAYS * 86400000, name: m.recipient || '', phone, items: m.items || '' }), { expirationTtl: 60 * 60 * 24 * (REBUY_DAYS + 15) });
+}
+
+export function rebuyCard(r) {
+  const first = String(r.name || '').split(/\s+/)[0];
+  const waPhone = r.phone.length === 10 || r.phone.length === 11 ? '55' + r.phone : r.phone;
+  const items = String(r.items || '').split(' | ').filter(Boolean).map(i => i.replace(/\s+[—–-]\s+/g, ' '));
+  const waText = `Olá, ${first}! Já faz quase um mês do seu pedido na Buy Club. Quer que eu separe a sua reposição?`;
+  return [
+    `🔁 <b>Hora da recompra</b> (${REBUY_DAYS} dias do envio)`,
+    `${h(r.name)} · pedido <code>${h(r.orderId)}</code>`,
+    ...items.map(i => `• ${h(i)}`),
+    waPhone.length >= 12 ? `📲 <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}">Chamar no WhatsApp</a>` : null
+  ].filter(Boolean).join('\n');
+}
+
+export async function checkRebuy(env) {
+  if (!env.ORDERS || !env.TELEGRAM_BOT_TOKEN) return;
+  const list = await env.ORDERS.list({ prefix: 'recompra:' });
+  for (const k of list.keys) {
+    const r = JSON.parse(await env.ORDERS.get(k.name) || 'null');
+    if (!r) continue;
+    if (Date.now() < r.due) continue;
+    await env.ORDERS.delete(k.name);
+    for (const chat of tgChats(env)) await tgSend(env, chat, rebuyCard(r)).catch(() => {});
+  }
+}
+
+// /cupons: relatório de vendas por cupom
+async function couponReport(env) {
+  const list = await env.ORDERS.list({ prefix: 'stats:cupom:' });
+  const rows = [];
+  for (const k of list.keys) {
+    const code = k.name.slice('stats:cupom:'.length);
+    const st = JSON.parse(await env.ORDERS.get(k.name) || 'null');
+    if (!st) continue;
+    const rule = await getCouponRule(env, code) || {};
+    rows.push({ code, kind: rule.kind || 'fixo', ...st });
+  }
+  const inf = await env.ORDERS.list({ prefix: 'cupom:' });
+  const known = new Set(rows.map(r => r.code));
+  for (const k of inf.keys) {
+    const code = k.name.slice('cupom:'.length);
+    if (known.has(code)) continue;
+    const rule = JSON.parse(await env.ORDERS.get(k.name) || 'null');
+    if (rule && rule.kind === 'influencer') rows.push({ code, kind: 'influencer', orders: 0, total: 0 });
+  }
+  if (!rows.length) return '📊 Nenhuma venda com cupom ainda.\n\nCrie um cupom de influenciador com <code>/cupom NOME 10</code>.';
+  rows.sort((a, b) => b.total - a.total);
+  const tag = { influencer: 'influenciador', indicacao: 'indicação', premio: 'prêmio', fixo: 'fixo' };
+  return ['📊 <b>Vendas por cupom</b>', ''].concat(rows.slice(0, 40).map(r => `<code>${h(r.code)}</code> (${tag[r.kind] || h(r.kind)}): ${r.orders} ${r.orders === 1 ? 'venda' : 'vendas'} · R$ ${h(brl(r.total))}`)).join('\n');
+}
+
+// /cupom NOME 10 [primeira]  |  /cupom NOME apagar
+async function couponCommand(env, args) {
+  const parts = String(args || '').trim().split(/\s+/).filter(Boolean);
+  const code = couponCode(parts[0]);
+  if (!code || code.length < 3) return 'Use assim: <code>/cupom NOME 10</code> (10% de desconto). Para valer só na primeira compra: <code>/cupom NOME 10 primeira</code>. Para apagar: <code>/cupom NOME apagar</code>.';
+  if (/^(apagar|remover|excluir)$/i.test(parts[1] || '')) {
+    const rule = JSON.parse(await env.ORDERS.get(`cupom:${code}`) || 'null');
+    if (!rule || rule.kind !== 'influencer') return `❌ Não achei o cupom de influenciador <code>${h(code)}</code>.`;
+    await env.ORDERS.delete(`cupom:${code}`);
+    return `🗑️ Cupom <code>${h(code)}</code> apagado. As vendas dele continuam no /cupons.`;
+  }
+  const pct = Number(String(parts[1] || '').replace(/[%,]/g, '.').replace(/\.$/, ''));
+  if (!(pct > 0 && pct <= 50)) return '❌ Diga a porcentagem de 1 a 50. Exemplo: <code>/cupom NOME 10</code>';
+  const existing = JSON.parse(await env.ORDERS.get(`cupom:${code}`) || 'null');
+  if ((existing && existing.kind !== 'influencer') || DEFAULT_COUPONS[code]) return `❌ O código <code>${h(code)}</code> já está em uso. Escolha outro.`;
+  const first = /primeira/i.test(parts.slice(2).join(' '));
+  await env.ORDERS.put(`cupom:${code}`, JSON.stringify({ pct, first, kind: 'influencer', label: `Cupom ${code}` }));
+  const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
+  return [`✅ Cupom <code>${h(code)}</code> criado: ${pct}% de desconto${first ? ' na primeira compra' : ''}.`, '', `Link para o influenciador divulgar (o cupom já entra aplicado):`, `${h(site)}/?cupom=${h(code)}`, '', 'Acompanhe as vendas com /cupons.'].join('\n');
 }
 
 async function validSignature(request, secret, dataId) {

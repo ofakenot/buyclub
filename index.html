@@ -5300,6 +5300,13 @@ function handlePaymentReturn() {
     wa.textContent = t('mpSendWhatsapp');
     card.appendChild(wa);
   }
+  if (status === 'aprovado') {
+    const group = document.createElement('a');
+    group.className = 'mp-return-group';
+    group.href = 'https://chat.whatsapp.com/DGpMXz40qiT5CBh40SY2x5?mode=gi_t'; group.target = '_blank'; group.rel = 'noopener noreferrer';
+    group.textContent = window.ordT ? window.ordT('groupJoin') : 'Entrar no grupo de ofertas';
+    card.appendChild(group);
+  }
   if (orderId && status !== 'falhou') {
     const track = document.createElement('button');
     track.type = 'button';
@@ -7431,6 +7438,19 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 .ord-wa { display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.9rem; margin-top: 1rem; border-radius: .8rem; background: #25D366; color: #fff; font-weight: 800; font-size: .88rem; text-decoration: none; }
 .ord-wa svg { width: 18px; height: 18px; }
 .mp-return-card .mp-return-track { margin-bottom: .55rem; background: #0071e3; }
+.ord-ref { margin-top: 1rem; padding: 1rem; border-radius: .9rem; background: #f5f9ff; border: 1px solid #dbe8fb; }
+.ord-ref h4 { margin: 0 0 .3rem; font-size: .95rem; color: var(--text); }
+.ord-ref p { margin: 0 0 .7rem; font-size: .82rem; color: var(--muted-dark); line-height: 1.45; }
+.ord-ref-code { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.ord-ref-code code { font: 800 1.05rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; padding: .6rem .8rem; border-radius: .6rem; background: #fff; border: 1px dashed #0071e3; color: #0071e3; }
+.ord-ref-code button, .ord-ref-code a { min-height: 2.4rem; padding: 0 .9rem; border-radius: .6rem; border: 0; font-family: inherit; font-weight: 800; font-size: .8rem; line-height: 2.4rem; cursor: pointer; text-decoration: none; }
+.ord-ref-code button { background: #0071e3; color: #fff; }
+.ord-ref-code a { background: #25D366; color: #fff; display: inline-flex; align-items: center; }
+.ord-group { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin-top: .8rem; padding: .85rem 1rem; border-radius: .9rem; background: #f1fbf4; border: 1px solid #cdeed8; }
+.ord-group strong { display: block; font-size: .88rem; color: var(--text); }
+.ord-group span { font-size: .78rem; color: var(--muted-dark); }
+.ord-group a { flex: none; padding: .55rem .85rem; border-radius: .6rem; background: #25D366; color: #fff; font-weight: 800; font-size: .78rem; text-decoration: none; }
+.mp-return-card .mp-return-group { display: block; margin: 0 0 .55rem; padding: .8rem; border-radius: .8rem; background: #f1fbf4; color: #128C7E; font-weight: 800; font-size: .86rem; text-decoration: none; border: 1px solid #cdeed8; }
 @media (max-width: 640px) {
   .ord-sec { padding: 1.4rem .85rem 8rem; }
   .ord-form { grid-template-columns: 1fr; }
@@ -7489,6 +7509,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 (function () {
   const ORD_T = {
     pt: {
+      refTitle: 'Indique e ganhe', refText: 'Seus amigos ganham {pct}% na primeira compra com o seu cupom. A cada amigo que comprar, você ganha {pct}% na próxima compra.', refCopy: 'Copiar cupom', refCopied: 'Copiado!', refShare: 'Enviar para amigos', refShareMsg: 'Conheci a Buy Club e gostei. Use o meu cupom {code} e ganhe {pct}% de desconto na primeira compra: {url}', groupTitle: 'Grupo de ofertas', groupText: 'Entre no grupo do WhatsApp para receber ofertas e reposições antes de todo mundo.', groupBtn: 'Entrar no grupo', groupJoin: 'Entrar no grupo de ofertas',
       nav: 'Meu pedido', faq: 'Perguntas frequentes', kicker: 'Acompanhe sua compra', title: 'Meu pedido',
       lead: 'Digite o número do pedido e o CPF usado na compra para ver o status.',
       number: 'Número do pedido', cpf: 'CPF', search: 'Consultar pedido', searching: 'Consultando…',
@@ -7514,6 +7535,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       cats: { emagrecimento: 'Emagrecimento', recuperacao: 'Recuperação', pele: 'Pele e beleza', gh: 'GH e performance', longevidade: 'Longevidade e foco' }
     },
     en: {
+      refTitle: 'Refer and earn', refText: 'Your friends get {pct}% off their first purchase with your code. For each friend who buys, you get {pct}% off your next purchase.', refCopy: 'Copy code', refCopied: 'Copied!', refShare: 'Send to friends', refShareMsg: 'I found Buy Club and liked it. Use my code {code} to get {pct}% off your first purchase: {url}', groupTitle: 'Deals group', groupText: 'Join the WhatsApp group to get deals and restocks first.', groupBtn: 'Join the group', groupJoin: 'Join the deals group',
       nav: 'My order', faq: 'FAQ', kicker: 'Track your purchase', title: 'My order',
       lead: 'Enter your order number and the CPF used at checkout to see the status.',
       number: 'Order number', cpf: 'CPF', search: 'Check order', searching: 'Checking…',
@@ -7539,6 +7561,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       cats: { emagrecimento: 'Weight loss', recuperacao: 'Recovery', pele: 'Skin & beauty', gh: 'GH & performance', longevidade: 'Longevity & focus' }
     },
     es: {
+      refTitle: 'Recomienda y gana', refText: 'Tus amigos ganan {pct}% en la primera compra con tu cupón. Por cada amigo que compre, ganas {pct}% en tu próxima compra.', refCopy: 'Copiar cupón', refCopied: '¡Copiado!', refShare: 'Enviar a amigos', refShareMsg: 'Conocí Buy Club y me gustó. Usa mi cupón {code} y gana {pct}% de descuento en la primera compra: {url}', groupTitle: 'Grupo de ofertas', groupText: 'Únete al grupo de WhatsApp para recibir ofertas y reposiciones antes que nadie.', groupBtn: 'Entrar al grupo', groupJoin: 'Entrar al grupo de ofertas',
       nav: 'Mi pedido', faq: 'Preguntas frecuentes', kicker: 'Sigue tu compra', title: 'Mi pedido',
       lead: 'Ingresa el número de pedido y el CPF usado en la compra para ver el estado.',
       number: 'Número de pedido', cpf: 'CPF', search: 'Consultar pedido', searching: 'Consultando…',
@@ -7628,7 +7651,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     // pedido de demonstração (para conhecer a página sem uma compra real)
     if (pedido === 'BCDEMO01' && cpf === '11144477735') {
       const now = Date.now();
-      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() } });
+      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() }, referral: 'CLIENTE7K2', referralPct: 10 });
       return;
     }
     submitBtn.disabled = true; submitBtn.textContent = ot('searching');
@@ -7677,7 +7700,14 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       <dl class="ord-details">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}
         ${o.items && o.items.length ? `<div style="display:block"><dt>${esc(ot('items'))}</dt><dd style="text-align:left;font-weight:500"><ul class="ord-items">${o.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></dd></div>` : ''}
       </dl>
+      ${o.referral ? `<div class="ord-ref"><h4>${esc(ot('refTitle'))}</h4><p>${esc(fill(ot('refText'), { pct: o.referralPct || 10 }))}</p><div class="ord-ref-code"><code>${esc(o.referral)}</code><button type="button" data-ref-copy="${esc(o.referral)}">${esc(ot('refCopy'))}</button><a href="https://wa.me/?text=${encodeURIComponent(fill(ot('refShareMsg'), { code: o.referral, pct: o.referralPct || 10, url: location.origin + location.pathname + '?cupom=' + o.referral }))}" target="_blank" rel="noopener noreferrer">${esc(ot('refShare'))}</a></div></div>` : ''}
+      ${ok ? `<div class="ord-group"><div><strong>${esc(ot('groupTitle'))}</strong><span>${esc(ot('groupText'))}</span></div><a href="https://chat.whatsapp.com/DGpMXz40qiT5CBh40SY2x5?mode=gi_t" target="_blank" rel="noopener noreferrer">${esc(ot('groupBtn'))}</a></div>` : ''}
       <a class="ord-wa" href="${esc(wa(fill(ot('waMsg'), { id: o.orderId })))}" target="_blank" rel="noopener noreferrer">${WA_SVG}${esc(ot('wa'))}</a>`;
+    const copyBtn = resultEl.querySelector('[data-ref-copy]');
+    if (copyBtn) copyBtn.addEventListener('click', () => {
+      const done = () => { copyBtn.textContent = ot('refCopied'); setTimeout(() => { copyBtn.textContent = ot('refCopy'); }, 1800); };
+      try { navigator.clipboard.writeText(copyBtn.dataset.refCopy).then(done, done); } catch (_) { done(); }
+    });
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
