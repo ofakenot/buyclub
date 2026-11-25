@@ -6767,67 +6767,115 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   });
 })();
 </script>
-<!-- ===== ANIMAÇÃO: caixa sendo fechada e lacrada ao ir para o checkout ===== -->
+<!-- ===== ANIMAÇÃO: produto entrando na caixa, papel de seda, tampa, fita e selo (ao ir para o checkout) ===== -->
 <style>
-  .bx-overlay { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; background: rgba(244,244,245,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity .3s ease; cursor: pointer; }
+  .bx-overlay { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; background: radial-gradient(120% 80% at 50% 35%, rgba(255,255,255,.97), rgba(236,236,239,.97)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity .35s ease; cursor: pointer; }
   .bx-overlay.is-on { opacity: 1; }
   .bx-overlay.is-out { opacity: 0; }
-  .bx-wrap { display: grid; justify-items: center; gap: 2.2rem; }
-  .bx-scene { --w: 230px; --d: 158px; --h: 46px; width: var(--w); height: 200px; perspective: 1000px; display: grid; place-items: center; }
-  .bx { position: relative; width: var(--w); height: var(--h); transform-style: preserve-3d; transform: rotateX(-30deg) rotateY(-34deg); animation: bxTurn 2.3s cubic-bezier(.45,0,.2,1) forwards; }
-  .bx-face { position: absolute; left: 50%; top: 50%; backface-visibility: visible; background: linear-gradient(160deg, #d9b98a, #c79f68); box-shadow: inset 0 0 0 1px rgba(110,74,30,.18); }
+  .bx-wrap { display: grid; justify-items: center; gap: 1.6rem; }
+  .bx-scene { --w: 224px; --d: 152px; --h: 50px; --k: #d7b17b; --k2: #c49a62; --k3: #ad8350; --in: #e8d2ad; width: 320px; height: 300px; perspective: 1100px; perspective-origin: 50% 30%; display: grid; place-items: center; animation: bxIn .55s cubic-bezier(.2,.9,.3,1.2) both; }
+  .bx { position: relative; width: var(--w); height: var(--h); margin-top: 90px; transform-style: preserve-3d; transform: rotateX(-32deg) rotateY(-30deg); animation: bxTurn 3.4s cubic-bezier(.45,0,.2,1) forwards; }
+  .bx * { box-sizing: border-box; }
+  .bx-face { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
   .bx-front, .bx-back { width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2); }
-  .bx-left, .bx-right { width: var(--d); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--d) / -2); background: linear-gradient(160deg, #c9a571, #b88d55); }
-  .bx-bottom { width: var(--w); height: var(--d); margin: calc(var(--d) / -2) 0 0 calc(var(--w) / -2); background: #a87d48; }
-  .bx-front { transform: translateZ(calc(var(--d) / 2)); background: linear-gradient(180deg, #e2c497, #cfa872); }
-  .bx-back { transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: #b98e56; }
-  .bx-left { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); }
-  .bx-right { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); }
-  .bx-bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); }
+  .bx-left, .bx-right { width: var(--d); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--d) / -2); }
+  .bx-bottom, .bx-floor { width: var(--w); height: var(--d); margin: calc(var(--d) / -2) 0 0 calc(var(--w) / -2); }
+  /* papelão: frente/laterais por fora, parede interna mais clara, borda ondulada no topo */
+  .bx-front { transform: translateZ(calc(var(--d) / 2)); background: linear-gradient(180deg, #e3c08c, var(--k) 60%, #cda56e); box-shadow: inset 0 3px 0 rgba(255,255,255,.18), inset 0 -2px 0 rgba(0,0,0,.08); }
+  .bx-back { transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: linear-gradient(180deg, var(--in), #d9bd92); }
+  .bx-left { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); background: linear-gradient(180deg, var(--k2), var(--k3)); }
+  .bx-right { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); background: linear-gradient(180deg, var(--k2), #b78b55); }
+  .bx-bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); background: #9c7442; }
+  .bx-floor { transform: rotateX(90deg) translateZ(calc(var(--h) / -2 + 1px)); background: radial-gradient(80% 70% at 50% 45%, #ecd9b8, #d6b98c); }
+  .bx-print { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; color: rgba(70,44,14,.55); font: 800 9px/1 'Plus Jakarta Sans', Arial, sans-serif; letter-spacing: .32em; }
+  .bx-print i { font-style: normal; font-weight: 600; letter-spacing: .08em; }
+  .bx-edge { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: repeating-linear-gradient(90deg, #b48a55 0 3px, #e8cfa6 3px 6px); }
+  /* produto */
+  .bx-item { position: absolute; left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; display: grid; place-items: center; border-radius: 12px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.06); transform-style: preserve-3d; opacity: 0; transform: translate3d(var(--x, 0px), -260px, var(--z, 0px)) rotateX(35deg) rotateZ(-10deg); animation: bxDrop .75s cubic-bezier(.5,0,.6,1.35) var(--delay, .55s) forwards, bxHide .01s linear 3s forwards; }
+  .bx-item img { width: 86%; height: 86%; object-fit: contain; }
+  /* papel de seda */
+  .bx-tissue { position: absolute; top: 50%; height: calc(var(--d) - 14px); margin-top: calc((var(--d) - 14px) / -2); width: calc(var(--w) / 2 + 6px); background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(246,243,237,.96)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
+  .bx-tissue::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 14px, rgba(0,0,0,.025) 14px 15px); }
+  .bx-tissue-l { left: 50%; margin-left: calc(var(--w) / -2 + 3px); transform-origin: 0 50%; transform: translateY(calc(var(--h) / -2 + 10px)) rotateZ(-118deg) rotateX(90deg); animation: bxTissueL .45s cubic-bezier(.45,0,.3,1) 1.45s forwards, bxHide .01s linear 3s forwards; }
+  .bx-tissue-r { left: auto; right: 50%; margin-right: calc(var(--w) / -2 + 3px); transform-origin: 100% 50%; transform: translateY(calc(var(--h) / -2 + 9px)) rotateZ(118deg) rotateX(90deg); animation: bxTissueR .45s cubic-bezier(.45,0,.3,1) 1.7s forwards, bxHide .01s linear 3s forwards; }
+  .bx-sticker { position: absolute; left: 0; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #09090b; color: #fff; display: grid; place-items: center; font: 900 8px/1 'Plus Jakarta Sans', Arial, sans-serif; letter-spacing: .04em; transform: translateZ(.5px) scale(0); animation: bxPopZ .25s cubic-bezier(.3,1.6,.5,1) 2.1s forwards; }
+  /* tampa com aba de encaixe */
   .bx-hinge { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; transform: translateY(calc(var(--h) / -2)) translateZ(calc(var(--d) / -2)); }
-  .bx-lid { position: absolute; left: calc(var(--w) / -2); top: 0; width: var(--w); height: var(--d); transform-origin: 50% 0; transform-style: preserve-3d; transform: rotateX(205deg); animation: bxClose .75s cubic-bezier(.55,0,.25,1.15) .3s forwards; }
-  .bx-lid-in, .bx-lid-out { position: absolute; inset: 0; }
-  .bx-lid-in { background: linear-gradient(170deg, #b8925c, #9f7843); transform: rotateY(180deg); backface-visibility: hidden; }
-  .bx-lid-out { background: linear-gradient(200deg, #e6c99c, #d2ab74); box-shadow: inset 0 0 0 1px rgba(110,74,30,.2); backface-visibility: hidden; }
-  .bx-tape { position: absolute; left: 50%; top: 0; bottom: -1px; width: 54px; margin-left: -27px; background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.35) 50%, rgba(255,255,255,.08)), #f1e2c5; transform-origin: 50% 0; transform: translateZ(.6px) scaleY(0); animation: bxTape .4s ease-out 1.08s forwards; }
-  .bx-tape-front { position: absolute; left: 50%; top: -1px; height: 60%; width: 54px; margin-left: -27px; background: #f1e2c5; transform-origin: 50% 0; transform: translateZ(.6px) scaleY(0); animation: bxTape .25s ease-out 1.45s forwards; }
-  .bx-seal { position: absolute; left: 50%; top: 50%; display: block; width: 450px; height: 222px; margin: -111px 0 0 -225px; opacity: 0; transform: translateZ(1.2px) scale(.6); /* desenhado em 3x e reduzido: fica nítido em 3D */ animation: bxStamp .38s cubic-bezier(.3,1.4,.5,1) 1.5s forwards; }
+  .bx-lid { position: absolute; left: calc(var(--w) / -2); top: 0; width: var(--w); height: var(--d); transform-origin: 50% 0; transform-style: preserve-3d; transform: rotateX(208deg); animation: bxClose .7s cubic-bezier(.6,0,.25,1.12) 2.3s forwards; }
+  .bx-lid-in, .bx-lid-out { position: absolute; inset: 0; backface-visibility: hidden; }
+  .bx-lid-in { background: linear-gradient(170deg, var(--in), #d3b484); transform: rotateY(180deg); }
+  .bx-lid-out { background: linear-gradient(200deg, #e6c695, var(--k) 70%); box-shadow: inset 0 0 0 1px rgba(110,74,30,.18); }
+  .bx-flap { position: absolute; left: 0; right: 0; top: 100%; height: var(--h); transform-origin: 50% 0; transform-style: preserve-3d; transform: rotateX(-90deg) translateZ(1px); animation: bxFlap .35s ease-in-out 2.75s both; }
+  .bx-flap-out, .bx-flap-in { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 0 0 6px 6px; }
+  .bx-flap-out { background: linear-gradient(180deg, #e2bf8b, #cfa770); }
+  .bx-flap-in { background: var(--in); transform: rotateY(180deg); }
+  .bx-tape { position: absolute; left: 50%; top: 0; bottom: 0; width: 50px; margin-left: -25px; background: linear-gradient(90deg, rgba(255,255,255,.1), rgba(255,255,255,.45) 50%, rgba(255,255,255,.1)), #efe0c2; transform-origin: 50% 0; transform: translateZ(.6px) scaleY(0); animation: bxTape .38s ease-out 3.05s forwards; }
+  .bx-flap .bx-tape { animation-delay: 3.4s; animation-duration: .2s; }
+  .bx-seal { position: absolute; left: 50%; top: 50%; width: 450px; height: 222px; margin: -111px 0 0 -225px; opacity: 0; transform: translateZ(1.2px) scale(.6); animation: bxStamp .36s cubic-bezier(.3,1.4,.5,1) 3.5s forwards; }
   .bx-seal svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .bx-shadow { position: absolute; left: 50%; top: 50%; width: calc(var(--w) * 1.15); height: calc(var(--d) * 1.1); margin: calc(var(--d) * -.55) 0 0 calc(var(--w) * -.575); border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.22), transparent); transform: rotateX(90deg) translateZ(calc(var(--h) / -2 - 2px)); }
-  .bx-caption { margin: 0; color: #09090b; font-size: .95rem; font-weight: 800; letter-spacing: .02em; text-align: center; }
-  .bx-caption small { display: block; margin-top: .35rem; color: #71717a; font-size: .72rem; font-weight: 600; letter-spacing: 0; }
-  .bx-check { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-right: .35rem; border-radius: 50%; background: #16a34a; color: #fff; font-size: .75rem; vertical-align: -.2rem; transform: scale(0); animation: bxPop .3s cubic-bezier(.3,1.5,.5,1) 1.85s forwards; }
-  @keyframes bxClose { to { transform: rotateX(90deg); } }
+  .bx-shadow { position: absolute; left: 50%; top: 50%; width: calc(var(--w) * 1.25); height: calc(var(--d) * 1.25); margin: calc(var(--d) * -.625) 0 0 calc(var(--w) * -.625); border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.26), transparent); transform: rotateX(90deg) translateZ(calc(var(--h) / -2 - 2px)); }
+  .bx-caption { min-height: 2.6rem; margin: 0; color: #09090b; font-size: .95rem; font-weight: 800; letter-spacing: .01em; text-align: center; }
+  .bx-caption small { display: block; margin-top: .35rem; color: #71717a; font-size: .72rem; font-weight: 600; }
+  .bx-steps { display: flex; gap: .4rem; justify-content: center; margin-top: .7rem; }
+  .bx-steps i { width: 26px; height: 4px; border-radius: 99px; background: #d4d4d8; transition: background .3s; }
+  .bx-steps i.on { background: #09090b; }
+  .bx-check { display: inline-grid; place-items: center; width: 1.2rem; height: 1.2rem; margin-right: .35rem; border-radius: 50%; background: #16a34a; color: #fff; font-size: .72rem; vertical-align: -.18rem; }
+  @keyframes bxIn { from { opacity: 0; transform: translateY(14px) scale(.92); } }
+  @keyframes bxTurn { 0% { transform: rotateX(-32deg) rotateY(-30deg); } 55% { transform: rotateX(-40deg) rotateY(-24deg); } 100% { transform: rotateX(-44deg) rotateY(-16deg); } }
+  @keyframes bxDrop { 0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 1; transform: translate3d(var(--x, 0px), calc(var(--h) / 2 - 3px - var(--lift, 0px)), var(--z, 0px)) rotateX(90deg) rotateZ(var(--rz, -4deg)); } }
+  @keyframes bxTissueL { to { transform: translateY(calc(var(--h) / -2 + 10px)) rotateZ(-2deg) rotateX(90deg); } }
+  @keyframes bxTissueR { to { transform: translateY(calc(var(--h) / -2 + 9px)) rotateZ(2deg) rotateX(90deg); } }
+  @keyframes bxHide { to { visibility: hidden; } }
+  @keyframes bxClose { 0% { transform: rotateX(208deg); } 100% { transform: rotateX(90deg); } }
+  @keyframes bxFlap { 0% { transform: rotateX(-25deg) translateZ(1px); } 100% { transform: rotateX(-90deg) translateZ(1px); } }
   @keyframes bxTape { to { transform: translateZ(.6px) scaleY(1); } }
   @keyframes bxStamp { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 1; transform: translateZ(1.2px) scale(.3333); } }
-  @keyframes bxPop { to { transform: scale(1); } }
-  @keyframes bxTurn { 0% { transform: rotateX(-30deg) rotateY(-34deg); } 100% { transform: rotateX(-42deg) rotateY(-22deg) translateY(4px); } }
-  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 138px; --h: 40px; } }
+  @keyframes bxPopZ { to { transform: translateZ(.5px) scale(1); } }
+  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 136px; --h: 46px; width: 290px; height: 280px; } .bx-item { width: 96px; height: 96px; margin: -48px 0 0 -48px; } }
 </style>
 <script>
 (function () {
   if (typeof openCartCheckout !== 'function') return;
   const TXT = {
-    pt: ['Embalando seu pedido…', 'Lacrado com o selo Buy Club'],
-    en: ['Packing your order…', 'Sealed with the Buy Club seal'],
-    es: ['Empacando tu pedido…', 'Sellado con el sello Buy Club']
+    pt: [['Separando seu pedido…', 'Conferindo cada item'], ['Embalando com cuidado…', 'Papel de seda e caixa reforçada'], ['Lacrando a caixa…', 'Fita e selo Buy Club'], ['Pedido embalado!', 'Agora é só finalizar o pagamento']],
+    en: [['Picking your order…', 'Checking every item'], ['Packing with care…', 'Tissue paper and a sturdy box'], ['Sealing the box…', 'Tape and Buy Club seal'], ['Order packed!', 'Now just complete your payment']],
+    es: [['Separando tu pedido…', 'Revisando cada artículo'], ['Empacando con cuidado…', 'Papel de seda y caja reforzada'], ['Sellando la caja…', 'Cinta y sello Buy Club'], ['¡Pedido empacado!', 'Ahora solo falta el pago']]
   };
+  const TOTAL_MS = 4300;
+  const STEP_AT = [0, 1350, 2450, 3750];
   const reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (_) { return false; } };
+  const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let running = false;
 
   // Selo vetorial (adesivo preto com a logo Buy Club), nítido mesmo em 3D.
-  function logoHtml() {
+  function sealSvg() {
+    const F = 'Plus Jakarta Sans, Helvetica, Arial, sans-serif';
     return '<svg viewBox="0 0 150 74" role="img" aria-label="Buy Club">'
       + '<rect x="1" y="1" width="148" height="72" rx="14" fill="#09090b"/>'
       + '<rect x="5.5" y="5.5" width="139" height="63" rx="10" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1" stroke-dasharray="3 3"/>'
-      + '<text x="15" y="48" fill="#fff" font-family="&#39;Plus Jakarta Sans&#39;, Helvetica, Arial, sans-serif" font-size="37" font-weight="800" letter-spacing="-1.6">Bu</text>'
+      + '<text x="15" y="48" fill="#fff" font-family="' + F + '" font-size="37" font-weight="800" letter-spacing="-1.6">Bu</text>'
       + '<g transform="translate(61 15) scale(.36)" fill="#fff">'
       +   '<path d="M43 47h19L31 123H12z"/>'
       +   '<path d="M5 34L9 47" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>'
       +   '<path transform="translate(9 47) rotate(-32)" fill-rule="evenodd" d="M0 0l13 13v38H-13V13z M3 14a3 3 0 1 0-6 0a3 3 0 1 0 6 0z" stroke="#09090b" stroke-width="4" paint-order="stroke"/>'
       + '</g>'
-      + '<text x="91" y="47" fill="#fff" fill-opacity=".88" font-family="&#39;Plus Jakarta Sans&#39;, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" letter-spacing="3.2">CLUB</text>'
+      + '<text x="91" y="47" fill="#fff" fill-opacity=".88" font-family="' + F + '" font-size="11.5" font-weight="800" letter-spacing="3.2">CLUB</text>'
       + '</svg>';
+  }
+
+  // Até 2 produtos do carrinho caem dentro da caixa.
+  function itemsHtml() {
+    const list = [];
+    try {
+      (cartItems || []).forEach(ci => {
+        const p = (typeof getCartProduct === 'function' ? getCartProduct(ci) : null) || (products || []).find(x => x.id === ci.id);
+        if (p && p.images && p.images[0] && list.length < 2) list.push(p);
+      });
+    } catch (_) {}
+    const pos = list.length > 1
+      ? [{ x: '-44px', z: '-6px', rz: '-6deg', delay: '.5s', lift: '0px' }, { x: '46px', z: '8px', rz: '5deg', delay: '.8s', lift: '1px' }]
+      : [{ x: '0px', z: '0px', rz: '-4deg', delay: '.55s', lift: '0px' }];
+    return list.map((p, i) => `<div class="bx-item" style="--x:${pos[i].x};--z:${pos[i].z};--rz:${pos[i].rz};--delay:${pos[i].delay};--lift:${pos[i].lift}"><img src="${esc(p.images[0])}" alt=""></div>`).join('');
   }
 
   function play(done) {
@@ -6838,23 +6886,40 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     el.setAttribute('aria-live', 'polite');
     el.innerHTML = `<div class="bx-wrap"><div class="bx-scene" aria-hidden="true"><div class="bx">
         <div class="bx-shadow"></div>
-        <div class="bx-face bx-bottom"></div><div class="bx-face bx-back"></div><div class="bx-face bx-left"></div><div class="bx-face bx-right"></div>
-        <div class="bx-face bx-front"><span class="bx-tape-front"></span></div>
-        <div class="bx-hinge"><div class="bx-lid"><div class="bx-lid-in"></div><div class="bx-lid-out"><span class="bx-tape"></span><span class="bx-seal">${logoHtml()}</span></div></div></div>
+        <div class="bx-face bx-bottom"></div><div class="bx-face bx-floor"></div>
+        <div class="bx-face bx-back"><span class="bx-edge"></span></div>
+        <div class="bx-face bx-left"><span class="bx-edge"></span></div><div class="bx-face bx-right"><span class="bx-edge"></span></div>
+        ${itemsHtml()}
+        <div class="bx-face bx-tissue bx-tissue-l"></div>
+        <div class="bx-face bx-tissue bx-tissue-r"><span class="bx-sticker">BC</span></div>
+        <div class="bx-face bx-front"><span class="bx-edge"></span><span class="bx-print">BUY CLUB<i>buyclub.us</i></span></div>
+        <div class="bx-hinge"><div class="bx-lid"><div class="bx-lid-in"></div><div class="bx-lid-out"><span class="bx-tape"></span><span class="bx-seal">${sealSvg()}</span></div>
+          <div class="bx-flap"><div class="bx-flap-in"></div><div class="bx-flap-out"><span class="bx-print">BUY CLUB<i>buyclub.us</i></span><span class="bx-tape"></span></div></div>
+        </div></div>
       </div></div>
-      <p class="bx-caption"><span class="bx-check">✓</span>${TXT[lang][0]}<small>${TXT[lang][1]}</small></p></div>`;
+      <div><p class="bx-caption"></p><div class="bx-steps"><i></i><i></i><i></i><i></i></div></div></div>`;
     document.body.appendChild(el);
+    const caption = el.querySelector('.bx-caption');
+    const dots = el.querySelectorAll('.bx-steps i');
+    const setStep = n => {
+      const [title, sub] = TXT[lang][n];
+      caption.innerHTML = `${n === 3 ? '<span class="bx-check">✓</span>' : ''}${esc(title)}<small>${esc(sub)}</small>`;
+      dots.forEach((d, i) => d.classList.toggle('on', i <= n));
+    };
+    setStep(0);
+    const timers = STEP_AT.slice(1).map((ms, i) => setTimeout(() => setStep(i + 1), ms));
     requestAnimationFrame(() => el.classList.add('is-on'));
     let finished = false;
     const finish = () => {
       if (finished) return;
       finished = true;
+      timers.forEach(clearTimeout);
       try { done(); } finally {
         el.classList.add('is-out');
-        setTimeout(() => { el.remove(); running = false; }, 320);
+        setTimeout(() => { el.remove(); running = false; }, 380);
       }
     };
-    const timer = setTimeout(finish, 2350);
+    const timer = setTimeout(finish, TOTAL_MS);
     el.addEventListener('click', () => { clearTimeout(timer); finish(); });
   }
 
