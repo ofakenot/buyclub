@@ -62,6 +62,10 @@ const DEFAULT_COUPONS = {
 let catalogCache = { at: 0, url: '', products: null };
 
 export default {
+  // Cron do Worker (Settings > Trigger events > Cron, a cada 15 min): avisa carrinhos abandonados
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(checkAbandoned(env).catch(e => console.error('abandono', e && e.stack || e)));
+  },
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const cors = corsHeaders(request, env);
@@ -290,7 +294,62 @@ async function createCheckout(request, env) {
     console.error('Mercado Pago preference error', res.status, JSON.stringify(data));
     throw new Error('Falha ao criar preferência no Mercado Pago');
   }
+  await trackOpenCheckout(env, { orderId, at: Date.now(), recipient: customer.recipient, phone: customer.phone, city: customer.city, total, items: preference.metadata.items });
   return { orderId, total, discount, coupon: coupon ? coupon.code : null, url: data.init_point };
+}
+
+/* ------------------------------------------------------------------ */
+/* Carrinho abandonado: checkout aberto que não virou pagamento        */
+/* ------------------------------------------------------------------ */
+
+const ABANDON_AFTER_MIN = 40;   // espera antes de avisar
+const ABANDON_MAX_HOURS = 24;   // depois disso, descarta sem avisar
+
+// Um registro por telefone (o último checkout). Se a pessoa tentar de novo e pagar, o aviso não sai.
+async function trackOpenCheckout(env, c) {
+  const phone = digits(c.phone);
+  if (!env.ORDERS || phone.length < 10) return;
+  try { await env.ORDERS.put(`aberto:${phone}`, JSON.stringify(c), { expirationTtl: 60 * 60 * 48 }); }
+  catch (e) { console.error('aberto put', e && e.message); }
+}
+
+export function abandonedCard(c) {
+  const phone = digits(c.phone);
+  const waPhone = phone.length === 10 || phone.length === 11 ? '55' + phone : phone;
+  const first = String(c.recipient || '').split(/\s+/)[0] || '';
+  const waText = `Olá, ${first}! Vi que você começou um pedido na Buy Club (R$ ${brl(c.total)}) e não chegou a finalizar o pagamento. Posso te ajudar a concluir?`;
+  const items = String(c.items || '').split(' | ').filter(Boolean).map(i => i.replace(/\s+[—–-]\s+/g, ' '));
+  const mins = Math.round((Date.now() - c.at) / 60000);
+  return [
+    `🛒 <b>Carrinho abandonado</b> (${mins >= 60 ? `${Math.round(mins / 60)} h` : `${mins} min`})`,
+    `${h(c.recipient || '')}${c.city ? ` · ${h(c.city)}` : ''}`,
+    `Total: <b>R$ ${h(brl(c.total))}</b>`,
+    ...items.map(i => `• ${h(i)}`),
+    `WhatsApp: ${h(phone)}`,
+    `Pedido: <code>${h(c.orderId)}</code>${c.status ? ` (${h(c.status)})` : ''}`,
+    '',
+    waPhone.length >= 12 ? `📲 <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}">Chamar no WhatsApp</a>` : null
+  ].filter(x => x !== null).join('\n');
+}
+
+export async function checkAbandoned(env) {
+  if (!env.ORDERS || !env.TELEGRAM_BOT_TOKEN) return;
+  const list = await env.ORDERS.list({ prefix: 'aberto:' });
+  for (const k of list.keys) {
+    const c = JSON.parse(await env.ORDERS.get(k.name) || 'null');
+    if (!c || !c.at) { await env.ORDERS.delete(k.name); continue; }
+    const age = Date.now() - c.at;
+    if (age < ABANDON_AFTER_MIN * 60000) continue;
+    await env.ORDERS.delete(k.name); // avisa uma vez só
+    if (age > ABANDON_MAX_HOURS * 3600000) continue;
+    let pay = null;
+    try { pay = await mpOrder(env, c.orderId); } catch (e) { console.error('abandono mp', e && e.message); }
+    if (pay && (pay.status === 'approved' || pay.status === 'authorized')) continue;
+    c.status = pay ? ({ pending: 'Pix gerado, não pago', in_process: 'em análise', rejected: 'pagamento recusado', cancelled: 'cancelado' }[pay.status] || pay.status) : 'não chegou a pagar';
+    for (const chat of tgChats(env)) {
+      try { await tgSend(env, chat, abandonedCard(c)); } catch (e) { console.error('abandono tg', e && e.message); }
+    }
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -968,6 +1027,7 @@ async function handleWebhook(request, env, url, ctx) {
 
   if (env.ORDERS) {
     await env.ORDERS.put(key, JSON.stringify(order), { expirationTtl: 60 * 60 * 24 * 365 });
+    if (digits(order.phone).length >= 10) await env.ORDERS.delete(`aberto:${digits(order.phone)}`);
     // marca o CPF como cliente (cupons de primeira compra deixam de valer para ele)
     const cpfDigits = digits(order.cpf);
     if (cpfDigits.length === 11) {

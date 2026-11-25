@@ -164,3 +164,9 @@ Configuração (uma vez):
 4. Adicione o bot ao grupo e mande `/start`. O bot responde com o ID do grupo.
 5. Crie a variável `TELEGRAM_CHAT_IDS` com esse ID (vários separados por vírgula).
 Precisa do KV `ORDERS` ligado. Pedidos pagos antes do bot existir precisam do número `BC…` na mensagem.
+
+## Carrinho abandonado
+
+Quando alguém chega a abrir o pagamento do Mercado Pago e, depois de 40 minutos, não pagou, o bot avisa no grupo do Telegram. O aviso traz o nome, o total, os itens e um link pronto para chamar a pessoa no WhatsApp.
+
+Para funcionar, o Worker precisa de um Cron: **Settings → Trigger events → Cron**, `*/15 * * * *` (a cada 15 minutos). Cada carrinho é avisado uma vez só. Se a pessoa pagar, o aviso não sai.
