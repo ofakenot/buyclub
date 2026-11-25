@@ -129,3 +129,36 @@ Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado 
 ### Entrega expressa na capital de SP
 
 Para CEPs do município de São Paulo (01000-000 a 05999-999 e 08000-000 a 08499-999), o Worker acrescenta a opção "Entrega expressa SP": até 3 horas após o pedido, rastreio pelo WhatsApp, valor fixo de R$ 50 (mude com a variável `SP_EXPRESS_FEE`). Ela vem selecionada por padrão; com frete grátis New Life, a opção grátis fica em primeiro.
+
+## Cupons de desconto
+
+O desconto vale sobre os produtos (o frete não muda) e o Worker confere o cupom de novo antes de cobrar.
+
+- Cupom padrão: `BEMVINDO10`, 10% na primeira compra. Com o KV `ORDERS` ligado, cada CPF só usa uma vez. Sem o KV, não há como saber se o CPF já comprou.
+- Para criar cupons (influenciadores, promoções), crie a variável `COUPONS` no Worker com um JSON:
+
+```json
+{"JOAO10": {"pct": 10}, "VIP50": {"value": 50, "min": 300}, "BLACK15": {"pct": 15, "until": "2026-11-30"}}
+```
+
+Campos: `pct` (porcentagem) ou `value` (reais), `min` (pedido mínimo em produtos), `until` (último dia, AAAA-MM-DD), `first` (só primeira compra), `active: false` (desliga).
+Link de influenciador: `https://buyclub.us/?cupom=JOAO10` já deixa o cupom preenchido no checkout.
+
+## Página "Meu pedido"
+
+`POST /pedido` com `{ pedido, cpf }` consulta o pagamento no Mercado Pago pelo número do pedido e só responde quando o CPF bate.
+Link direto: `https://buyclub.us/?meu-pedido` ou `https://buyclub.us/?pedido=BC...`.
+
+## Bot de rastreio no Telegram
+
+No grupo do Telegram, mande `/rastreio CÓDIGO CPF NOME` (ex.: `/rastreio AB123456789BR 529.982.247-25 Ana Silva`).
+O bot acha o último pedido pago desse CPF, confere o nome, salva o código e a página "Meu pedido" passa a mostrar "Pedido enviado" com o botão para o site da transportadora (Correios, Jadlog ou Loggi, reconhecida pelo código). Ele responde com um link pronto para avisar o cliente no WhatsApp.
+Se o CPF tiver mais de um pedido, mande também o número `BC…`. Para apagar: `/apagar BC…`.
+
+Configuração (uma vez):
+1. No Telegram, fale com o @BotFather, mande `/newbot` e siga os passos. Ele entrega o token do bot.
+2. No Worker (Settings → Variables and Secrets), crie os secrets `TELEGRAM_BOT_TOKEN` (o token) e `TELEGRAM_SECRET` (um texto longo qualquer).
+3. Abra `https://<seu-worker>/telegram/setup` no navegador. Deve aparecer `"ok": true`.
+4. Adicione o bot ao grupo e mande `/start`. O bot responde com o ID do grupo.
+5. Crie a variável `TELEGRAM_CHAT_IDS` com esse ID (vários separados por vírgula).
+Precisa do KV `ORDERS` ligado. Pedidos pagos antes do bot existir precisam do número `BC…` na mensagem.

@@ -8,6 +8,11 @@
  *   POST /frete     → recebe { cep, items } e devolve as opções de frete do Melhor Envio
  *                     (SEDEX, PAC etc.) com preço e prazo. Sem token configurado, devolve
  *                     { enabled: false } e o site usa o frete fixo.
+ *   POST /cupom     → recebe { code, cpf, items } e diz se o cupom vale e quanto desconta.
+ *   POST /pedido    → recebe { pedido, cpf } e devolve o status do pedido (página "Meu pedido").
+ *                     Consulta o Mercado Pago; só responde se o CPF bater com o do pedido.
+ *   POST /telegram  → webhook do bot do Telegram: você manda "código CPF nome" (ou o número do pedido)
+ *                     e o código de rastreio aparece na página "Meu pedido" do cliente.
  *   POST /webhook   → recebe a notificação do Mercado Pago, consulta o pagamento na API
  *                     e, quando aprovado, envia nome + endereço + itens para o seu WhatsApp.
  *   GET  /          → teste rápido ("ok").
@@ -31,7 +36,13 @@
  *   FREE_SHIP_CATEGORY  (opcional)             marca com frete grátis; padrão "newlife"
  *   FREE_SHIP_MIN_UNITS (opcional)             unidades dessa marca para ganhar frete grátis; padrão 3 (0 desliga)
  *   MP_WEBHOOK_SECRET   (secret, opcional)     "assinatura secreta" dos webhooks do Mercado Pago
- *   ORDERS              (KV, opcional)         evita aviso duplicado e guarda os pedidos pagos
+ *   ORDERS              (KV, opcional)         evita aviso duplicado, guarda os pedidos pagos e os CPFs que já compraram
+ *   TELEGRAM_BOT_TOKEN  (secret, opcional)     token do bot criado no @BotFather (liga o bot de rastreio)
+ *   TELEGRAM_SECRET     (secret, opcional)     senha do webhook do Telegram (qualquer texto longo)
+ *   TELEGRAM_CHAT_IDS   (opcional)             IDs dos grupos (ou pessoas) do Telegram onde o bot funciona, separados por vírgula
+ *   COUPONS             (opcional)             cupons extras em JSON, ex.: {"JOAO10":{"pct":10},"VIP50":{"value":50,"min":300}}
+ *                                              campos: pct (porcentagem) ou value (reais), min (pedido mínimo),
+ *                                              until ("AAAA-MM-DD"), first (só primeira compra), active (false desliga)
  */
 
 const DEFAULT_CATALOG_URL = 'https://raw.githubusercontent.com/ofakenot/buyclub/main/index.html';
@@ -41,6 +52,12 @@ const CATALOG_TTL_MS = 5 * 60 * 1000;
 const DEFAULT_SHIPPING_FEE = 50;
 const DEFAULT_ME_SERVICES = '1,2,3,31'; // Correios PAC, Correios SEDEX, Jadlog .Package, Loggi Express
 const DEFAULT_BOX_CM = '4,12,17';      // caixa de envio (altura, largura, comprimento)
+
+// Cupons padrão. O desconto vale sobre os produtos (não sobre o frete).
+// Para criar cupons de influenciador sem mexer no código, use a variável COUPONS.
+const DEFAULT_COUPONS = {
+  BEMVINDO10: { pct: 10, first: true, label: 'Primeira compra' }
+};
 
 let catalogCache = { at: 0, url: '', products: null };
 
@@ -57,6 +74,20 @@ export default {
       }
       if (url.pathname === '/frete' && request.method === 'POST') {
         return json(await quoteShipping(request, env), 200, cors);
+      }
+      if (url.pathname === '/cupom' && request.method === 'POST') {
+        return json(await checkCoupon(request, env), 200, cors);
+      }
+      if (url.pathname === '/pedido' && request.method === 'POST') {
+        return json(await lookupOrder(request, env), 200, cors);
+      }
+      if (url.pathname === '/telegram/setup' && request.method === 'GET') {
+        return json(await setupTelegram(env, url.origin), 200, cors);
+      }
+      if (url.pathname === '/telegram' && request.method === 'POST') {
+        if (ctx && ctx.waitUntil) ctx.waitUntil(handleTelegram(request, env).catch(e => console.error('telegram', e && e.stack || e)));
+        else await handleTelegram(request, env);
+        return new Response('ok', { status: 200 });
       }
       if (url.pathname === '/webhook' && request.method === 'POST') {
         await handleWebhook(request, env, url, ctx);
@@ -174,7 +205,9 @@ async function createCheckout(request, env) {
   const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
   const ship = await resolveShipping(env, customer.cep, lines, subtotal, body.shipping && body.shipping.service);
   const shipping = ship.price;
-  const total = round2(subtotal + shipping);
+  const coupon = body.coupon ? await evaluateCoupon(env, body.coupon, customer.cpf, subtotal) : null;
+  const discount = coupon ? coupon.discount : 0;
+  const total = round2(subtotal - discount + shipping);
 
   const orderId = `BC${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
@@ -223,6 +256,8 @@ async function createCheckout(request, env) {
       subtotal: String(subtotal),
       shipping: String(shipping),
       shipping_label: ship.label,
+      coupon: coupon ? coupon.code : '',
+      discount: String(discount),
       total: String(total),
       recipient: customer.recipient,
       phone: customer.phone,
@@ -252,7 +287,275 @@ async function createCheckout(request, env) {
     console.error('Mercado Pago preference error', res.status, JSON.stringify(data));
     throw new Error('Falha ao criar preferência no Mercado Pago');
   }
-  return { orderId, total, url: data.init_point };
+  return { orderId, total, discount, coupon: coupon ? coupon.code : null, url: data.init_point };
+}
+
+/* ------------------------------------------------------------------ */
+/* Cupons de desconto                                                   */
+/* ------------------------------------------------------------------ */
+
+export function couponTable(env) {
+  const table = {};
+  const add = (code, rule) => {
+    const key = String(code || '').trim().toUpperCase();
+    if (key && rule && typeof rule === 'object') table[key] = rule;
+  };
+  Object.entries(DEFAULT_COUPONS).forEach(([k, v]) => add(k, v));
+  if (env.COUPONS) {
+    try { Object.entries(JSON.parse(env.COUPONS)).forEach(([k, v]) => add(k, v)); }
+    catch (e) { console.error('COUPONS inválido (JSON)', e && e.message); }
+  }
+  return table;
+}
+
+export function couponDiscount(rule, subtotal) {
+  const pct = Number(rule.pct) || 0;
+  const value = Number(rule.value) || 0;
+  const raw = pct > 0 ? subtotal * Math.min(pct, 90) / 100 : value;
+  return round2(Math.max(0, Math.min(raw, subtotal)));
+}
+
+async function evaluateCoupon(env, rawCode, cpf, subtotal, now = new Date()) {
+  const code = String(rawCode || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 30);
+  if (!code) throw new UserError('Digite o cupom.');
+  const rule = couponTable(env)[code];
+  if (!rule || rule.active === false) throw new UserError('Cupom inválido ou expirado.');
+  if (rule.until && now.toISOString().slice(0, 10) > String(rule.until)) throw new UserError('Cupom inválido ou expirado.');
+  const min = Number(rule.min) || 0;
+  if (min && subtotal < min) throw new UserError(`Este cupom vale para pedidos a partir de R$ ${brl(min)} em produtos.`);
+  if (rule.first && env.ORDERS && cpf && await env.ORDERS.get(`cliente:${cpf}`)) {
+    throw new UserError('Este cupom vale só na primeira compra.');
+  }
+  const discount = couponDiscount(rule, subtotal);
+  if (!(discount > 0)) throw new UserError('Cupom inválido ou expirado.');
+  return {
+    code,
+    label: clean(rule.label, 60),
+    pct: Number(rule.pct) > 0 ? Math.min(Number(rule.pct), 90) : null,
+    value: Number(rule.pct) > 0 ? null : Number(rule.value) || null,
+    min: min || null,
+    discount
+  };
+}
+
+async function checkCoupon(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !Array.isArray(body.items) || !body.items.length) throw new UserError('Carrinho vazio.');
+  if (body.items.length > 50) throw new UserError('Carrinho grande demais.');
+  const cpf = digits(body.cpf).slice(0, 11);
+  const lines = await buildLines(body.items, env);
+  const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
+  const coupon = await evaluateCoupon(env, body.code, cpf, subtotal);
+  return { ok: true, ...coupon, subtotal };
+}
+
+/* ------------------------------------------------------------------ */
+/* POST /pedido — página "Meu pedido"                                   */
+/* ------------------------------------------------------------------ */
+
+const PAYMENT_RANK = { approved: 6, authorized: 5, in_process: 4, in_mediation: 4, pending: 3, refunded: 2, charged_back: 2, cancelled: 1, rejected: 1 };
+
+function paymentCpf(p) {
+  const m = (p && p.metadata) || {};
+  return digits(m.cpf || (p && p.payer && p.payer.identification && p.payer.identification.number));
+}
+
+// Pagamento "principal" de um pedido no Mercado Pago (aprovado tem prioridade), ou null.
+async function mpOrder(env, orderId) {
+  const res = await fetch(`https://api.mercadopago.com/v1/payments/search?external_reference=${encodeURIComponent(orderId)}&sort=date_created&criteria=desc&limit=20`, {
+    headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` }
+  });
+  if (!res.ok) { console.error('payment search failed', res.status); throw new Error('Falha ao consultar o Mercado Pago'); }
+  const data = await res.json().catch(() => ({}));
+  const results = (Array.isArray(data.results) ? data.results : []).filter(p => p.external_reference === orderId);
+  if (!results.length) return null;
+  results.sort((a, b) => (PAYMENT_RANK[b.status] || 0) - (PAYMENT_RANK[a.status] || 0) || String(b.date_created).localeCompare(String(a.date_created)));
+  return results[0];
+}
+
+async function lookupOrder(request, env) {
+  if (!env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado');
+  const body = await request.json().catch(() => null) || {};
+  const orderId = String(body.pedido || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 24);
+  const cpf = digits(body.cpf).slice(0, 11);
+  if (orderId.length < 6) throw new UserError('Digite o número do pedido (começa com BC).');
+  if (!isValidCpf(cpf)) throw new UserError('Digite o CPF usado na compra.');
+
+  const p = await mpOrder(env, orderId);
+  // A mesma resposta para "não existe" e "CPF não bate": não revela se o número existe.
+  if (!p || paymentCpf(p) !== cpf) return { found: false };
+  const m = p.metadata || {};
+  return {
+    found: true,
+    orderId,
+    status: p.status,
+    createdAt: p.date_created || null,
+    paidAt: p.date_approved || null,
+    amount: p.transaction_amount,
+    method: p.payment_type_id === 'bank_transfer' ? 'Pix' : `Cartão${p.installments > 1 ? ` ${p.installments}x` : ''}`,
+    name: String(m.recipient || '').split(/\s+/)[0] || '',
+    city: m.city || '',
+    items: String(m.items || '').split(' | ').filter(Boolean),
+    subtotal: m.subtotal || null,
+    shipping: m.shipping || null,
+    shippingLabel: m.shipping_label || '',
+    express: /expressa/i.test(String(m.shipping_label || '')),
+    coupon: m.coupon || '',
+    discount: m.discount || null,
+    tracking: env.ORDERS ? JSON.parse(await env.ORDERS.get(`envio:${orderId}`) || 'null') : null
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Rastreio pelo bot do Telegram                                        */
+/* ------------------------------------------------------------------ */
+
+const CARRIERS = {
+  correios: { name: 'Correios', url: c => `https://rastreamento.correios.com.br/app/index.php?objetos=${encodeURIComponent(c)}` },
+  jadlog: { name: 'Jadlog', url: c => `https://www.jadlog.com.br/jadlog/tracking?cte=${encodeURIComponent(c)}` },
+  loggi: { name: 'Loggi', url: c => `https://www.loggi.com/rastreador/${encodeURIComponent(c)}` }
+};
+const CARRIER_WORDS = { correios: 'correios', sedex: 'correios', pac: 'correios', jadlog: 'jadlog', loggi: 'loggi' };
+
+export function detectCarrier(code, hint) {
+  if (hint && CARRIERS[hint]) return hint;
+  if (/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(code)) return 'correios';
+  if (/^\d{14}$/.test(code)) return 'jadlog';
+  return 'loggi';
+}
+
+const normName = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+
+// Lê a mensagem: "AB123456789BR 529.982.247-25 Ana Silva" (em qualquer ordem; transportadora e nº do pedido opcionais)
+export function parseTrackingMessage(text) {
+  let rest = ' ' + String(text || '').replace(/[\r\n,;]+/g, ' ') + ' ';
+  const take = re => { const m = rest.match(re); if (m) rest = rest.replace(m[0], ' '); return m; };
+  const order = take(/\bBC[A-Z0-9]{6,22}\b/i);
+  let cpf = null;
+  for (const m of rest.matchAll(/(?<![\d])(\d{3}\.?\d{3}\.?\d{3}-?\d{2})(?![\d])/g)) {
+    if (isValidCpf(m[1])) { cpf = digits(m[1]); rest = rest.replace(m[0], ' '); break; }
+  }
+  let carrier = null;
+  for (const [w, c] of Object.entries(CARRIER_WORDS)) {
+    const re = new RegExp(`(^|\\s)${w}(\\s|$)`, 'i');
+    if (re.test(rest)) { carrier = c; rest = rest.replace(re, ' '); break; }
+  }
+  rest = rest.replace(/(^|\s)(rastreio|codigo|código|pedido|cpf|nome)[:]?(?=\s)/gi, ' ');
+  const tokens = rest.split(/\s+/).filter(Boolean);
+  const codeTok = tokens.find(t => /^[A-Z]{2}\d{9}[A-Z]{2}$/i.test(t)) || tokens.find(t => /\d/.test(t) && /^[A-Z0-9-]{6,40}$/i.test(t));
+  const code = codeTok ? codeTok.toUpperCase().replace(/[^A-Z0-9]/g, '') : '';
+  const name = tokens.filter(t => t !== codeTok && /^[\p{L}'.-]+$/u.test(t)).join(' ');
+  return { orderId: order ? order[0].toUpperCase() : '', cpf, code, carrier, name };
+}
+
+async function tgSend(env, chatId, text) {
+  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
+  });
+  if (!res.ok) console.error('telegram sendMessage', res.status, await res.text());
+}
+const h = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+const TG_HELP = [
+  '📦 <b>Bot de rastreio Buy Club</b>',
+  '',
+  'Mande numa mensagem só: <b>/rastreio</b> + código de rastreio, CPF e nome do cliente. Exemplo:',
+  '<code>/rastreio AB123456789BR 529.982.247-25 Ana Silva</code>',
+  '',
+  'O código aparece na hora na página "Meu pedido" do cliente, com o link da transportadora.',
+  '• Se o cliente tiver mais de um pedido, mande também o número (BC…).',
+  '• A transportadora é reconhecida pelo código. Para escolher, escreva correios, jadlog ou loggi.',
+  '• Para apagar um rastreio: <code>/apagar BC…</code>'
+].join('\n');
+
+// Liga o webhook do bot neste Worker (abrir https://<worker>/telegram/setup uma vez depois de criar os secrets).
+async function setupTelegram(env, origin) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_SECRET) return { ok: false, error: 'Crie os secrets TELEGRAM_BOT_TOKEN e TELEGRAM_SECRET no Worker.' };
+  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/setWebhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: `${origin}/telegram`, secret_token: env.TELEGRAM_SECRET, allowed_updates: ['message', 'edited_message'] })
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: !!data.ok, description: data.description || '' };
+}
+
+export async function handleTelegram(request, env) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_SECRET) return;
+  if (!sameKey(request.headers.get('X-Telegram-Bot-Api-Secret-Token'), env.TELEGRAM_SECRET)) { console.warn('telegram: secret inválido'); return; }
+  const update = await request.json().catch(() => null);
+  const msg = update && (update.message || update.edited_message);
+  if (!msg || !msg.chat || typeof msg.text !== 'string') return;
+  const chatId = msg.chat.id;
+  // tira "@nomedobot" dos comandos usados em grupo
+  const text = msg.text.trim().replace(/^(\/\w+)@\w+/, '$1');
+  const isCommand = /^\/\w+/.test(text);
+  const allowed = String(env.TELEGRAM_CHAT_IDS || '').split(',').map(x => x.trim()).filter(Boolean);
+  if (!allowed.includes(String(chatId))) {
+    // fora do grupo liberado: só responde a comandos, dizendo o ID para liberar
+    if (isCommand) await tgSend(env, chatId, `Este bot é privado.\nO ID desta conversa é <code>${h(chatId)}</code>. Para liberar, ele precisa entrar na lista TELEGRAM_CHAT_IDS do Worker.`);
+    return;
+  }
+  if (/^\/(start|help|ajuda)\b/i.test(text)) return tgSend(env, chatId, TG_HELP);
+  // no grupo, conversa normal é ignorada: o bot só age em /rastreio, /apagar ou numa mensagem que tenha código + CPF/pedido
+  const cmd = text.match(/^\/(rastreio|apagar|remover)\b\s*/i);
+  if (isCommand && !cmd) return;
+  const body = cmd ? text.slice(cmd[0].length) : text;
+  if (!cmd) { const q = parseTrackingMessage(body); if (!(q.code && (q.cpf || q.orderId))) return; }
+  if (!env.ORDERS) return tgSend(env, chatId, '⚠️ O armazenamento (KV ORDERS) não está ligado no Worker. Sem ele não dá para salvar o rastreio.');
+
+  if (cmd && /^(apagar|remover)$/i.test(cmd[1])) {
+    const del = body.match(/\bBC[A-Z0-9]{6,22}\b/i);
+    if (!del) return tgSend(env, chatId, 'Mande o número do pedido: <code>/apagar BC…</code>');
+    await env.ORDERS.delete(`envio:${del[0].toUpperCase()}`);
+    return tgSend(env, chatId, `🗑️ Rastreio do pedido <b>${h(del[0].toUpperCase())}</b> apagado.`);
+  }
+
+  const p = parseTrackingMessage(body);
+  if (!p.code || p.code.length < 8) return tgSend(env, chatId, '❌ Não achei o código de rastreio na mensagem.\n\n' + TG_HELP);
+  if (!p.orderId && !p.cpf) return tgSend(env, chatId, '❌ Mande também o CPF do cliente (ou o número do pedido BC…).');
+
+  let orderId = p.orderId;
+  if (!orderId) {
+    const list = JSON.parse(await env.ORDERS.get(`cpfpedidos:${p.cpf}`) || '[]');
+    if (!list.length) return tgSend(env, chatId, `❌ Não achei pedido pago com o CPF ${h(p.cpf)}. Mande junto o número do pedido (BC…).`);
+    if (list.length > 1) {
+      const recent = await Promise.all(list.slice(0, 5).map(async id => [id, await env.ORDERS.get(`envio:${id}`)]));
+      const open = recent.filter(([, t]) => !t).map(([id]) => id);
+      if (open.length !== 1) return tgSend(env, chatId, `⚠️ Esse CPF tem ${list.length} pedidos: ${list.slice(0, 5).map(h).join(', ')}.\nMande de novo com o número do pedido.`);
+      orderId = open[0];
+    } else orderId = list[0];
+  }
+
+  const pay = await mpOrder(env, orderId);
+  if (!pay) return tgSend(env, chatId, `❌ Pedido <b>${h(orderId)}</b> não encontrado no Mercado Pago.`);
+  const m = pay.metadata || {};
+  if (p.cpf && paymentCpf(pay) !== p.cpf) return tgSend(env, chatId, `❌ O CPF não confere com o pedido <b>${h(orderId)}</b>.`);
+  const want = normName(p.name), have = normName(m.recipient);
+  if (want.length && have.length && !want.every(w => have.includes(w))) {
+    return tgSend(env, chatId, `❌ O nome não confere. O pedido <b>${h(orderId)}</b> está em nome de <b>${h(m.recipient)}</b>. Nada foi salvo.`);
+  }
+  if (pay.status !== 'approved') return tgSend(env, chatId, `⚠️ O pagamento do pedido <b>${h(orderId)}</b> está "${h(pay.status)}", não aprovado. Nada foi salvo.`);
+
+  const carrier = detectCarrier(p.code, p.carrier);
+  const info = { code: p.code, carrier, name: CARRIERS[carrier].name, url: CARRIERS[carrier].url(p.code), at: new Date().toISOString() };
+  await env.ORDERS.put(`envio:${orderId}`, JSON.stringify(info), { expirationTtl: 60 * 60 * 24 * 365 });
+
+  const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
+  const phone = digits(m.phone);
+  const waPhone = phone.length === 10 || phone.length === 11 ? '55' + phone : phone;
+  const firstName = String(m.recipient || '').split(/\s+/)[0] || '';
+  const waText = `Olá, ${firstName}! Seu pedido ${orderId} da Buy Club foi enviado (${info.name}).\nCódigo de rastreio: ${info.code}\nAcompanhe: ${info.url}\n\nVocê também vê tudo em ${site}/?pedido=${orderId}`;
+  return tgSend(env, chatId, [
+    `✅ Rastreio salvo no pedido <b>${h(orderId)}</b>`,
+    `Cliente: ${h(m.recipient || '')}${m.city ? ` · ${h(m.city)}` : ''}`,
+    `${h(info.name)}: <code>${h(info.code)}</code>`,
+    info.url ? `Link: ${h(info.url)}` : null,
+    '',
+    waPhone.length >= 12 ? `📲 <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}">Avisar o cliente no WhatsApp</a>` : null
+  ].filter(x => x !== null).join('\n'));
 }
 
 
@@ -446,11 +749,24 @@ async function handleWebhook(request, env, url, ctx) {
     items: m.items || '',
     subtotal: m.subtotal || '',
     shipping: m.shipping || '',
-    shippingLabel: m.shipping_label || ''
+    shippingLabel: m.shipping_label || '',
+    coupon: m.coupon || '',
+    discount: m.discount || ''
   };
 
   if (env.ORDERS) {
     await env.ORDERS.put(key, JSON.stringify(order), { expirationTtl: 60 * 60 * 24 * 365 });
+    // marca o CPF como cliente (cupons de primeira compra deixam de valer para ele)
+    const cpfDigits = digits(order.cpf);
+    if (cpfDigits.length === 11) {
+      await env.ORDERS.put(`cliente:${cpfDigits}`, String(order.orderId || payment.id));
+      // pedidos pagos por CPF (o mais recente primeiro), para o admin achar o pedido só pelo CPF
+      if (order.orderId) {
+        const list = JSON.parse(await env.ORDERS.get(`cpfpedidos:${cpfDigits}`) || '[]').filter(id => id !== order.orderId);
+        list.unshift(order.orderId);
+        await env.ORDERS.put(`cpfpedidos:${cpfDigits}`, JSON.stringify(list.slice(0, 20)));
+      }
+    }
   }
   await notifyWhatsApp(env, order);
 }
@@ -472,6 +788,7 @@ export function buildOrderMessage(o) {
     `✅ *PAGAMENTO APROVADO* — pedido ${o.orderId}`,
     `Valor pago: R$ ${brl(o.amount)} (${o.method})`,
     o.subtotal ? `Produtos: R$ ${brl(o.subtotal)} + frete R$ ${brl(o.shipping || 0)}` : null,
+    o.coupon && Number(o.discount) > 0 ? `Cupom: ${o.coupon} (− R$ ${brl(o.discount)})` : null,
     o.shippingLabel ? `Envio: ${o.shippingLabel}` : null,
     `ID Mercado Pago: ${o.paymentId}`,
     '',
@@ -516,6 +833,13 @@ function corsHeaders(request, env) {
 }
 function json(data, status, headers) {
   return new Response(JSON.stringify(data), { status, headers: { ...headers, 'Content-Type': 'application/json', 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-store' } });
+}
+function sameKey(a, b) {
+  const x = new TextEncoder().encode(String(a || '')), y = new TextEncoder().encode(String(b || ''));
+  if (!x.length || x.length !== y.length) return false;
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
 }
 export function isValidCpf(value) {
   const d = digits(value);
