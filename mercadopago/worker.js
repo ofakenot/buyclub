@@ -21,10 +21,10 @@
  *   SHIPPING_FEE        (opcional)             frete fixo em reais; padrão 50 (usado quando não há Melhor Envio)
  *   MELHOR_ENVIO_TOKEN  (secret, opcional)     token do Melhor Envio; liga o cálculo de frete por CEP
  *   ME_FROM_CEP         (obrigatório c/ token) CEP de onde as encomendas saem
- *   ME_BOX_CM           (opcional)             medidas da caixa em cm "altura,largura,comprimento"; padrão "10,15,20"
- *   ME_BASE_WEIGHT_KG   (opcional)             peso da caixa vazia em kg; padrão 0.2
+ *   ME_BOX_CM           (opcional)             medidas da caixa em cm "altura,largura,comprimento"; padrão "4,12,17"
+ *   ME_BASE_WEIGHT_KG   (opcional)             peso da caixa vazia em kg; padrão 0.15
  *   ME_ITEM_WEIGHT_KG   (opcional)             peso de cada unidade em kg; padrão 0.05
- *   ME_SERVICES         (opcional)             IDs dos serviços do Melhor Envio, ex.: "1,2" (PAC e SEDEX dos Correios); padrão: todos
+ *   ME_SERVICES         (opcional)             IDs dos serviços do Melhor Envio; padrão "1,2,3,31" (Correios PAC e SEDEX, Jadlog .Package, Loggi Express); "todos" mostra tudo
  *   ME_EXTRA_FEE        (opcional)             valor somado a cada opção de frete (embalagem/manuseio); padrão 0
  *   ME_CONTACT          (opcional)             contato técnico enviado no User-Agent, ex.: um e-mail seu
  *   ME_SANDBOX          (opcional)             "1" para usar o ambiente de testes do Melhor Envio
@@ -39,6 +39,8 @@ const WHOLESALE_MIN = { atacado5: 5, atacado10: 10 };
 const TYPE_LABEL = { varejo: 'Varejo', atacado5: 'Atacado (mín. 5)', atacado10: 'Atacado (mín. 10)' };
 const CATALOG_TTL_MS = 5 * 60 * 1000;
 const DEFAULT_SHIPPING_FEE = 50;
+const DEFAULT_ME_SERVICES = '1,2,3,31'; // Correios PAC, Correios SEDEX, Jadlog .Package, Loggi Express
+const DEFAULT_BOX_CM = '4,12,17';      // caixa de envio (altura, largura, comprimento)
 
 let catalogCache = { at: 0, url: '', products: null };
 
@@ -315,14 +317,14 @@ async function resolveShipping(env, cep, lines, subtotal, service) {
   if (free) options = applyFreeShipping(options);
   const chosen = options.find(o => String(o.id) === String(service));
   if (!chosen) throw new UserError('Essa opção de frete não está disponível para o CEP. Escolha outra.');
-  return { price: chosen.price, label: `${chosen.company} ${chosen.name} (${chosen.days} dias úteis)${chosen.free ? ' — grátis' : ''}` };
+  return { price: chosen.price, label: `${chosen.company} ${chosen.name} (${chosen.daysMin && chosen.daysMax && chosen.daysMin !== chosen.daysMax ? `${chosen.daysMin} a ${chosen.daysMax}` : chosen.days} dias úteis)${chosen.free ? ' — grátis' : ''}` };
 }
 
 export function shippingPackage(env, lines) {
-  const [h, w, l] = String(env.ME_BOX_CM || '10,15,20').split(',').map(Number);
+  const [h, w, l] = String(env.ME_BOX_CM || DEFAULT_BOX_CM).split(',').map(Number);
   const units = lines.reduce((s, x) => s + x.qty, 0);
-  const weight = (Number(env.ME_BASE_WEIGHT_KG ?? 0.2) || 0) + units * (Number(env.ME_ITEM_WEIGHT_KG ?? 0.05) || 0);
-  return { height: h || 10, width: w || 15, length: l || 20, weight: Math.max(0.1, round2(weight)) };
+  const weight = (Number(env.ME_BASE_WEIGHT_KG ?? 0.15) || 0) + units * (Number(env.ME_ITEM_WEIGHT_KG ?? 0.05) || 0);
+  return { height: h || 4, width: w || 12, length: l || 17, weight: Math.max(0.1, round2(weight)) };
 }
 
 async function melhorEnvioQuote(env, cep, lines, subtotal) {
@@ -332,7 +334,7 @@ async function melhorEnvioQuote(env, cep, lines, subtotal) {
     to: { postal_code: cep },
     package: shippingPackage(env, lines),
     options: { insurance_value: subtotal, receipt: false, own_hand: false },
-    ...(env.ME_SERVICES ? { services: String(env.ME_SERVICES) } : {})
+    ...(String(env.ME_SERVICES || DEFAULT_ME_SERVICES).toLowerCase() === 'todos' ? {} : { services: String(env.ME_SERVICES || DEFAULT_ME_SERVICES) })
   };
   const res = await fetch(`${base}/api/v2/me/shipment/calculate`, {
     method: 'POST',
@@ -352,6 +354,12 @@ async function melhorEnvioQuote(env, cep, lines, subtotal) {
   return parseQuotes(data, Number(env.ME_EXTRA_FEE) || 0);
 }
 
+function deliveryRange(o) {
+  const r = o.custom_delivery_range || o.delivery_range || {};
+  const min = Number(r.min) || null, max = Number(r.max) || null;
+  return min && max ? { daysMin: min, daysMax: max } : {};
+}
+
 export function parseQuotes(data, extra = 0) {
   return data
     .filter(o => o && !o.error && Number(o.custom_price ?? o.price) > 0)
@@ -360,7 +368,8 @@ export function parseQuotes(data, extra = 0) {
       name: String(o.name || ''),
       company: String((o.company && o.company.name) || ''),
       price: round2(Number(o.custom_price ?? o.price) + extra),
-      days: Number(o.custom_delivery_time ?? o.delivery_time) || null
+      days: Number(o.custom_delivery_time ?? o.delivery_time) || null,
+      ...deliveryRange(o)
     }))
     .sort((a, b) => a.price - b.price);
 }

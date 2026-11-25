@@ -4740,9 +4740,9 @@ document.getElementById('cart-clear')?.addEventListener('click', clearCart);
 
 /* Frete por CEP (Melhor Envio via Worker). Sem token no Worker, fica o frete fixo. */
 const SHIP_T = {
-  pt: { title: 'Escolha o frete', loading: 'Calculando frete…', enterCep: 'Informe o CEP', days: n => `${n} ${n === 1 ? 'dia útil' : 'dias úteis'}`, error: 'Não foi possível calcular o frete. Tente de novo.', choose: 'Escolha uma opção de frete.' },
-  en: { title: 'Choose shipping', loading: 'Calculating shipping…', enterCep: 'Enter your ZIP', days: n => `${n} business ${n === 1 ? 'day' : 'days'}`, error: 'Could not calculate shipping. Please try again.', choose: 'Choose a shipping option.' },
-  es: { title: 'Elige el envío', loading: 'Calculando envío…', enterCep: 'Ingresa el CEP', days: n => `${n} ${n === 1 ? 'día hábil' : 'días hábiles'}`, error: 'No fue posible calcular el envío. Inténtalo de nuevo.', choose: 'Elige una opción de envío.' }
+  pt: { title: 'Escolha o frete', loading: 'Calculando frete…', enterCep: 'Informe o CEP', days: (n, a, b) => a && b && a !== b ? `${a} a ${b} dias úteis` : `${n} ${n === 1 ? 'dia útil' : 'dias úteis'}`, error: 'Não foi possível calcular o frete. Tente de novo.', choose: 'Escolha uma opção de frete.' },
+  en: { title: 'Choose shipping', loading: 'Calculating shipping…', enterCep: 'Enter your ZIP', days: (n, a, b) => a && b && a !== b ? `${a}–${b} business days` : `${n} business ${n === 1 ? 'day' : 'days'}`, error: 'Could not calculate shipping. Please try again.', choose: 'Choose a shipping option.' },
+  es: { title: 'Elige el envío', loading: 'Calculando envío…', enterCep: 'Ingresa el CEP', days: (n, a, b) => a && b && a !== b ? `${a} a ${b} días hábiles` : `${n} ${n === 1 ? 'día hábil' : 'días hábiles'}`, error: 'No fue posible calcular el envío. Inténtalo de nuevo.', choose: 'Elige una opción de envío.' }
 };
 function shipT(key) { const d = SHIP_T[currentLang] || SHIP_T.pt; return d[key]; }
 let shipQuote = { enabled: null, key: '', options: [], selected: null, loading: false };
@@ -4759,7 +4759,7 @@ function renderShipOptions(message, isError) {
   if (!shipQuote.enabled && !shipQuote.loading && !message) { box.hidden = true; box.innerHTML = ''; return; }
   box.hidden = false;
   if (shipQuote.loading || message) { box.innerHTML = `<p class="co-ship-msg${isError ? ' is-error' : ''}">${escShip(message || shipT('loading'))}</p>`; return; }
-  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${escShip(shipOptionLabel(o))}</b>${o.days ? `<small>${escShip(shipT('days')(o.days))}</small>` : ''}</span><em>${shipPriceText(o.price)}</em></label>`).join('');
+  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${escShip(shipOptionLabel(o))}</b>${o.days ? `<small>${escShip(shipT('days')(o.days, o.daysMin, o.daysMax))}</small>` : ''}</span><em>${shipPriceText(o.price)}</em></label>`).join('');
 }
 async function refreshShippingQuote() {
   const cep = (checkoutCep && checkoutCep.value || '').replace(/\D/g, '');
