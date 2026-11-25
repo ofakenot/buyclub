@@ -875,28 +875,34 @@ async function validSignature(request, secret, dataId) {
   return hex === parts.v1;
 }
 
+// Sem emojis e sem hífens; números (pedido, CPF, CEP, telefone) sozinhos na linha para copiar fácil
 export function buildOrderMessage(o) {
+  const num = v => String(v || '').replace(/\D/g, '');
+  const field = (label, value) => value ? `*${label}*\n${value}` : '';
+  const street = [o.address, o.number ? `nº ${o.number}` : ''].filter(Boolean).join(', ');
+  const place = [o.neighborhood, o.city].filter(Boolean).join(', ');
+  const items = String(o.items || '').split(' | ').filter(Boolean).map(i => i.replace(/\s+[—–-]\s+/g, ' '));
   return [
-    `✅ *PAGAMENTO APROVADO* — pedido ${o.orderId}`,
-    `Valor pago: R$ ${brl(o.amount)} (${o.method})`,
-    o.subtotal ? `Produtos: R$ ${brl(o.subtotal)} + frete R$ ${brl(o.shipping || 0)}` : null,
-    o.coupon && Number(o.discount) > 0 ? `Cupom: ${o.coupon} (− R$ ${brl(o.discount)})` : null,
-    o.shippingLabel ? `Envio: ${o.shippingLabel}` : null,
-    `ID Mercado Pago: ${o.paymentId}`,
-    '',
-    '📦 *ENVIAR PARA*',
-    `Nome: ${o.recipient}`,
-    `WhatsApp: ${o.phone}`,
-    o.email ? `E-mail: ${o.email}` : null,
-    o.cpf ? `CPF: ${o.cpf}` : null,
-    `Endereço: ${o.address}, nº ${o.number}${o.complement ? ` — ${o.complement}` : ''}`,
-    `Bairro: ${o.neighborhood}`,
-    `Cidade/UF: ${o.city}`,
-    `CEP: ${o.cep}`,
-    '',
-    '🛒 *ITENS*',
-    ...String(o.items).split(' | ').filter(Boolean).map(i => `• ${i}`)
-  ].filter(l => l !== null).join('\n');
+    `*PAGAMENTO APROVADO*\nR$ ${brl(o.amount)} no ${o.method}`,
+    field('Pedido', o.orderId),
+    items.length ? `*ITENS*\n${items.join('\n')}` : '',
+    [
+      '*VALORES*',
+      o.subtotal ? `Produtos: R$ ${brl(o.subtotal)}` : null,
+      o.subtotal ? `Frete: R$ ${brl(o.shipping || 0)}` : null,
+      o.coupon && Number(o.discount) > 0 ? `Cupom ${o.coupon}: R$ ${brl(o.discount)} de desconto` : null,
+      `Total pago: R$ ${brl(o.amount)}`,
+      o.shippingLabel ? `Envio: ${String(o.shippingLabel).replace(/\s+[—–-]\s+/g, ', ')}` : null
+    ].filter(Boolean).join('\n'),
+    '*ENVIAR PARA*',
+    field('Nome', o.recipient),
+    field('CPF', num(o.cpf)),
+    field('CEP', num(o.cep)),
+    field('Endereço', [street, o.complement, place].filter(Boolean).join('\n')),
+    field('WhatsApp', num(o.phone)),
+    field('Email', o.email),
+    field('ID Mercado Pago', o.paymentId)
+  ].filter(Boolean).join('\n\n');
 }
 
 async function notifyWhatsApp(env, o) {
