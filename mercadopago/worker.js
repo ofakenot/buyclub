@@ -479,7 +479,16 @@ async function setupTelegram(env, origin) {
     body: JSON.stringify({ url: `${origin}/telegram`, secret_token: env.TELEGRAM_SECRET, allowed_updates: ['message', 'edited_message'] })
   });
   const data = await res.json().catch(() => ({}));
-  return { ok: !!data.ok, description: data.description || '' };
+  const api = m => fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${m}`).then(r => r.json()).catch(() => ({}));
+  const [me, info] = await Promise.all([api('getMe'), api('getWebhookInfo')]);
+  const w = info.result || {};
+  return {
+    ok: !!data.ok, description: data.description || '',
+    bot: me.result ? `@${me.result.username}` : (me.description || 'token inválido'),
+    webhookUrl: w.url || '', pending: w.pending_update_count || 0,
+    lastError: w.last_error_message || '', chatsLiberados: String(env.TELEGRAM_CHAT_IDS || '').split(',').filter(Boolean).length,
+    kv: !!env.ORDERS
+  };
 }
 
 export async function handleTelegram(request, env) {
