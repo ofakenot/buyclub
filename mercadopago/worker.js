@@ -350,7 +350,7 @@ export async function checkAbandoned(env) {
     if (pay && (pay.status === 'approved' || pay.status === 'authorized')) continue;
     c.status = pay ? ({ pending: 'Pix gerado, não pago', in_process: 'em análise', rejected: 'pagamento recusado', cancelled: 'cancelado' }[pay.status] || pay.status) : 'não chegou a pagar';
     for (const chat of tgChats(env)) {
-      try { await tgSend(env, chat, abandonedCard(c)); } catch (e) { console.error('abandono tg', e && e.message); }
+      try { await tgPost(env, chat, 'abandono', abandonedCard(c)); } catch (e) { console.error('abandono tg', e && e.message); }
     }
   }
 }
@@ -553,18 +553,50 @@ export function parseTrackingMessage(text) {
   return { orderId: order ? order[0].toUpperCase() : '', cpf, code, carrier, name };
 }
 
-async function tgSend(env, chatId, text) {
+async function tgSend(env, chatId, text, thread) {
   const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true, ...(thread ? { message_thread_id: thread } : {}) })
   });
   const out = await res.json().catch(() => ({}));
   if (!res.ok) console.error('telegram sendMessage', res.status, JSON.stringify(out));
   // grupo que virou supergrupo: o Telegram informa o novo ID; reenvia para ele
   const moved = out && out.parameters && out.parameters.migrate_to_chat_id;
   if (moved && moved !== chatId) return tgSend(env, moved, text);
+  // tópico apagado: posta no geral
+  if (thread && !out.ok && /thread not found|TOPIC_DELETED|TOPIC_CLOSED/i.test(out.description || '')) {
+    if (env.ORDERS) await env.ORDERS.delete(`topicos:${chatId}`).catch(() => {});
+    return tgSend(env, chatId, text);
+  }
   return out;
+}
+
+// Tópicos (pastas) do grupo. Se o grupo tiver Tópicos ligados e o bot puder gerenciar, ele cria cada pasta uma vez.
+const TOPICS = {
+  pedidos: { name: '📦 Pedidos pagos', color: 7322096 },
+  abandono: { name: '🛒 Carrinhos abandonados', color: 16766590 },
+  cupons: { name: '🎟️ Cupons e indicações', color: 13338331 },
+  recompra: { name: '🔁 Recompra', color: 9367192 }
+};
+async function topicFor(env, chat, kind) {
+  if (!env.ORDERS || !TOPICS[kind] || !String(chat).startsWith('-')) return undefined;
+  const key = `topicos:${chat}`;
+  const map = JSON.parse(await env.ORDERS.get(key) || '{}');
+  if (map.off && Date.now() - map.off < 3600000) return undefined; // grupo sem tópicos: tenta de novo a cada hora
+  if (map[kind]) return map[kind];
+  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/createForumTopic`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chat, name: TOPICS[kind].name, icon_color: TOPICS[kind].color })
+  });
+  const out = await res.json().catch(() => ({}));
+  if (out.ok && out.result) { map[kind] = out.result.message_thread_id; delete map.off; }
+  else { console.warn('createForumTopic', JSON.stringify(out)); map.off = Date.now(); }
+  await env.ORDERS.put(key, JSON.stringify(map));
+  return map[kind];
+}
+async function tgPost(env, chat, kind, text) {
+  return tgSend(env, chat, text, await topicFor(env, chat, kind).catch(() => undefined));
 }
 const h = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
@@ -733,9 +765,10 @@ export function receiptPdf(o, test) {
   return Uint8Array.from(pdf, c => c.charCodeAt(0) & 0xFF);
 }
 
-async function tgSendDocument(env, chatId, bytes, filename, caption, replyTo) {
+async function tgSendDocument(env, chatId, bytes, filename, caption, replyTo, thread) {
   const fd = new FormData();
   fd.append('chat_id', String(chatId));
+  if (thread) fd.append('message_thread_id', String(thread));
   fd.append('document', new Blob([bytes], { type: 'application/pdf' }), filename);
   if (caption) fd.append('caption', caption);
   if (replyTo) fd.append('reply_to_message_id', String(replyTo));
@@ -744,11 +777,12 @@ async function tgSendDocument(env, chatId, bytes, filename, caption, replyTo) {
 }
 
 // Posta o pedido e, logo abaixo (como resposta), o PDF do comprovante
-async function postOrderWithReceipt(env, chat, o, test) {
-  const out = await tgSend(env, chat, tgOrderCard(o, test));
+async function postOrderWithReceipt(env, chat, o, test, thread) {
+  if (thread === undefined) thread = await topicFor(env, chat, 'pedidos').catch(() => undefined);
+  const out = await tgSend(env, chat, tgOrderCard(o, test), thread);
   const sent = out && out.result;
   try {
-    await tgSendDocument(env, (sent && sent.chat && sent.chat.id) || chat, receiptPdf(o, test), `comprovante-${o.orderId}.pdf`, `Comprovante do pedido ${o.orderId}`, sent && sent.message_id);
+    await tgSendDocument(env, (sent && sent.chat && sent.chat.id) || chat, receiptPdf(o, test), `comprovante-${o.orderId}.pdf`, `Comprovante do pedido ${o.orderId}`, sent && sent.message_id, sent && sent.message_thread_id);
   } catch (e) { console.error('comprovante pdf', e && e.stack || e); }
 }
 
@@ -767,20 +801,22 @@ export async function handleTelegram(request, env, parsed) {
   console.log('telegram update', JSON.stringify({ chat: msg && msg.chat && { id: msg.chat.id, type: msg.chat.type }, hasText: !!(msg && msg.text), keys: update ? Object.keys(update) : [] }));
   if (!msg || !msg.chat || typeof msg.text !== 'string') return;
   const chatId = msg.chat.id;
+  const thread = msg.is_topic_message ? msg.message_thread_id : undefined;
+  const say = text => tgSend(env, chatId, text, thread);
   // tira "@nomedobot" dos comandos usados em grupo
   const text = msg.text.trim().replace(/^(\/\w+)@\w+/, '$1');
   const isCommand = /^\/\w+/.test(text);
   const allowed = String(env.TELEGRAM_CHAT_IDS || '').split(',').map(x => x.trim()).filter(Boolean);
   if (!allowed.includes(String(chatId))) {
     // fora do grupo liberado: só responde a comandos, dizendo o ID para liberar
-    if (isCommand) await tgSend(env, chatId, `Este bot é privado.\nO ID desta conversa é <code>${h(chatId)}</code>. Para liberar, ele precisa entrar na lista TELEGRAM_CHAT_IDS do Worker.`);
+    if (isCommand) await say(`Este bot é privado.\nO ID desta conversa é <code>${h(chatId)}</code>. Para liberar, ele precisa entrar na lista TELEGRAM_CHAT_IDS do Worker.`);
     return;
   }
-  if (/^\/(start|help|ajuda)\b/i.test(text)) return tgSend(env, chatId, TG_HELP);
-  if (/^\/cupons\b/i.test(text)) return tgSend(env, chatId, env.ORDERS ? await couponReport(env) : '⚠️ KV ORDERS não ligado.');
-  if (/^\/cupom\b/i.test(text)) return tgSend(env, chatId, env.ORDERS ? await couponCommand(env, text.replace(/^\/cupom\b/i, '')) : '⚠️ KV ORDERS não ligado.');
+  if (/^\/(start|help|ajuda)\b/i.test(text)) return say(TG_HELP);
+  if (/^\/cupons\b/i.test(text)) return say(env.ORDERS ? await couponReport(env) : '⚠️ KV ORDERS não ligado.');
+  if (/^\/cupom\b/i.test(text)) return say(env.ORDERS ? await couponCommand(env, text.replace(/^\/cupom\b/i, '')) : '⚠️ KV ORDERS não ligado.');
   if (/^\/pedidoteste\b/i.test(text)) {
-    if (!env.ORDERS) return tgSend(env, chatId, '⚠️ O armazenamento (KV ORDERS) não está ligado no Worker.');
+    if (!env.ORDERS) return say('⚠️ O armazenamento (KV ORDERS) não está ligado no Worker.');
     const t = parseTrackingMessage(text.replace(/^\/pedidoteste\b/i, ''));
     const cpf = t.cpf || '11144477735';
     const name = (t.name || 'Cliente Teste').slice(0, 60);
@@ -789,8 +825,8 @@ export async function handleTelegram(request, env, parsed) {
     const cpfFmt = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     const test = { orderId: id, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1', shippingLabel: 'Correios PAC (teste)', cpf: cpfFmt,
       receipt: { id: 'TESTE', method: 'Pix', at: new Date().toISOString(), amount: 0, net: 0, payer: name } };
-    await postOrderWithReceipt(env, chatId, test, true);
-    return tgSend(env, chatId, `No site: ${h(site)}/?pedido=${h(id)} (CPF ${h(cpfFmt)}). Some em 7 dias.`);
+    await postOrderWithReceipt(env, chatId, test, true, thread);
+    return say(`No site: ${h(site)}/?pedido=${h(id)} (CPF ${h(cpfFmt)}). Some em 7 dias.`);
   }
   // resposta a um cartão de pedido do bot: basta o código (o número do pedido vem da mensagem respondida)
   const replied = msg.reply_to_message;
@@ -800,41 +836,41 @@ export async function handleTelegram(request, env, parsed) {
   if (isCommand && !cmd) return;
   const body = replyOrder ? `${replyOrder[0]} ${text}` : cmd ? text.slice(cmd[0].length) : text;
   if (!cmd) { const q = parseTrackingMessage(body); if (!(q.code && (q.cpf || q.orderId))) return; }
-  if (!env.ORDERS) return tgSend(env, chatId, '⚠️ O armazenamento (KV ORDERS) não está ligado no Worker. Sem ele não dá para salvar o rastreio.');
+  if (!env.ORDERS) return say('⚠️ O armazenamento (KV ORDERS) não está ligado no Worker. Sem ele não dá para salvar o rastreio.');
 
   if (cmd && /^(apagar|remover)$/i.test(cmd[1])) {
     const del = body.match(/\bBC[A-Z0-9]{6,22}\b/i);
-    if (!del) return tgSend(env, chatId, 'Mande o número do pedido: <code>/apagar BC…</code>');
+    if (!del) return say('Mande o número do pedido: <code>/apagar BC…</code>');
     await env.ORDERS.delete(`envio:${del[0].toUpperCase()}`);
-    return tgSend(env, chatId, `🗑️ Rastreio do pedido <b>${h(del[0].toUpperCase())}</b> apagado.`);
+    return say(`🗑️ Rastreio do pedido <b>${h(del[0].toUpperCase())}</b> apagado.`);
   }
 
   const p = parseTrackingMessage(body);
   if (replyOrder) p.name = ''; // na resposta, o pedido já está identificado; palavras soltas não são nome
-  if (!p.code || p.code.length < 8) return tgSend(env, chatId, '❌ Não achei o código de rastreio na mensagem.\n\n' + TG_HELP);
-  if (!p.orderId && !p.cpf) return tgSend(env, chatId, '❌ Mande também o CPF do cliente (ou o número do pedido BC…).');
+  if (!p.code || p.code.length < 8) return say('❌ Não achei o código de rastreio na mensagem.\n\n' + TG_HELP);
+  if (!p.orderId && !p.cpf) return say('❌ Mande também o CPF do cliente (ou o número do pedido BC…).');
 
   let orderId = p.orderId;
   if (!orderId) {
     const list = JSON.parse(await env.ORDERS.get(`cpfpedidos:${p.cpf}`) || '[]');
-    if (!list.length) return tgSend(env, chatId, `❌ Não achei pedido pago com o CPF ${h(p.cpf)}. Mande junto o número do pedido (BC…).`);
+    if (!list.length) return say(`❌ Não achei pedido pago com o CPF ${h(p.cpf)}. Mande junto o número do pedido (BC…).`);
     if (list.length > 1) {
       const recent = await Promise.all(list.slice(0, 5).map(async id => [id, await env.ORDERS.get(`envio:${id}`)]));
       const open = recent.filter(([, t]) => !t).map(([id]) => id);
-      if (open.length !== 1) return tgSend(env, chatId, `⚠️ Esse CPF tem ${list.length} pedidos: ${list.slice(0, 5).map(h).join(', ')}.\nMande de novo com o número do pedido.`);
+      if (open.length !== 1) return say(`⚠️ Esse CPF tem ${list.length} pedidos: ${list.slice(0, 5).map(h).join(', ')}.\nMande de novo com o número do pedido.`);
       orderId = open[0];
     } else orderId = list[0];
   }
 
   const pay = await getOrder(env, orderId);
-  if (!pay) return tgSend(env, chatId, `❌ Pedido <b>${h(orderId)}</b> não encontrado no Mercado Pago.`);
+  if (!pay) return say(`❌ Pedido <b>${h(orderId)}</b> não encontrado no Mercado Pago.`);
   const m = pay.metadata || {};
-  if (p.cpf && paymentCpf(pay) !== p.cpf) return tgSend(env, chatId, `❌ O CPF não confere com o pedido <b>${h(orderId)}</b>.`);
+  if (p.cpf && paymentCpf(pay) !== p.cpf) return say(`❌ O CPF não confere com o pedido <b>${h(orderId)}</b>.`);
   const want = normName(p.name), have = normName(m.recipient);
   if (want.length && have.length && !want.every(w => have.includes(w))) {
-    return tgSend(env, chatId, `❌ O nome não confere. O pedido <b>${h(orderId)}</b> está em nome de <b>${h(m.recipient)}</b>. Nada foi salvo.`);
+    return say(`❌ O nome não confere. O pedido <b>${h(orderId)}</b> está em nome de <b>${h(m.recipient)}</b>. Nada foi salvo.`);
   }
-  if (pay.status !== 'approved') return tgSend(env, chatId, `⚠️ O pagamento do pedido <b>${h(orderId)}</b> está "${h(pay.status)}", não aprovado. Nada foi salvo.`);
+  if (pay.status !== 'approved') return say(`⚠️ O pagamento do pedido <b>${h(orderId)}</b> está "${h(pay.status)}", não aprovado. Nada foi salvo.`);
 
   const carrier = detectCarrier(p.code, p.carrier);
   const info = { code: p.code, carrier, name: CARRIERS[carrier].name, url: CARRIERS[carrier].url(p.code), at: new Date().toISOString() };
@@ -853,7 +889,7 @@ export async function handleTelegram(request, env, parsed) {
     `*Seu pedido no site*\n${site}/?pedido=${orderId}`,
     refCode ? `*Indique e ganhe*\nSeus amigos ganham ${REFERRAL_PCT}% na primeira compra com o seu cupom ${refCode}, e você ganha ${REFERRAL_PCT}% na próxima compra a cada amigo que comprar.\n${site}/?cupom=${refCode}` : ''
   ].filter(Boolean).join('\n\n');
-  return tgSend(env, chatId, [
+  return say([
     `✅ Rastreio salvo no pedido <b>${h(orderId)}</b>`,
     `Cliente: ${h(m.recipient || '')}${m.city ? ` · ${h(m.city)}` : ''}`,
     `${h(info.name)}: <code>${h(info.code)}</code>`,
@@ -1138,7 +1174,7 @@ async function afterPaidGrowth(env, order) {
       const waPhone = p.length === 10 || p.length === 11 ? '55' + p : p;
       const waText = `Olá, ${first}! Uma pessoa que você indicou acabou de comprar na Buy Club. Como agradecimento, você ganhou ${REFERRAL_PCT}% de desconto na próxima compra com o cupom ${prize} (válido até ${until.split('-').reverse().join('/')}).`;
       for (const chat of tgChats(env)) {
-        await tgSend(env, chat, [
+        await tgPost(env, chat, 'cupons', [
           `🎁 <b>Indicação</b>: ${h(order.recipient)} comprou com o cupom <code>${h(code)}</code> de ${h(rule.ownerName)}.`,
           `${h(first)} ganhou o cupom <code>${h(prize)}</code> (${REFERRAL_PCT}% em uma compra, até ${h(until.split('-').reverse().join('/'))}).`,
           waPhone.length >= 12 ? `📲 <a href="https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}">Avisar ${h(first)} no WhatsApp</a>` : null
@@ -1192,7 +1228,7 @@ export async function checkRebuy(env) {
     if (!r) continue;
     if (Date.now() < r.due) continue;
     await env.ORDERS.delete(k.name);
-    for (const chat of tgChats(env)) await tgSend(env, chat, rebuyCard(r)).catch(() => {});
+    for (const chat of tgChats(env)) await tgPost(env, chat, 'recompra', rebuyCard(r)).catch(() => {});
   }
 }
 
