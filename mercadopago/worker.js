@@ -454,7 +454,12 @@ async function tgSend(env, chatId, text) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
   });
-  if (!res.ok) console.error('telegram sendMessage', res.status, await res.text());
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) console.error('telegram sendMessage', res.status, JSON.stringify(out));
+  // grupo que virou supergrupo: o Telegram informa o novo ID; reenvia para ele
+  const moved = out && out.parameters && out.parameters.migrate_to_chat_id;
+  if (moved && moved !== chatId) return tgSend(env, moved, text);
+  return out;
 }
 const h = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
@@ -496,6 +501,7 @@ export async function handleTelegram(request, env) {
   if (!sameKey(request.headers.get('X-Telegram-Bot-Api-Secret-Token'), env.TELEGRAM_SECRET)) { console.warn('telegram: secret inválido'); return; }
   const update = await request.json().catch(() => null);
   const msg = update && (update.message || update.edited_message);
+  console.log('telegram update', JSON.stringify({ chat: msg && msg.chat && { id: msg.chat.id, type: msg.chat.type }, hasText: !!(msg && msg.text), keys: update ? Object.keys(update) : [] }));
   if (!msg || !msg.chat || typeof msg.text !== 'string') return;
   const chatId = msg.chat.id;
   // tira "@nomedobot" dos comandos usados em grupo
