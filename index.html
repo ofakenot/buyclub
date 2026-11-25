@@ -2649,6 +2649,139 @@ position: absolute; top: .65rem; left: .65rem;
     }
   </style>
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
+<style id="checkout-apple">
+/* ===== CHECKOUT estilo Apple: fundo cinza claro, cartões brancos, tipografia do sistema, botão azul em pílula ===== */
+#checkout-modal { --ap-bg: #f5f5f7; --ap-card: #fff; --ap-text: #1d1d1f; --ap-muted: #6e6e73; --ap-line: #d2d2d7; --ap-blue: #0071e3; --ap-blue-h: #0077ed; }
+#checkout-modal .co-shell { background: var(--ap-bg); color: var(--ap-text); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Plus Jakarta Sans", Arial, sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -.012em; }
+#checkout-modal .co-header { grid-template-columns: 2.25rem 1fr 2.25rem; padding: .55rem 1rem; padding-top: max(.55rem, env(safe-area-inset-top)); background: rgba(251,251,253,.82); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-back { width: 2.25rem; height: 2.25rem; border: 0; background: rgba(0,0,0,.05); color: var(--ap-text); }
+#checkout-modal .co-back:hover { background: rgba(0,0,0,.09); }
+#checkout-modal .co-brand { font-family: inherit; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; }
+#checkout-modal .co-secure { justify-self: end; color: var(--ap-muted); font-size: .74rem; font-weight: 500; }
+#checkout-modal .co-summary-toggle { padding: .9rem 1.1rem; background: var(--ap-card); border-bottom: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-summary-toggle-label { color: var(--ap-blue); font-size: .9rem; font-weight: 500; }
+#checkout-modal .co-summary-toggle strong { font-size: 1.05rem; font-weight: 600; }
+#checkout-modal .co-aside { background: var(--ap-bg); border-bottom: 0; }
+#checkout-modal .co-aside-inner, #checkout-modal .co-main-inner { padding: 1.25rem 1rem; }
+#checkout-modal .co-card { background: var(--ap-card); border-radius: 18px; padding: 1.25rem; }
+#checkout-modal .co-title { font-family: inherit; font-size: 2rem; font-weight: 700; letter-spacing: -.028em; line-height: 1.1; margin: .35rem 0 .4rem; }
+#checkout-modal .co-subtitle { color: var(--ap-muted); font-size: .95rem; line-height: 1.45; margin-bottom: 1.4rem; }
+#checkout-modal .checkout-form { gap: 1rem; }
+#checkout-modal .co-section { gap: .75rem; padding: 1.35rem 1.15rem; background: var(--ap-card); border-radius: 18px; }
+#checkout-modal .co-section-title { font-size: 1.32rem; font-weight: 600; letter-spacing: -.022em; color: var(--ap-text); margin-bottom: .2rem; }
+#checkout-modal .co-float input { height: 3.5rem; padding: 1.3rem 1rem .4rem; border: 1px solid var(--ap-line); border-radius: 12px; background: #fff; color: var(--ap-text); font-size: 1.0625rem; transition: border-color .2s, box-shadow .2s; }
+#checkout-modal .co-float label { left: 1.02rem; top: .5rem; color: var(--ap-muted); font-size: .72rem; font-weight: 400; }
+#checkout-modal .co-float input::placeholder { color: #a1a1a6; }
+#checkout-modal .co-float input:focus { border-color: var(--ap-blue); box-shadow: 0 0 0 4px rgba(0,113,227,.18); }
+#checkout-modal .co-float input[readonly] { background: var(--ap-bg); border-color: transparent; color: var(--ap-text); }
+#checkout-modal .co-float input[readonly]:focus { border-color: transparent; box-shadow: none; }
+#checkout-modal .checkout-lookup-status { color: #248a3d; font-weight: 500; font-size: .75rem; }
+#checkout-modal .checkout-shipping-notice { padding: .8rem .95rem; border: 0; border-radius: 12px; background: var(--ap-bg); color: var(--ap-muted); font-size: .76rem; }
+#checkout-modal .checkout-shipping-notice strong { color: var(--ap-text); font-weight: 600; }
+#checkout-modal .co-ship-title { font-size: .95rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .co-ship-msg { color: var(--ap-muted); font-size: .82rem; }
+#checkout-modal .co-ship-opt { padding: .85rem 1rem; border: 1px solid var(--ap-line); border-radius: 12px; transition: border-color .2s, box-shadow .2s; }
+#checkout-modal .co-ship-opt:has(input:checked) { border-color: var(--ap-blue); box-shadow: 0 0 0 1px var(--ap-blue); }
+#checkout-modal .co-ship-opt input { accent-color: var(--ap-blue); }
+#checkout-modal .co-ship-opt b { font-size: .9rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .co-ship-opt small { color: var(--ap-muted); font-size: .78rem; }
+#checkout-modal .co-ship-opt em { font-size: .9rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .checkout-payment { display: grid; gap: .6rem; border: 0; border-radius: 0; overflow: visible; }
+#checkout-modal .checkout-payment label { min-height: 3.6rem; padding: .85rem 1rem; border: 1px solid var(--ap-line); border-radius: 12px; font-size: 1rem; font-weight: 500; color: var(--ap-text); transition: border-color .2s, box-shadow .2s; }
+#checkout-modal .checkout-payment label + label { border-top: 1px solid var(--ap-line); }
+#checkout-modal .checkout-payment label:has(input:checked) { background: #fff; border-color: var(--ap-blue); box-shadow: 0 0 0 1px var(--ap-blue); }
+#checkout-modal .checkout-payment input { accent-color: var(--ap-blue); }
+#checkout-modal .co-pay-name small { color: var(--ap-muted); font-size: .8rem; font-weight: 400; }
+#checkout-modal .checkout-form .shop-secure { margin: .2rem 0 .4rem; border: 0; border-radius: 14px; background: var(--ap-bg); color: var(--ap-muted); font-size: .78rem; }
+#checkout-modal .checkout-form .shop-secure strong { color: var(--ap-text); font-weight: 600; font-size: .85rem; }
+#checkout-modal .checkout-mp-note { margin-top: .2rem; padding: .8rem .95rem; border: 0; border-radius: 12px; background: #eef5ff; color: #0b4f9c; font-size: .8rem; }
+#checkout-modal .checkout-error { border-radius: 12px; border: 0; background: #fff2f2; color: #d70015; font-weight: 500; }
+#checkout-modal .checkout-actions { gap: .35rem; padding-top: .4rem; }
+#checkout-modal .checkout-action.submit { min-height: 3.5rem; border-radius: 980px; background: var(--ap-text); color: #fff; font-size: 1.0625rem; font-weight: 600; letter-spacing: -.01em; box-shadow: none; transition: background .2s, transform .15s; }
+#checkout-modal .checkout-action.submit:hover { background: #000; }
+#checkout-modal .checkout-action.submit:active { transform: scale(.985); }
+#checkout-modal .checkout-action.submit.is-mp { background: var(--ap-blue); box-shadow: none; }
+#checkout-modal .checkout-action.submit.is-mp:hover { background: var(--ap-blue-h); }
+#checkout-modal .checkout-action.cancel { color: var(--ap-blue); font-size: .92rem; font-weight: 400; }
+#checkout-modal .co-items { gap: 1rem; }
+#checkout-modal .co-item { grid-template-columns: 4.25rem minmax(0,1fr) auto; gap: .9rem; }
+#checkout-modal .co-thumb { width: 4.25rem; height: 4.25rem; border: 0; border-radius: 12px; background: var(--ap-bg); }
+#checkout-modal .co-thumb img { border-radius: 12px; padding: .35rem; mix-blend-mode: multiply; }
+#checkout-modal .co-qty { background: var(--ap-text); font-weight: 600; }
+#checkout-modal .co-item-name { font-size: .92rem; font-weight: 600; line-height: 1.3; color: var(--ap-text); }
+#checkout-modal .co-item-meta { color: var(--ap-muted); font-size: .78rem; margin-top: .2rem; }
+#checkout-modal .co-item-price { font-size: .92rem; font-weight: 600; color: var(--ap-text); }
+#checkout-modal .co-consult-pill { display: inline-block; padding: .28rem .6rem; border-radius: 980px; background: #fff4e5; color: #b25000; font-size: .72rem; font-weight: 600; letter-spacing: 0; }
+#checkout-modal .co-consult-note { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1.1rem; padding: .85rem .95rem; border-radius: 12px; background: #f0fbf3; color: #1d5e2e; font-size: .8rem; line-height: 1.45; }
+#checkout-modal .co-consult-note svg { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; margin-top: .05rem; color: #25d366; }
+#checkout-modal .co-consult-note p { margin: 0; }
+#checkout-modal .co-totals { gap: .6rem; margin-top: 1.2rem; padding-top: 1.1rem; border-top: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-row { color: var(--ap-muted); font-size: .9rem; }
+#checkout-modal .co-row span:last-child { color: var(--ap-text); font-weight: 500; }
+#checkout-modal .co-row.co-total { margin-top: .45rem; padding-top: .9rem; border-top: 1px solid rgba(0,0,0,.08); color: var(--ap-text); font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; }
+#checkout-modal .co-row.co-total span:last-child { font-weight: 700; }
+#checkout-modal .co-row.co-total small { color: var(--ap-muted); font-size: .72rem; font-weight: 500; }
+#checkout-modal .co-total-note { color: var(--ap-muted); font-size: .76rem; margin-top: .85rem; }
+@media (min-width: 900px) {
+  #checkout-modal .co-grid { min-height: calc(100dvh - 3.5rem); }
+  #checkout-modal .co-main { border-right: 0; }
+  #checkout-modal .co-aside, #checkout-modal .co-aside.is-open { background: var(--ap-bg); }
+  #checkout-modal .co-main-inner { max-width: 38rem; padding: 2.5rem 1.5rem 3rem 2.5rem; }
+  #checkout-modal .co-aside-inner { top: 3.5rem; max-width: 27rem; padding: 2.5rem 2.5rem 2.5rem 1.5rem; }
+  #checkout-modal .co-title { font-size: 2.5rem; }
+  #checkout-modal .co-section { padding: 1.6rem 1.5rem; }
+}
+#checkout-modal .co-ship-bolt { font-style: normal; margin-right: .3rem; }
+#checkout-modal .co-ship-opt:has(.co-ship-bolt) small { color: #248a3d; }
+/* 3 passos */
+#checkout-modal .co-steps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); margin: 0 0 1.1rem; padding: 0; list-style: none; }
+#checkout-modal .co-steps-bar { position: absolute; left: 16.66%; right: 16.66%; top: 1rem; height: 2px; border-radius: 2px; background: var(--ap-line); z-index: 0; }
+#checkout-modal .co-steps-bar b { display: block; height: 100%; border-radius: inherit; background: var(--ap-blue); transform: scaleX(0); transform-origin: 0 50%; transition: transform .55s cubic-bezier(.16,1,.3,1); }
+#checkout-modal .co-step-dot { position: relative; z-index: 1; display: flex; justify-content: center; }
+#checkout-modal .co-step-dot button { display: flex; flex-direction: column; align-items: center; gap: .4rem; padding: 0; border: 0; background: none; color: var(--ap-muted); font: inherit; font-size: .78rem; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#checkout-modal .co-step-dot i { position: relative; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--ap-bg); box-shadow: inset 0 0 0 2px var(--ap-line); color: var(--ap-muted); font-style: normal; font-size: .82rem; font-weight: 600; transition: background .35s, box-shadow .35s, color .35s, transform .35s cubic-bezier(.34,1.56,.64,1); }
+#checkout-modal .co-step-dot.is-active button { color: var(--ap-text); font-weight: 600; }
+#checkout-modal .co-step-dot.is-active i { background: var(--ap-blue); box-shadow: 0 0 0 5px rgba(0,113,227,.16); color: #fff; transform: scale(1.08); }
+#checkout-modal .co-step-dot.is-done button { color: var(--ap-text); }
+#checkout-modal .co-step-dot.is-done i { background: var(--ap-blue); box-shadow: none; color: transparent; }
+#checkout-modal .co-step-dot.is-done i::after { content: ""; position: absolute; width: .5rem; height: .85rem; margin-top: -.15rem; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg); animation: coCheck .35s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes coCheck { from { opacity: 0; transform: rotate(45deg) scale(.3); } to { opacity: 1; transform: rotate(45deg) scale(1); } }
+#checkout-modal .co-stage { position: relative; overflow: hidden; margin: -6px; padding: 6px; }
+#checkout-modal .co-step { display: none; flex-direction: column; gap: 1rem; }
+#checkout-modal .co-step.is-active { display: flex; }
+#checkout-modal .co-step.from-right { animation: coInR .5s cubic-bezier(.16,1,.3,1) both; }
+#checkout-modal .co-step.from-left { animation: coInL .5s cubic-bezier(.16,1,.3,1) both; }
+@keyframes coInR { from { opacity: 0; transform: translate3d(48px,0,0) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes coInL { from { opacity: 0; transform: translate3d(-48px,0,0) scale(.985); } to { opacity: 1; transform: none; } }
+#checkout-modal .co-step.is-active .co-section > * { animation: coRise .55s cubic-bezier(.16,1,.3,1) both; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(2) { animation-delay: .04s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(3) { animation-delay: .08s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(4) { animation-delay: .12s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(5) { animation-delay: .16s; }
+#checkout-modal .co-step.is-active .co-section > *:nth-child(n+6) { animation-delay: .2s; }
+@keyframes coRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+#checkout-modal .co-next { gap: .35rem; }
+#checkout-modal .co-next svg { width: 1.05rem; height: 1.05rem; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+#checkout-modal .co-next:hover svg { transform: translateX(4px); }
+#checkout-modal .co-next.submit { background: var(--ap-blue); }
+#checkout-modal .co-next.submit:hover { background: var(--ap-blue-h); }
+#checkout-modal .co-shake { animation: coShake .42s cubic-bezier(.36,.07,.19,.97) both; }
+#checkout-modal .co-shake input { border-color: #ff3b30 !important; box-shadow: 0 0 0 4px rgba(255,59,48,.15) !important; }
+@keyframes coShake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-6px); } 40%, 60% { transform: translateX(6px); } }
+#checkout-modal .co-review { display: grid; gap: 0; padding: .35rem 1.15rem; background: var(--ap-card); border-radius: 18px; }
+#checkout-modal .co-review:empty { display: none; }
+#checkout-modal .co-review-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: .85rem 0; }
+#checkout-modal .co-review-row + .co-review-row { border-top: 1px solid rgba(0,0,0,.08); }
+#checkout-modal .co-review-row small { display: block; margin-bottom: .2rem; color: var(--ap-muted); font-size: .74rem; }
+#checkout-modal .co-review-row p { margin: 0; color: var(--ap-text); font-size: .9rem; line-height: 1.45; }
+#checkout-modal .co-review-row button { flex: 0 0 auto; padding: .2rem 0; border: 0; background: none; color: var(--ap-blue); font: inherit; font-size: .88rem; cursor: pointer; }
+#checkout-modal .checkout-payment label { transition: border-color .2s, box-shadow .2s, transform .15s; }
+#checkout-modal .checkout-payment label:active { transform: scale(.985); }
+#checkout-modal .checkout-payment label:has(input:checked) .checkout-payment-icon { animation: coPop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes coPop { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { #checkout-modal .co-step, #checkout-modal .co-step .co-section > *, #checkout-modal .co-shake { animation: none !important; } }
+@media (min-width: 900px) { #checkout-modal .co-steps { margin-bottom: 1.4rem; } }
+</style>
 </head>
 <body>
 <!-- PRÉ-LOAD NEW LIFE + QUIZ -->
@@ -2975,8 +3108,16 @@ position: absolute; top: .65rem; left: .65rem;
             <h2 class="co-title" id="co-title" data-i18n="checkoutTitle">Finalizar pedido</h2>
             <p class="co-subtitle" data-i18n="checkoutSubtitle">Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.</p>
             <form class="checkout-form" id="checkout-form" novalidate>
+              <ol class="co-steps" id="co-steps" aria-label="Etapas">
+                <li class="co-step-dot is-active" data-go="1"><button type="button"><i>1</i><span data-co-step-label="1">Contato</span></button></li>
+                <li class="co-step-dot" data-go="2"><button type="button"><i>2</i><span data-co-step-label="2">Entrega</span></button></li>
+                <li class="co-step-dot" data-go="3"><button type="button"><i>3</i><span data-co-step-label="3">Pagamento</span></button></li>
+                <span class="co-steps-bar" aria-hidden="true"><b id="co-steps-fill"></b></span>
+              </ol>
+              <div class="co-stage">
+              <div class="co-step is-active" data-step="1">
               <section class="co-section">
-                <h3 class="co-section-title" data-i18n="coDelivery">Entrega</h3>
+                <h3 class="co-section-title" data-co-step-title="1">Seus dados</h3>
                 <div class="checkout-field co-float">
                   <input id="checkout-recipient" name="recipient" type="text" autocomplete="name" placeholder="Nome completo" data-i18n-placeholder="fullNamePlaceholder" required>
                   <label for="checkout-recipient" data-i18n="fieldRecipient">Nome de quem vai receber</label>
@@ -2991,6 +3132,12 @@ position: absolute; top: .65rem; left: .65rem;
                     <label for="checkout-email" data-i18n="fieldEmail">E-mail</label>
                   </div>
                 </div>
+              </section>
+              <button class="checkout-action submit co-next" type="button" data-next="2"><span data-co-next>Continuar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+              </div>
+              <div class="co-step" data-step="2">
+              <section class="co-section">
+                <h3 class="co-section-title" data-i18n="coDelivery">Entrega</h3>
                 <div class="checkout-address-grid">
                   <div class="checkout-field co-float">
                     <input id="checkout-cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" required>
@@ -3021,12 +3168,16 @@ position: absolute; top: .65rem; left: .65rem;
                   <input id="checkout-complement" name="complement" type="text" autocomplete="address-line2" placeholder="Opcional" data-i18n-placeholder="optionalPlaceholder">
                   <label for="checkout-complement" data-i18n="fieldComplement">Bloco / apartamento</label>
                 </div>
-                <div class="checkout-field co-float checkout-cpf-field" id="checkout-cpf-field">
-                  <input id="checkout-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14">
-                  <label for="checkout-cpf" data-i18n="fieldCpf">CPF do destinatário (opcional)</label>
+                <div class="checkout-field co-float checkout-cpf-field visible" id="checkout-cpf-field">
+                  <input id="checkout-cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14" required>
+                  <label for="checkout-cpf" data-i18n="fieldCpf">CPF do destinatário</label>
                 </div>
-                <p class="checkout-shipping-notice" data-i18n="shippingNotice">O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.</p>
+                <p class="checkout-shipping-notice" data-i18n="shippingNotice">O <strong>CPF do destinatário é obrigatório</strong>: a transportadora exige o documento para emitir a etiqueta e o código de rastreio.</p>
               </section>
+              <button class="checkout-action submit co-next" type="button" data-next="3"><span data-co-next>Continuar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+              </div>
+              <div class="co-step" data-step="3">
+              <div class="co-review" id="co-review"></div>
               <section class="co-section">
                 <h3 class="co-section-title checkout-payment-title" data-i18n="paymentTitle">Forma de pagamento</h3>
                 <div class="checkout-payment" role="radiogroup">
@@ -3041,6 +3192,8 @@ position: absolute; top: .65rem; left: .65rem;
               <div class="checkout-actions">
                 <button class="checkout-action submit" id="checkout-submit" type="submit"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.03c-.25.69-1.44 1.32-1.98 1.37-.51.05-1.15.07-1.85-.12a16.7 16.7 0 0 1-1.68-.62c-2.95-1.27-4.88-4.24-5.03-4.44-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.59-.37.79-.37h.57c.18 0 .43-.07.67.51.25.59.84 2.04.91 2.19.07.15.12.32.02.52-.1.2-.15.32-.3.49-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.49.22.57.35.07.12.07.71-.18 1.4Z"/></svg><span id="checkout-submit-label">Enviar para o WhatsApp</span></button>
                 <button class="checkout-action cancel" id="checkout-cancel" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span data-i18n="backButton">Voltar</span></button>
+              </div>
+              </div>
               </div>
             </form>
           </div>
@@ -3089,7 +3242,7 @@ position: absolute; top: .65rem; left: .65rem;
         <div class="info-feature-list">
           <div class="info-feature-item">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
-            <span data-i18n="card1Feature1"><strong>São Paulo (Capital):</strong> Entregue no <strong>mesmo dia</strong> para pedidos confirmados.</span>
+            <span data-i18n="card1Feature1"><strong>São Paulo (Capital):</strong> Entrega expressa em <strong>até 3 horas</strong> após o pedido, por R$ 50, com rastreio pelo WhatsApp.</span>
           </div>
           <div class="info-feature-item">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
@@ -3189,7 +3342,7 @@ position: absolute; top: .65rem; left: .65rem;
     <div>
       <h4 data-shop-t="payShip">Pagamento e entrega</h4>
       <div class="shop-pay"><span data-shop-t="card12">Cartão 12x</span><span>USDT</span><span>Cripto</span></div>
-      <p data-shop-t="shipText">Frete calculado pelo CEP no checkout. Grátis a partir de 3 produtos New Life.</p>
+      <p data-shop-t="shipText">Capital de SP: entrega expressa em até 3 horas por R$ 50. Demais CEPs: frete calculado no checkout. Grátis a partir de 3 produtos New Life.</p>
     </div>
   </div>
   <div class="shop-footer-bottom"><span>© <span id="shop-year">2026</span> Buy Club US. <span data-shop-t="rights">Todos os direitos reservados.</span></span><span data-shop-t="footerTag">Qualidade e tecnologia em peptídeos.</span></div>
@@ -3385,13 +3538,13 @@ function paymentBadgesHtml(){
 /* i18n - PT, EN e ES */
 const translations = {
   pt:{
-    headerTagline:"Qualidade Premium Global",heroBadge:"American Peptides",productCountSuffix:"produto",productCountSuffixPlural:"produtos",navHome:"Início",navCategories:"Categorias",navInfo:"Info",navContact:"Contato",categoriesTitle:"Categorias",chooseBrand:"Escolher marca",chooseBrandHint:"Selecione uma marca para ver os produtos",closeBrandMenu:"Fechar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética injetável",catEsteticaDesc:"Linha de estética injetável",categoriesSubtitle:"Explore nosso catálogo por marca",profileTagline:"Produtos Premium Importados",contactTitle:"Contato",whatsappSupport:"WhatsApp Suporte",officialSite:"Site Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Produto 100% original e certificado",modalSupport:"Suporte e orientação inclusos",infoBadge:"Padrão de Serviço & Garantia",infoTitle:"Informações de Envio",infoLead:"Logística rápida, embalagem segura e acompanhamento integral dos seus insumos.",card1Tag:"Logística Nacional",card1Title:"Envios & Prazos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entregue no <strong>mesmo dia</strong> para pedidos confirmados.",card1Feature2:"<strong>Outras Cidades & Estados:</strong> Entrega rastreada por Correios, Jadlog ou Loggi, com frete calculado pelo CEP.",card1PillText:"Valores de Frete",card1PillVal:"Calculado pelo CEP",card2Tag:"Insumo Incluso",card2Title:"Água Bacteriostática",card2Feature1:"Todas as ampolas e frascos acompanham <strong>água bacteriostática</strong> pronta para reconstituição imediata.",card2Feature2:"Embalagem protetora de grau laboratorial para garantir total integridade e esterilidade no transporte.",card2PillText:"Insumos inclusos sem custo extra",footerTagline:"Qualidade e tecnologia em peptídeos.",footerRights:"Todos os direitos reservados.",heroSubline:"Original products",heroInstallment:"Parcele sua compra em até 12x no cartão",heroPaymentMethods:"Aceitamos Pix e USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Entre para receber novidades e condições",exchangeLabel:"Câmbio",liveLabel:"em tempo real",contactIntro:"Fale com a Buy Club US para consultar disponibilidade, lote, documentação e condições de envio. Nossa equipe responde com agilidade e orienta cada etapa do pedido.",trustKicker:"ORIGEM E DOCUMENTAÇÃO",trustTitle:"Produtos originais, rastreáveis e acompanhados de COA",trustText:"Os produtos são comercializados como originais e cada lote pode ser acompanhado do respectivo Certificate of Analysis (COA), conforme disponibilidade da marca. Informações regulatórias e alegações de autorização devem ser verificadas na documentação oficial antes da compra.",trustItem1Title:"Originalidade",trustItem1Text:"Conferência de lote e procedência informada pela marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análise disponibilizado quando aplicável ao lote.",trustItem3Title:"Conformidade",trustItem3Text:"Consulte a documentação regulatória oficial e a finalidade de pesquisa.",accessBtn:"Acessar",buyBtn:"Comprar",addToCartBtn:"Adicionar ao carrinho",cartNav:"Carrinho",cartTitle:"Seu carrinho",cartEmpty:"Seu carrinho está vazio.",cartEmptyText:"Adicione os produtos que deseja comprar e finalize tudo em um só pedido.",cartContinue:"Continuar comprando",cartFinalize:"Finalizar compra",cartClear:"Limpar carrinho",cartRemove:"Remover",cartQty:"Quantidade",cartSubtotal:"Subtotal",cartConsult:"Valor sob consulta",cartUnit:"/unidade",cartAdded:"Produto adicionado ao carrinho",cartBack:"Voltar ao catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Linha completa de peptídeos Usa Peptides",catNewLifeDesc:"Linha exclusiva de produtos New Life",catSynedicaDesc:"Linha de peptídeos Synedica",catZphc:"ZPHC",catZphcDesc:"Linha de produtos ZPHC",catTg:"TG",catTgDesc:"Linha de produtos TG",catDysport:"DYSPORT",catDysportDesc:"Linha de produtos DYSPORT",retailLabel:"Varejo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidade",dragLabel:"arraste",priceConsult:"Preço sob consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total do lote",wholesale10Consult:"Valor a consultar para 10 unidades ou mais",directConsult:"Preços mediante consulta direta",researchUse:"Uso destinado à pesquisa",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Fechar formulário",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.",fieldCep:"CEP",fieldNumber:"Número",fieldAddress:"Endereço encontrado pelo CEP",fieldNeighborhood:"Bairro",fieldCity:"Cidade / UF",fieldComplement:"Bloco / apartamento",fieldRecipient:"Nome de quem vai receber",fieldCpf:"CPF do destinatário (opcional)",addressPlaceholder:"Digite o CEP para preencher",filledByCep:"Preenchido pelo CEP",numberPlaceholder:"Nº",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nome completo",shippingNotice:"O <strong>CPF do destinatário é opcional</strong>. Se informado, poderá ser usado no cadastro da transportadora e na geração do código de rastreio.",paymentTitle:"Forma de pagamento",cryptoPayment:"Criptomoeda",backButton:"Voltar",sendWhatsapp:"Enviar para o WhatsApp",mapKicker:"REDE INTERNACIONAL",mapTitle:"Presença e atendimento",mapNote:"Planeta interativo com rotação contínua. Arraste para explorar o globo em 360°.",globeAria:"Globo 3D com rotas internacionais e siglas dos países",exploreZoom:"Explorar &amp; Zoom",zoomHint:"ARRASTE E USE O SCROLL",loading:"carregando…",lookupLoading:"Consultando endereço…",lookupSuccess:"Endereço preenchido automaticamente.",lookupError:"Não foi possível localizar o CEP. Verifique os números.",closeExplore:"Fechar exploração",openExplore:"Explorar &amp; Zoom",totalLabel:"Total",coSecure:"Checkout seguro",coShowSummary:"Mostrar resumo do pedido",coHideSummary:"Ocultar resumo do pedido",coDelivery:"Entrega",coShipping:"Frete",mpSendWhatsapp:"Enviar pedido no WhatsApp",coTotalNote:"Frete calculado pelo CEP. Grátis a partir de 3 produtos New Life.",fieldPhone:"WhatsApp",fieldEmail:"E-mail (opcional)",payWithMp:"Pagar com Mercado Pago",mpRedirecting:"Abrindo o Mercado Pago…",mpNotePix:"Você será levado ao Mercado Pago para pagar com Pix. O pedido é confirmado automaticamente após o pagamento.",mpNoteCard:"Você será levado ao Mercado Pago para pagar com cartão em até 12x. O pedido é confirmado automaticamente após o pagamento.",mpErrorGeneric:"Não foi possível abrir o pagamento agora. Tente de novo ou finalize pelo WhatsApp.",mpWholesaleMin:"{name}: o preço de atacado exige no mínimo {min} unidades. Ajuste a quantidade no carrinho.",mpConsult:"{name} tem valor sob consulta. Para esse item, escolha USDT ou Criptomoeda e finalize pelo WhatsApp.",mpApprovedTitle:"Pagamento aprovado!",mpApprovedText:"Recebemos seu pagamento do pedido {id}. Vamos preparar o envio e falar com você pelo WhatsApp.",mpPendingTitle:"Pagamento em processamento",mpPendingText:"O pedido {id} será confirmado assim que o Mercado Pago aprovar o pagamento.",mpFailedTitle:"Pagamento não concluído",mpFailedText:"O pagamento do pedido {id} não foi concluído. Seu carrinho continua salvo para tentar de novo.",mpOk:"Entendi",phoneInvalid:"Informe um WhatsApp válido com DDD."
+    headerTagline:"Qualidade Premium Global",heroBadge:"American Peptides",productCountSuffix:"produto",productCountSuffixPlural:"produtos",navHome:"Início",navCategories:"Categorias",navInfo:"Info",navContact:"Contato",categoriesTitle:"Categorias",chooseBrand:"Escolher marca",chooseBrandHint:"Selecione uma marca para ver os produtos",closeBrandMenu:"Fechar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética injetável",catEsteticaDesc:"Linha de estética injetável",categoriesSubtitle:"Explore nosso catálogo por marca",profileTagline:"Produtos Premium Importados",contactTitle:"Contato",whatsappSupport:"WhatsApp Suporte",officialSite:"Site Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Produto 100% original e certificado",modalSupport:"Suporte e orientação inclusos",infoBadge:"Padrão de Serviço & Garantia",infoTitle:"Informações de Envio",infoLead:"Logística rápida, embalagem segura e acompanhamento integral dos seus insumos.",card1Tag:"Logística Nacional",card1Title:"Envios & Prazos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entrega expressa em <strong>até 3 horas</strong> após o pedido, por R$ 50, com rastreio pelo WhatsApp.",card1Feature2:"<strong>Outras Cidades & Estados:</strong> Entrega rastreada por Correios, Jadlog ou Loggi, com frete calculado pelo CEP.",card1PillText:"Valores de Frete",card1PillVal:"Calculado pelo CEP",card2Tag:"Insumo Incluso",card2Title:"Água Bacteriostática",card2Feature1:"Todas as ampolas e frascos acompanham <strong>água bacteriostática</strong> pronta para reconstituição imediata.",card2Feature2:"Embalagem protetora de grau laboratorial para garantir total integridade e esterilidade no transporte.",card2PillText:"Insumos inclusos sem custo extra",footerTagline:"Qualidade e tecnologia em peptídeos.",footerRights:"Todos os direitos reservados.",heroSubline:"Original products",heroInstallment:"Parcele sua compra em até 12x no cartão",heroPaymentMethods:"Aceitamos Pix e USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Entre para receber novidades e condições",exchangeLabel:"Câmbio",liveLabel:"em tempo real",contactIntro:"Fale com a Buy Club US para consultar disponibilidade, lote, documentação e condições de envio. Nossa equipe responde com agilidade e orienta cada etapa do pedido.",trustKicker:"ORIGEM E DOCUMENTAÇÃO",trustTitle:"Produtos originais, rastreáveis e acompanhados de COA",trustText:"Os produtos são comercializados como originais e cada lote pode ser acompanhado do respectivo Certificate of Analysis (COA), conforme disponibilidade da marca. Informações regulatórias e alegações de autorização devem ser verificadas na documentação oficial antes da compra.",trustItem1Title:"Originalidade",trustItem1Text:"Conferência de lote e procedência informada pela marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análise disponibilizado quando aplicável ao lote.",trustItem3Title:"Conformidade",trustItem3Text:"Consulte a documentação regulatória oficial e a finalidade de pesquisa.",accessBtn:"Acessar",buyBtn:"Comprar",addToCartBtn:"Adicionar ao carrinho",cartNav:"Carrinho",cartTitle:"Seu carrinho",cartEmpty:"Seu carrinho está vazio.",cartEmptyText:"Adicione os produtos que deseja comprar e finalize tudo em um só pedido.",cartContinue:"Continuar comprando",cartFinalize:"Finalizar compra",cartClear:"Limpar carrinho",cartRemove:"Remover",cartQty:"Quantidade",cartSubtotal:"Subtotal",cartConsult:"Valor sob consulta",cartUnit:"/unidade",cartAdded:"Produto adicionado ao carrinho",cartBack:"Voltar ao catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Linha completa de peptídeos Usa Peptides",catNewLifeDesc:"Linha exclusiva de produtos New Life",catSynedicaDesc:"Linha de peptídeos Synedica",catZphc:"ZPHC",catZphcDesc:"Linha de produtos ZPHC",catTg:"TG",catTgDesc:"Linha de produtos TG",catDysport:"DYSPORT",catDysportDesc:"Linha de produtos DYSPORT",retailLabel:"Varejo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidade",dragLabel:"arraste",priceConsult:"Preço sob consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total do lote",wholesale10Consult:"Valor a consultar para 10 unidades ou mais",directConsult:"Preços mediante consulta direta",researchUse:"Uso destinado à pesquisa",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Fechar formulário",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Preencha os dados abaixo. Depois de enviar, o pedido será encaminhado com todos os detalhes para o WhatsApp.",fieldCep:"CEP",fieldNumber:"Número",fieldAddress:"Endereço encontrado pelo CEP",fieldNeighborhood:"Bairro",fieldCity:"Cidade / UF",fieldComplement:"Bloco / apartamento",fieldRecipient:"Nome de quem vai receber",fieldCpf:"CPF do destinatário",addressPlaceholder:"Digite o CEP para preencher",filledByCep:"Preenchido pelo CEP",numberPlaceholder:"Nº",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nome completo",shippingNotice:"O <strong>CPF do destinatário é obrigatório</strong>: a transportadora exige o documento para emitir a etiqueta e o código de rastreio.",paymentTitle:"Forma de pagamento",cryptoPayment:"Criptomoeda",backButton:"Voltar",sendWhatsapp:"Enviar para o WhatsApp",mapKicker:"REDE INTERNACIONAL",mapTitle:"Presença e atendimento",mapNote:"Planeta interativo com rotação contínua. Arraste para explorar o globo em 360°.",globeAria:"Globo 3D com rotas internacionais e siglas dos países",exploreZoom:"Explorar &amp; Zoom",zoomHint:"ARRASTE E USE O SCROLL",loading:"carregando…",lookupLoading:"Consultando endereço…",lookupSuccess:"Endereço preenchido automaticamente.",lookupError:"Não foi possível localizar o CEP. Verifique os números.",closeExplore:"Fechar exploração",openExplore:"Explorar &amp; Zoom",totalLabel:"Total",coSecure:"Checkout seguro",coShowSummary:"Mostrar resumo do pedido",coHideSummary:"Ocultar resumo do pedido",coDelivery:"Entrega",coShipping:"Frete",mpSendWhatsapp:"Enviar pedido no WhatsApp",coTotalNote:"Frete calculado pelo CEP. Grátis a partir de 3 produtos New Life.",fieldPhone:"WhatsApp",fieldEmail:"E-mail (opcional)",payWithMp:"Pagar com Mercado Pago",mpRedirecting:"Abrindo o Mercado Pago…",mpNotePix:"Você será levado ao Mercado Pago para pagar com Pix. O pedido é confirmado automaticamente após o pagamento.",mpNoteCard:"Você será levado ao Mercado Pago para pagar com cartão em até 12x. O pedido é confirmado automaticamente após o pagamento.",mpErrorGeneric:"Não foi possível abrir o pagamento agora. Tente de novo ou finalize pelo WhatsApp.",mpWholesaleMin:"{name}: o preço de atacado exige no mínimo {min} unidades. Ajuste a quantidade no carrinho.",mpConsult:"{name} tem valor sob consulta. Para esse item, escolha USDT ou Criptomoeda e finalize pelo WhatsApp.",mpApprovedTitle:"Pagamento aprovado!",mpApprovedText:"Recebemos seu pagamento do pedido {id}. Vamos preparar o envio e falar com você pelo WhatsApp.",mpPendingTitle:"Pagamento em processamento",mpPendingText:"O pedido {id} será confirmado assim que o Mercado Pago aprovar o pagamento.",mpFailedTitle:"Pagamento não concluído",mpFailedText:"O pagamento do pedido {id} não foi concluído. Seu carrinho continua salvo para tentar de novo.",mpOk:"Entendi",phoneInvalid:"Informe um WhatsApp válido com DDD."
   },
   en:{
-    headerTagline:"Global Premium Quality",heroBadge:"American Peptides",productCountSuffix:"product",productCountSuffixPlural:"products",navHome:"Home",navCategories:"Categories",navInfo:"Info",navContact:"Contact",categoriesTitle:"Categories",chooseBrand:"Choose brand",chooseBrandHint:"Select a brand to view products",closeBrandMenu:"Close brands",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosmetics",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Injectable aesthetics",catEsteticaDesc:"Injectable aesthetics line",categoriesSubtitle:"Explore our catalog by brand",profileTagline:"Premium Imported Products",contactTitle:"Contact",whatsappSupport:"WhatsApp Support",officialSite:"Official Website",finalizeOrder:"Place Order",modalOriginal:"100% original and certified product",modalSupport:"Support and guidance included",infoBadge:"Service Standards & Quality",infoTitle:"Shipping Information",infoLead:"Fast logistics, secure packaging and full tracking of your supplies.",card1Tag:"National Logistics",card1Title:"Shipping & Delivery",card1Feature1:"<strong>São Paulo (Capital):</strong> Delivered on the <strong>same day</strong> for confirmed orders.",card1Feature2:"<strong>Other Cities & States:</strong> Tracked delivery by Correios, Jadlog or Loggi, with shipping calculated by ZIP code.",card1PillText:"Shipping Rates",card1PillVal:"Calculated by ZIP",card2Tag:"Supply Included",card2Title:"Bacteriostatic Water",card2Feature1:"All vials come accompanied by <strong>bacteriostatic water</strong> ready for reconstitution.",card2Feature2:"Laboratory grade protective packaging ensuring complete sterility during transit.",card2PillText:"Supplies included at no extra cost",footerTagline:"Quality and technology in peptides.",footerRights:"All rights reserved.",heroSubline:"Original products",heroInstallment:"Split your purchase into up to 12 card installments",heroPaymentMethods:"We accept Pix and USDT",heroGroupTitle:"Buy Club group",heroGroupText:"Join for updates and offers",exchangeLabel:"Exchange",liveLabel:"live",contactIntro:"Contact Buy Club US to check availability, lot information, documentation and shipping conditions. Our team responds quickly and guides every step of the order.",trustKicker:"ORIGIN AND DOCUMENTATION",trustTitle:"Original, traceable products accompanied by COA",trustText:"Products are presented as original and each lot may be accompanied by its Certificate of Analysis (COA), when available from the brand. Regulatory information and authorization claims must be checked against official documentation before purchase.",trustItem1Title:"Originality",trustItem1Text:"Lot and provenance information supplied by the brand.",trustItem2Title:"COA",trustItem2Text:"Certificate of analysis provided when applicable to the lot.",trustItem3Title:"Compliance",trustItem3Text:"Review official regulatory documentation and research-use purpose.",accessBtn:"Access",buyBtn:"Buy",addToCartBtn:"Add to cart",cartNav:"Cart",cartTitle:"Your cart",cartEmpty:"Your cart is empty.",cartEmptyText:"Add the products you want and finish everything in one order.",cartContinue:"Continue shopping",cartFinalize:"Checkout",cartClear:"Clear cart",cartRemove:"Remove",cartQty:"Quantity",cartSubtotal:"Subtotal",cartConsult:"Price on request",cartUnit:"/unit",cartAdded:"Product added to cart",cartBack:"Back to catalog",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Full line of Usa Peptides",catNewLifeDesc:"Exclusive New Life product line",catSynedicaDesc:"Synedica peptide line",catZphc:"ZPHC",catZphcDesc:"ZPHC product line",catTg:"TG",catTgDesc:"TG product line",retailLabel:"Retail",wholesale5Label:"5 units",wholesale10Label:"10 units",unitSuffix:"/unit",dragLabel:"drag",priceConsult:"Price on request",wholesaleMin5:"Min. 5 units",wholesaleMin10:"Min. 10 units",wholesale5Total:"Lot total",wholesale10Consult:"Price on request for 10 units or more",directConsult:"Prices available by direct consultation",researchUse:"For research use",pageTitle:"Buy Club US — Premium Catalog",closeForm:"Close form",checkoutTitle:"Place order",checkoutSubtitle:"Fill in the details below. After sending, the order will be forwarded with all details to WhatsApp.",fieldCep:"ZIP code",fieldNumber:"Number",fieldAddress:"Address found from ZIP code",fieldNeighborhood:"Neighborhood",fieldCity:"City / State",fieldComplement:"Unit / apartment",fieldRecipient:"Recipient name",fieldCpf:"Recipient tax ID (optional)",addressPlaceholder:"Enter the ZIP code to fill in",filledByCep:"Filled from ZIP code",numberPlaceholder:"No.",optionalPlaceholder:"Optional",fullNamePlaceholder:"Full name",shippingNotice:"The recipient&#39;s <strong>tax ID is optional</strong>. If provided, it may be used for carrier registration and tracking-code generation.",paymentTitle:"Payment method",cryptoPayment:"Cryptocurrency",backButton:"Back",sendWhatsapp:"Send to WhatsApp",mapKicker:"INTERNATIONAL NETWORK",mapTitle:"Presence and support",mapNote:"Interactive globe with continuous rotation. Drag to explore the globe in 360°.",globeAria:"3D globe with international routes and country codes",exploreZoom:"Explore &amp; Zoom",zoomHint:"DRAG AND USE SCROLL",loading:"loading…",lookupLoading:"Looking up address…",lookupSuccess:"Address filled automatically.",lookupError:"ZIP code not found. Check the numbers.",closeExplore:"Close exploration",openExplore:"Explore &amp; Zoom",totalLabel:"Total",coSecure:"Secure checkout",coShowSummary:"Show order summary",coHideSummary:"Hide order summary",coDelivery:"Delivery",coShipping:"Shipping",mpSendWhatsapp:"Send order on WhatsApp",coTotalNote:"Shipping calculated by ZIP code. Free from 3 New Life products.",fieldPhone:"WhatsApp",fieldEmail:"Email (optional)",payWithMp:"Pay with Mercado Pago",mpRedirecting:"Opening Mercado Pago…",mpNotePix:"You will be taken to Mercado Pago to pay with Pix. Your order is confirmed automatically after payment.",mpNoteCard:"You will be taken to Mercado Pago to pay by card in up to 12 installments. Your order is confirmed automatically after payment.",mpErrorGeneric:"We couldn't open the payment right now. Try again or finish on WhatsApp.",mpWholesaleMin:"{name}: wholesale price requires at least {min} units. Adjust the quantity in your cart.",mpConsult:"{name} is price on request. For this item, choose USDT or Cryptocurrency and finish on WhatsApp.",mpApprovedTitle:"Payment approved!",mpApprovedText:"We received your payment for order {id}. We'll prepare shipping and contact you on WhatsApp.",mpPendingTitle:"Payment processing",mpPendingText:"Order {id} will be confirmed as soon as Mercado Pago approves the payment.",mpFailedTitle:"Payment not completed",mpFailedText:"Payment for order {id} was not completed. Your cart is still saved so you can try again.",mpOk:"OK",phoneInvalid:"Enter a valid WhatsApp number with area code."
+    headerTagline:"Global Premium Quality",heroBadge:"American Peptides",productCountSuffix:"product",productCountSuffixPlural:"products",navHome:"Home",navCategories:"Categories",navInfo:"Info",navContact:"Contact",categoriesTitle:"Categories",chooseBrand:"Choose brand",chooseBrandHint:"Select a brand to view products",closeBrandMenu:"Close brands",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosmetics",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Injectable aesthetics",catEsteticaDesc:"Injectable aesthetics line",categoriesSubtitle:"Explore our catalog by brand",profileTagline:"Premium Imported Products",contactTitle:"Contact",whatsappSupport:"WhatsApp Support",officialSite:"Official Website",finalizeOrder:"Place Order",modalOriginal:"100% original and certified product",modalSupport:"Support and guidance included",infoBadge:"Service Standards & Quality",infoTitle:"Shipping Information",infoLead:"Fast logistics, secure packaging and full tracking of your supplies.",card1Tag:"National Logistics",card1Title:"Shipping & Delivery",card1Feature1:"<strong>São Paulo (Capital):</strong> Express delivery <strong>within 3 hours</strong> of your order, R$ 50, with tracking via WhatsApp.",card1Feature2:"<strong>Other Cities & States:</strong> Tracked delivery by Correios, Jadlog or Loggi, with shipping calculated by ZIP code.",card1PillText:"Shipping Rates",card1PillVal:"Calculated by ZIP",card2Tag:"Supply Included",card2Title:"Bacteriostatic Water",card2Feature1:"All vials come accompanied by <strong>bacteriostatic water</strong> ready for reconstitution.",card2Feature2:"Laboratory grade protective packaging ensuring complete sterility during transit.",card2PillText:"Supplies included at no extra cost",footerTagline:"Quality and technology in peptides.",footerRights:"All rights reserved.",heroSubline:"Original products",heroInstallment:"Split your purchase into up to 12 card installments",heroPaymentMethods:"We accept Pix and USDT",heroGroupTitle:"Buy Club group",heroGroupText:"Join for updates and offers",exchangeLabel:"Exchange",liveLabel:"live",contactIntro:"Contact Buy Club US to check availability, lot information, documentation and shipping conditions. Our team responds quickly and guides every step of the order.",trustKicker:"ORIGIN AND DOCUMENTATION",trustTitle:"Original, traceable products accompanied by COA",trustText:"Products are presented as original and each lot may be accompanied by its Certificate of Analysis (COA), when available from the brand. Regulatory information and authorization claims must be checked against official documentation before purchase.",trustItem1Title:"Originality",trustItem1Text:"Lot and provenance information supplied by the brand.",trustItem2Title:"COA",trustItem2Text:"Certificate of analysis provided when applicable to the lot.",trustItem3Title:"Compliance",trustItem3Text:"Review official regulatory documentation and research-use purpose.",accessBtn:"Access",buyBtn:"Buy",addToCartBtn:"Add to cart",cartNav:"Cart",cartTitle:"Your cart",cartEmpty:"Your cart is empty.",cartEmptyText:"Add the products you want and finish everything in one order.",cartContinue:"Continue shopping",cartFinalize:"Checkout",cartClear:"Clear cart",cartRemove:"Remove",cartQty:"Quantity",cartSubtotal:"Subtotal",cartConsult:"Price on request",cartUnit:"/unit",cartAdded:"Product added to cart",cartBack:"Back to catalog",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Full line of Usa Peptides",catNewLifeDesc:"Exclusive New Life product line",catSynedicaDesc:"Synedica peptide line",catZphc:"ZPHC",catZphcDesc:"ZPHC product line",catTg:"TG",catTgDesc:"TG product line",retailLabel:"Retail",wholesale5Label:"5 units",wholesale10Label:"10 units",unitSuffix:"/unit",dragLabel:"drag",priceConsult:"Price on request",wholesaleMin5:"Min. 5 units",wholesaleMin10:"Min. 10 units",wholesale5Total:"Lot total",wholesale10Consult:"Price on request for 10 units or more",directConsult:"Prices available by direct consultation",researchUse:"For research use",pageTitle:"Buy Club US — Premium Catalog",closeForm:"Close form",checkoutTitle:"Place order",checkoutSubtitle:"Fill in the details below. After sending, the order will be forwarded with all details to WhatsApp.",fieldCep:"ZIP code",fieldNumber:"Number",fieldAddress:"Address found from ZIP code",fieldNeighborhood:"Neighborhood",fieldCity:"City / State",fieldComplement:"Unit / apartment",fieldRecipient:"Recipient name",fieldCpf:"Recipient CPF",addressPlaceholder:"Enter the ZIP code to fill in",filledByCep:"Filled from ZIP code",numberPlaceholder:"No.",optionalPlaceholder:"Optional",fullNamePlaceholder:"Full name",shippingNotice:"The recipient&#39;s <strong>CPF is required</strong>: the carrier needs it to issue the shipping label and tracking code.",paymentTitle:"Payment method",cryptoPayment:"Cryptocurrency",backButton:"Back",sendWhatsapp:"Send to WhatsApp",mapKicker:"INTERNATIONAL NETWORK",mapTitle:"Presence and support",mapNote:"Interactive globe with continuous rotation. Drag to explore the globe in 360°.",globeAria:"3D globe with international routes and country codes",exploreZoom:"Explore &amp; Zoom",zoomHint:"DRAG AND USE SCROLL",loading:"loading…",lookupLoading:"Looking up address…",lookupSuccess:"Address filled automatically.",lookupError:"ZIP code not found. Check the numbers.",closeExplore:"Close exploration",openExplore:"Explore &amp; Zoom",totalLabel:"Total",coSecure:"Secure checkout",coShowSummary:"Show order summary",coHideSummary:"Hide order summary",coDelivery:"Delivery",coShipping:"Shipping",mpSendWhatsapp:"Send order on WhatsApp",coTotalNote:"Shipping calculated by ZIP code. Free from 3 New Life products.",fieldPhone:"WhatsApp",fieldEmail:"Email (optional)",payWithMp:"Pay with Mercado Pago",mpRedirecting:"Opening Mercado Pago…",mpNotePix:"You will be taken to Mercado Pago to pay with Pix. Your order is confirmed automatically after payment.",mpNoteCard:"You will be taken to Mercado Pago to pay by card in up to 12 installments. Your order is confirmed automatically after payment.",mpErrorGeneric:"We couldn't open the payment right now. Try again or finish on WhatsApp.",mpWholesaleMin:"{name}: wholesale price requires at least {min} units. Adjust the quantity in your cart.",mpConsult:"{name} is price on request. For this item, choose USDT or Cryptocurrency and finish on WhatsApp.",mpApprovedTitle:"Payment approved!",mpApprovedText:"We received your payment for order {id}. We'll prepare shipping and contact you on WhatsApp.",mpPendingTitle:"Payment processing",mpPendingText:"Order {id} will be confirmed as soon as Mercado Pago approves the payment.",mpFailedTitle:"Payment not completed",mpFailedText:"Payment for order {id} was not completed. Your cart is still saved so you can try again.",mpOk:"OK",phoneInvalid:"Enter a valid WhatsApp number with area code."
   },
   es:{
-    headerTagline:"Calidad Premium Global",heroBadge:"American Peptides",productCountSuffix:"producto",productCountSuffixPlural:"productos",navHome:"Inicio",navCategories:"Categorías",navInfo:"Info",navContact:"Contacto",categoriesTitle:"Categorías",chooseBrand:"Elegir marca",chooseBrandHint:"Seleccione una marca para ver los productos",closeBrandMenu:"Cerrar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética inyectable",catEsteticaDesc:"Línea de estética inyectable",categoriesSubtitle:"Explora nuestro catálogo por marca",profileTagline:"Productos Premium Importados",contactTitle:"Contacto",whatsappSupport:"Soporte por WhatsApp",officialSite:"Sitio Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Producto 100% original y certificado",modalSupport:"Soporte y orientación incluidos",infoBadge:"Estándar de Servicio y Garantía",infoTitle:"Información de Envío",infoLead:"Logística rápida, empaque seguro y seguimiento total de sus productos.",card1Tag:"Logística Nacional",card1Title:"Envíos y Tiempos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entrega en el <strong>mismo día</strong> para pedidos confirmados.",card1Feature2:"<strong>Otras Ciudades y Estados:</strong> Entrega rastreada por Correios, Jadlog o Loggi, con envío calculado por el CEP.",card1PillText:"Valores de Envío",card1PillVal:"Calculado por el CEP",card2Tag:"Insumo Incluido",card2Title:"Agua Bacteriostática",card2Feature1:"Todas las ampolletas vienen acompañadas de <strong>agua bacteriostática</strong>.",card2Feature2:"Empaque de protección especial de grado laboratorio.",card2PillText:"Insumos incluidos sin costo extra",footerTagline:"Calidad y tecnología en péptidos.",footerRights:"Todos los derechos reservados.",heroSubline:"Original products",heroInstallment:"Divide tu compra hasta en 12 cuotas con tarjeta",heroPaymentMethods:"Aceptamos Pix y USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Únase para recibir novedades y condiciones",exchangeLabel:"Cambio",liveLabel:"en tiempo real",contactIntro:"Contacta a Buy Club US para consultar disponibilidad, lote, documentación y condiciones de envío. Nuestro equipo responde con agilidad y orienta cada etapa del pedido.",trustKicker:"ORIGEN Y DOCUMENTACIÓN",trustTitle:"Productos originales, trazables y acompañados de COA",trustText:"Los productos se presentan como originales y cada lote puede incluir su Certificate of Analysis (COA), según disponibilidad de la marca. La información regulatoria y cualquier alegación de autorización debe verificarse en la documentación oficial antes de comprar.",trustItem1Title:"Originalidad",trustItem1Text:"Información de lote y procedencia proporcionada por la marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análisis disponible cuando corresponde al lote.",trustItem3Title:"Conformidad",trustItem3Text:"Consulta la documentación regulatoria oficial y el uso previsto para investigación.",accessBtn:"Acceder",buyBtn:"Comprar",addToCartBtn:"Añadir al carrito",cartNav:"Carrito",cartTitle:"Tu carrito",cartEmpty:"Tu carrito está vacío.",cartEmptyText:"Añade los productos que deseas y finaliza todo en un solo pedido.",cartContinue:"Seguir comprando",cartFinalize:"Finalizar compra",cartClear:"Vaciar carrito",cartRemove:"Eliminar",cartQty:"Cantidad",cartSubtotal:"Subtotal",cartConsult:"Precio bajo consulta",cartUnit:"/unidad",cartAdded:"Producto añadido al carrito",cartBack:"Volver al catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Línea completa Usa Peptides",catNewLifeDesc:"Línea exclusiva New Life",catSynedicaDesc:"Línea de péptidos Synedica",catZphc:"ZPHC",catZphcDesc:"Línea de productos ZPHC",catTg:"TG",catTgDesc:"Línea de productos TG",catDysport:"DYSPORT",catDysportDesc:"Línea de productos DYSPORT",retailLabel:"Menudeo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidad",dragLabel:"arrastra",priceConsult:"Precio bajo consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total del lote",wholesale10Consult:"Precio a consultar para 10 unidades o más",directConsult:"Precios mediante consulta directa",researchUse:"Uso destinado a investigación",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Cerrar formulario",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Complete los datos. Después de enviar, el pedido se enviará con todos los detalles a WhatsApp.",fieldCep:"Código postal",fieldNumber:"Número",fieldAddress:"Dirección encontrada por el código postal",fieldNeighborhood:"Barrio",fieldCity:"Ciudad / Estado",fieldComplement:"Bloque / apartamento",fieldRecipient:"Nombre del destinatario",fieldCpf:"Documento del destinatario (opcional)",addressPlaceholder:"Ingrese el código postal para completar",filledByCep:"Completado por el código postal",numberPlaceholder:"N.º",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nombre completo",shippingNotice:"El <strong>documento del destinatario es opcional</strong>. Si se informa, podrá utilizarse para el registro del transportista y la generación del código de seguimiento.",paymentTitle:"Forma de pago",cryptoPayment:"Criptomoneda",backButton:"Volver",sendWhatsapp:"Enviar a WhatsApp",mapKicker:"RED INTERNACIONAL",mapTitle:"Presencia y atención",mapNote:"Globo interactivo con rotación continua. Arrastra para explorar el globo en 360°.",globeAria:"Globo 3D con rutas internacionales y códigos de países",exploreZoom:"Explorar y zoom",zoomHint:"ARRASTRA Y USA EL SCROLL",loading:"cargando…",lookupLoading:"Consultando dirección…",lookupSuccess:"Dirección completada automáticamente.",lookupError:"No se encontró el código postal. Verifica los números.",closeExplore:"Cerrar exploración",openExplore:"Explorar y zoom",totalLabel:"Total",coSecure:"Pago seguro",coShowSummary:"Mostrar resumen del pedido",coHideSummary:"Ocultar resumen del pedido",coDelivery:"Entrega",coShipping:"Envío",mpSendWhatsapp:"Enviar pedido por WhatsApp",coTotalNote:"Envío calculado por el CEP. Gratis desde 3 productos New Life.",fieldPhone:"WhatsApp",fieldEmail:"Correo (opcional)",payWithMp:"Pagar con Mercado Pago",mpRedirecting:"Abriendo Mercado Pago…",mpNotePix:"Serás llevado a Mercado Pago para pagar con Pix. El pedido se confirma automáticamente después del pago.",mpNoteCard:"Serás llevado a Mercado Pago para pagar con tarjeta hasta en 12 cuotas. El pedido se confirma automáticamente después del pago.",mpErrorGeneric:"No fue posible abrir el pago ahora. Inténtalo de nuevo o finaliza por WhatsApp.",mpWholesaleMin:"{name}: el precio mayorista exige al menos {min} unidades. Ajusta la cantidad en el carrito.",mpConsult:"{name} tiene precio bajo consulta. Para este artículo, elige USDT o Criptomoneda y finaliza por WhatsApp.",mpApprovedTitle:"¡Pago aprobado!",mpApprovedText:"Recibimos tu pago del pedido {id}. Prepararemos el envío y te contactaremos por WhatsApp.",mpPendingTitle:"Pago en proceso",mpPendingText:"El pedido {id} se confirmará cuando Mercado Pago apruebe el pago.",mpFailedTitle:"Pago no completado",mpFailedText:"El pago del pedido {id} no se completó. Tu carrito sigue guardado para intentarlo de nuevo.",mpOk:"Entendido",phoneInvalid:"Ingresa un WhatsApp válido con código de área."
+    headerTagline:"Calidad Premium Global",heroBadge:"American Peptides",productCountSuffix:"producto",productCountSuffixPlural:"productos",navHome:"Inicio",navCategories:"Categorías",navInfo:"Info",navContact:"Contacto",categoriesTitle:"Categorías",chooseBrand:"Elegir marca",chooseBrandHint:"Seleccione una marca para ver los productos",closeBrandMenu:"Cerrar marcas",catAlluvi:"Alluvi",catElevia:"Elevia",catMounjaro:"Mounjaro",catCosmeticos:"Cosméticos",catTirzec:"TIRZEC",catLipoless:"LIPOLESS",catEstetica:"Estética inyectable",catEsteticaDesc:"Línea de estética inyectable",categoriesSubtitle:"Explora nuestro catálogo por marca",profileTagline:"Productos Premium Importados",contactTitle:"Contacto",whatsappSupport:"Soporte por WhatsApp",officialSite:"Sitio Oficial",finalizeOrder:"Finalizar Pedido",modalOriginal:"Producto 100% original y certificado",modalSupport:"Soporte y orientación incluidos",infoBadge:"Estándar de Servicio y Garantía",infoTitle:"Información de Envío",infoLead:"Logística rápida, empaque seguro y seguimiento total de sus productos.",card1Tag:"Logística Nacional",card1Title:"Envíos y Tiempos",card1Feature1:"<strong>São Paulo (Capital):</strong> Entrega exprés en <strong>hasta 3 horas</strong> tras el pedido, por R$ 50, con seguimiento por WhatsApp.",card1Feature2:"<strong>Otras Ciudades y Estados:</strong> Entrega rastreada por Correios, Jadlog o Loggi, con envío calculado por el CEP.",card1PillText:"Valores de Envío",card1PillVal:"Calculado por el CEP",card2Tag:"Insumo Incluido",card2Title:"Agua Bacteriostática",card2Feature1:"Todas las ampolletas vienen acompañadas de <strong>agua bacteriostática</strong>.",card2Feature2:"Empaque de protección especial de grado laboratorio.",card2PillText:"Insumos incluidos sin costo extra",footerTagline:"Calidad y tecnología en péptidos.",footerRights:"Todos los derechos reservados.",heroSubline:"Original products",heroInstallment:"Divide tu compra hasta en 12 cuotas con tarjeta",heroPaymentMethods:"Aceptamos Pix y USDT",heroGroupTitle:"Grupo Buy Club",heroGroupText:"Únase para recibir novedades y condiciones",exchangeLabel:"Cambio",liveLabel:"en tiempo real",contactIntro:"Contacta a Buy Club US para consultar disponibilidad, lote, documentación y condiciones de envío. Nuestro equipo responde con agilidad y orienta cada etapa del pedido.",trustKicker:"ORIGEN Y DOCUMENTACIÓN",trustTitle:"Productos originales, trazables y acompañados de COA",trustText:"Los productos se presentan como originales y cada lote puede incluir su Certificate of Analysis (COA), según disponibilidad de la marca. La información regulatoria y cualquier alegación de autorización debe verificarse en la documentación oficial antes de comprar.",trustItem1Title:"Originalidad",trustItem1Text:"Información de lote y procedencia proporcionada por la marca.",trustItem2Title:"COA",trustItem2Text:"Certificado de análisis disponible cuando corresponde al lote.",trustItem3Title:"Conformidad",trustItem3Text:"Consulta la documentación regulatoria oficial y el uso previsto para investigación.",accessBtn:"Acceder",buyBtn:"Comprar",addToCartBtn:"Añadir al carrito",cartNav:"Carrito",cartTitle:"Tu carrito",cartEmpty:"Tu carrito está vacío.",cartEmptyText:"Añade los productos que deseas y finaliza todo en un solo pedido.",cartContinue:"Seguir comprando",cartFinalize:"Finalizar compra",cartClear:"Vaciar carrito",cartRemove:"Eliminar",cartQty:"Cantidad",cartSubtotal:"Subtotal",cartConsult:"Precio bajo consulta",cartUnit:"/unidad",cartAdded:"Producto añadido al carrito",cartBack:"Volver al catálogo",catUsaPeptides:"Usa Peptides",catNewLife:"New Life",catSynedica:"Synedica",catUsaPeptidesDesc:"Línea completa Usa Peptides",catNewLifeDesc:"Línea exclusiva New Life",catSynedicaDesc:"Línea de péptidos Synedica",catZphc:"ZPHC",catZphcDesc:"Línea de productos ZPHC",catTg:"TG",catTgDesc:"Línea de productos TG",catDysport:"DYSPORT",catDysportDesc:"Línea de productos DYSPORT",retailLabel:"Menudeo",wholesale5Label:"5 un",wholesale10Label:"10 un",unitSuffix:"/unidad",dragLabel:"arrastra",priceConsult:"Precio bajo consulta",wholesaleMin5:"Mín. 5 unidades",wholesaleMin10:"Mín. 10 unidades",wholesale5Total:"Total del lote",wholesale10Consult:"Precio a consultar para 10 unidades o más",directConsult:"Precios mediante consulta directa",researchUse:"Uso destinado a investigación",pageTitle:"Buy Club US — Catálogo Premium",closeForm:"Cerrar formulario",checkoutTitle:"Finalizar pedido",checkoutSubtitle:"Complete los datos. Después de enviar, el pedido se enviará con todos los detalles a WhatsApp.",fieldCep:"Código postal",fieldNumber:"Número",fieldAddress:"Dirección encontrada por el código postal",fieldNeighborhood:"Barrio",fieldCity:"Ciudad / Estado",fieldComplement:"Bloque / apartamento",fieldRecipient:"Nombre del destinatario",fieldCpf:"CPF del destinatario",addressPlaceholder:"Ingrese el código postal para completar",filledByCep:"Completado por el código postal",numberPlaceholder:"N.º",optionalPlaceholder:"Opcional",fullNamePlaceholder:"Nombre completo",shippingNotice:"El <strong>CPF del destinatario es obligatorio</strong>: la transportadora lo exige para emitir la etiqueta y el código de seguimiento.",paymentTitle:"Forma de pago",cryptoPayment:"Criptomoneda",backButton:"Volver",sendWhatsapp:"Enviar a WhatsApp",mapKicker:"RED INTERNACIONAL",mapTitle:"Presencia y atención",mapNote:"Globo interactivo con rotación continua. Arrastra para explorar el globo en 360°.",globeAria:"Globo 3D con rutas internacionales y códigos de países",exploreZoom:"Explorar y zoom",zoomHint:"ARRASTRA Y USA EL SCROLL",loading:"cargando…",lookupLoading:"Consultando dirección…",lookupSuccess:"Dirección completada automáticamente.",lookupError:"No se encontró el código postal. Verifica los números.",closeExplore:"Cerrar exploración",openExplore:"Explorar y zoom",totalLabel:"Total",coSecure:"Pago seguro",coShowSummary:"Mostrar resumen del pedido",coHideSummary:"Ocultar resumen del pedido",coDelivery:"Entrega",coShipping:"Envío",mpSendWhatsapp:"Enviar pedido por WhatsApp",coTotalNote:"Envío calculado por el CEP. Gratis desde 3 productos New Life.",fieldPhone:"WhatsApp",fieldEmail:"Correo (opcional)",payWithMp:"Pagar con Mercado Pago",mpRedirecting:"Abriendo Mercado Pago…",mpNotePix:"Serás llevado a Mercado Pago para pagar con Pix. El pedido se confirma automáticamente después del pago.",mpNoteCard:"Serás llevado a Mercado Pago para pagar con tarjeta hasta en 12 cuotas. El pedido se confirma automáticamente después del pago.",mpErrorGeneric:"No fue posible abrir el pago ahora. Inténtalo de nuevo o finaliza por WhatsApp.",mpWholesaleMin:"{name}: el precio mayorista exige al menos {min} unidades. Ajusta la cantidad en el carrito.",mpConsult:"{name} tiene precio bajo consulta. Para este artículo, elige USDT o Criptomoneda y finaliza por WhatsApp.",mpApprovedTitle:"¡Pago aprobado!",mpApprovedText:"Recibimos tu pago del pedido {id}. Prepararemos el envío y te contactaremos por WhatsApp.",mpPendingTitle:"Pago en proceso",mpPendingText:"El pedido {id} se confirmará cuando Mercado Pago apruebe el pago.",mpFailedTitle:"Pago no completado",mpFailedText:"El pago del pedido {id} no se completó. Tu carrito sigue guardado para intentarlo de nuevo.",mpOk:"Entendido",phoneInvalid:"Ingresa un WhatsApp válido con código de área."
   }
 };
 
@@ -4544,7 +4697,8 @@ function buildCartWhatsAppMessage(items, order) {
   let message = `Olá! Gostaria de fazer um pedido.\n\n*PRODUTOS SELECIONADOS*\n${lines}`;
   const cpfLine = order.cpf ? `\nCPF: ${order.cpf}` : '';
   const orderSubtotal = checkoutSubtotalValue(items);
-  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos: R$ ${formatBRL(orderSubtotal)}\nFrete${shipQuote.selected ? ` (${shipOptionLabel(shipQuote.selected)})` : ''}: ${currentShippingFee() === null ? 'a calcular' : `R$ ${formatBRL(currentShippingFee())}`}\nTotal: R$ ${formatBRL(orderSubtotal + (currentShippingFee() || 0))}`;
+  const consultCount = splitCheckoutItems(items).consult.length;
+  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos${consultCount ? ' com preço' : ''}: R$ ${formatBRL(orderSubtotal)}${consultCount ? `\nItens sob consulta: ${consultCount} (preciso saber o valor)` : ''}\nFrete${shipQuote.selected ? ` (${shipQuote.selected.express ? 'Entrega expressa SP, até 3 horas, rastreio pelo WhatsApp' : shipOptionLabel(shipQuote.selected)})` : ''}: ${currentShippingFee() === null ? 'a calcular' : `R$ ${formatBRL(currentShippingFee())}`}\nTotal: R$ ${formatBRL(orderSubtotal + (currentShippingFee() || 0))}`;
   message += `\n\n*DADOS DE ENTREGA*\nWhatsApp: ${order.phone || 'Não informado'}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nBloco/Apartamento: ${order.complement || 'Não informado'}\nCEP: ${order.cep}\nDestinatário: ${order.recipient}${cpfLine}\n\n*PAGAMENTO*\nForma de pagamento: ${order.payment}\n\nAguardo confirmação e instruções para finalizar.`;
   return message;
 }
@@ -4740,9 +4894,9 @@ document.getElementById('cart-clear')?.addEventListener('click', clearCart);
 
 /* Frete por CEP (Melhor Envio via Worker). Sem token no Worker, fica o frete fixo. */
 const SHIP_T = {
-  pt: { title: 'Escolha o frete', loading: 'Calculando frete…', enterCep: 'Informe o CEP', days: (n, a, b) => a && b && a !== b ? `${a} a ${b} dias úteis` : `${n} ${n === 1 ? 'dia útil' : 'dias úteis'}`, error: 'Não foi possível calcular o frete. Tente de novo.', choose: 'Escolha uma opção de frete.' },
-  en: { title: 'Choose shipping', loading: 'Calculating shipping…', enterCep: 'Enter your ZIP', days: (n, a, b) => a && b && a !== b ? `${a}–${b} business days` : `${n} business ${n === 1 ? 'day' : 'days'}`, error: 'Could not calculate shipping. Please try again.', choose: 'Choose a shipping option.' },
-  es: { title: 'Elige el envío', loading: 'Calculando envío…', enterCep: 'Ingresa el CEP', days: (n, a, b) => a && b && a !== b ? `${a} a ${b} días hábiles` : `${n} ${n === 1 ? 'día hábil' : 'días hábiles'}`, error: 'No fue posible calcular el envío. Inténtalo de nuevo.', choose: 'Elige una opción de envío.' }
+  pt: { title: 'Escolha o frete', loading: 'Calculando frete…', enterCep: 'Informe o CEP', days: (n, a, b) => a && b && a !== b ? `${a} a ${b} dias úteis` : `${n} ${n === 1 ? 'dia útil' : 'dias úteis'}`, error: 'Não foi possível calcular o frete. Tente de novo.', choose: 'Escolha uma opção de frete.', expressName: 'Entrega expressa SP', express: 'Até 3 horas após o pedido · rastreio pelo WhatsApp' },
+  en: { title: 'Choose shipping', loading: 'Calculating shipping…', enterCep: 'Enter your ZIP', days: (n, a, b) => a && b && a !== b ? `${a}–${b} business days` : `${n} business ${n === 1 ? 'day' : 'days'}`, error: 'Could not calculate shipping. Please try again.', choose: 'Choose a shipping option.', expressName: 'São Paulo express delivery', express: 'Within 3 hours of your order · tracking via WhatsApp' },
+  es: { title: 'Elige el envío', loading: 'Calculando envío…', enterCep: 'Ingresa el CEP', days: (n, a, b) => a && b && a !== b ? `${a} a ${b} días hábiles` : `${n} ${n === 1 ? 'día hábil' : 'días hábiles'}`, error: 'No fue posible calcular el envío. Inténtalo de nuevo.', choose: 'Elige una opción de envío.', expressName: 'Entrega exprés SP', express: 'Hasta 3 horas después del pedido · seguimiento por WhatsApp' }
 };
 function shipT(key) { const d = SHIP_T[currentLang] || SHIP_T.pt; return d[key]; }
 let shipQuote = { enabled: null, key: '', options: [], selected: null, loading: false };
@@ -4752,7 +4906,7 @@ function currentShippingFee() {
   return hasFreeShipping(getCheckoutItems()) ? 0 : SHIPPING_FEE;
 }
 function shipPriceText(value) { return value === 0 ? ({ pt: 'Grátis', en: 'Free', es: 'Gratis' }[currentLang] || 'Grátis') : `R$ ${formatBRL(value)}`; }
-function shipOptionLabel(o) { return [o.company, o.name].filter(Boolean).join(' '); }
+function shipOptionLabel(o) { return o.express ? shipT('expressName') : [o.company, o.name].filter(Boolean).join(' '); }
 function escShip(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function renderShipOptions(message, isError) {
   const box = document.getElementById('co-ship');
@@ -4760,11 +4914,15 @@ function renderShipOptions(message, isError) {
   if (!shipQuote.enabled && !shipQuote.loading && !message) { box.hidden = true; box.innerHTML = ''; return; }
   box.hidden = false;
   if (shipQuote.loading || message) { box.innerHTML = `<p class="co-ship-msg${isError ? ' is-error' : ''}">${escShip(message || shipT('loading'))}</p>`; return; }
-  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${escShip(shipOptionLabel(o))}</b>${o.days ? `<small>${escShip(shipT('days')(o.days, o.daysMin, o.daysMax))}</small>` : ''}</span><em>${shipPriceText(o.price)}</em></label>`).join('');
+  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${o.express ? '<i class="co-ship-bolt" aria-hidden="true">⚡</i>' : ''}${escShip(shipOptionLabel(o))}</b>${o.express ? `<small>${escShip(shipT('express'))}</small>` : o.days ? `<small>${escShip(shipT('days')(o.days, o.daysMin, o.daysMax))}</small>` : ''}</span><em>${shipPriceText(o.price)}</em></label>`).join('');
 }
 async function refreshShippingQuote() {
   const cep = (checkoutCep && checkoutCep.value || '').replace(/\D/g, '');
-  const items = getCheckoutItems();
+  const items = splitCheckoutItems(getCheckoutItems()).paid;
+  if (!items.length && shipQuote.enabled !== false) {
+    shipQuote = { enabled: null, key: '', options: [], selected: null, loading: false };
+    renderShipOptions(getCheckoutItems().length ? consultT('shipWa') : '', false); renderCheckoutSummary(); return;
+  }
   if (cep.length !== 8 || !items.length || shipQuote.enabled === false || !MP_API_URL) return;
   const payloadItems = items.map(({ product, type, qty }) => ({ id: product.id, type, qty }));
   const key = cep + JSON.stringify(payloadItems);
@@ -4797,10 +4955,31 @@ document.addEventListener('change', e => {
 function getCheckoutItems() {
   return checkoutItems.length ? checkoutItems : (selectedProduct ? [{ product: selectedProduct, type: modalPriceType, qty: WHOLESALE_MIN_QTY[modalPriceType] || 1 }] : []);
 }
+// Itens "sob consulta" não entram no pagamento: o cliente paga os demais e pede o preço pelo WhatsApp.
+function splitCheckoutItems(items) {
+  const paid = [], consult = [];
+  (items || []).forEach(item => (getCartPriceValue(item.product, item.type) === null ? consult : paid).push(item));
+  return { paid, consult };
+}
+const CONSULT_T = {
+  pt: { pill: 'Sob consulta', row: 'Sob consulta', rowVal: n => `${n} ${n === 1 ? 'item' : 'itens'} · WhatsApp`, note: n => `${n === 1 ? 'O item sob consulta não entra' : `Os ${n} itens sob consulta não entram`} no pagamento. Ao finalizar, abrimos o WhatsApp para você receber o preço.`, mpMixed: 'Você paga agora só os itens com preço, pelo Mercado Pago. Os itens sob consulta abrem no WhatsApp para você receber o valor.', ask: 'Consultar preço no WhatsApp', shipWa: 'Frete combinado pelo WhatsApp junto com o preço.', shipRow: 'Pelo WhatsApp', none: '—' },
+  en: { pill: 'Price on request', row: 'Price on request', rowVal: n => `${n} ${n === 1 ? 'item' : 'items'} · WhatsApp`, note: n => `${n === 1 ? 'The price-on-request item is' : `The ${n} price-on-request items are`} not charged now. When you finish, WhatsApp opens so you can get the price.`, mpMixed: 'You pay only the priced items now, via Mercado Pago. Price-on-request items open in WhatsApp so you can get the price.', ask: 'Ask for price on WhatsApp', shipWa: 'Shipping agreed on WhatsApp together with the price.', shipRow: 'Via WhatsApp', none: '—' },
+  es: { pill: 'Bajo consulta', row: 'Bajo consulta', rowVal: n => `${n} ${n === 1 ? 'ítem' : 'ítems'} · WhatsApp`, note: n => `${n === 1 ? 'El ítem bajo consulta no entra' : `Los ${n} ítems bajo consulta no entran`} en el pago. Al finalizar, abrimos WhatsApp para que recibas el precio.`, mpMixed: 'Ahora pagas solo los ítems con precio, por Mercado Pago. Los ítems bajo consulta se abren en WhatsApp para que recibas el valor.', ask: 'Consultar precio por WhatsApp', shipWa: 'Envío acordado por WhatsApp junto con el precio.', shipRow: 'Por WhatsApp', none: '—' }
+};
+function consultT(key) { const d = CONSULT_T[currentLang] || CONSULT_T.pt; return d[key]; }
+function conditionLabelPt(type) { return type === 'atacado5' ? 'Atacado — mínimo de 5 unidades' : type === 'atacado10' ? 'Atacado — mínimo de 10 unidades' : 'Varejo'; }
+function buildConsultWhatsAppMessage(consult, order, payingRest) {
+  const lines = consult.map(({ product, type, qty }) => `• ${formatBrandLabel(product.badge)} — ${product.name}\n  Quantidade: ${qty}\n  Condição: ${conditionLabelPt(type)}`).join('\n\n');
+  let message = `Olá! Tenho interesse ${consult.length === 1 ? 'neste produto' : 'nestes produtos'}, mas preciso saber o preço:\n\n${lines}`;
+  if (payingRest) message += `\n\n(Os outros itens do pedido estou pagando agora pelo Mercado Pago via ${order.payment}.)`;
+  message += `\n\n*MEUS DADOS*\nNome: ${order.recipient}\nWhatsApp: ${order.phone}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}${order.complement ? ` (${order.complement})` : ''}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nCEP: ${order.cep}\n\nPode me passar o valor${consult.length === 1 ? '' : 'es'} e o frete?`;
+  return message;
+}
+function waPhoneFor(items) { return items.some(item => item.type === 'atacado5' || item.type === 'atacado10') ? WA_PHONES[1] : WA_PHONES[0]; }
 function checkoutSubtotalValue(items) {
-  const values = items.map(({product, type}) => getCartPriceValue(product, type));
-  if (values.some(value => value === null)) return null;
-  return values.reduce((sum, value, index) => sum + value * items[index].qty, 0);
+  const { paid } = splitCheckoutItems(items);
+  if (!paid.length) return null;
+  return paid.reduce((sum, { product, type, qty }) => sum + getCartPriceValue(product, type) * qty, 0);
 }
 function checkoutTotalText(items) {
   const subtotal = checkoutSubtotalValue(items);
@@ -4824,18 +5003,27 @@ function renderCheckoutSummary() {
   const items = getCheckoutItems();
   const totalMobile = document.getElementById('co-total-mobile');
   if (!items.length) { checkoutSummary.innerHTML = ''; if (totalMobile) totalMobile.textContent = ''; return; }
-  const subtotalText = checkoutTotalText(items);
-  const total = checkoutGrandTotalText(items);
+  const { paid, consult } = splitCheckoutItems(items);
+  const subtotal = checkoutSubtotalValue(items);
+  const subtotalText = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal)}`;
+  const total = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal + (currentShippingFee() || 0))}`;
+  const shipText = !paid.length ? consultT('shipRow') : currentShippingFee() === null ? shipT('enterCep') : shipPriceText(currentShippingFee());
   const lines = items.map(({product, type, qty}) => {
     const unit = getCartPriceValue(product, type);
-    const lineTotal = unit === null ? t('cartConsult') : `R$ ${formatBRL(unit * qty)}`;
+    const lineTotal = unit === null ? `<span class="co-consult-pill">${consultT('pill')}</span>` : `R$ ${formatBRL(unit * qty)}`;
     const condition = type === 'atacado5' ? t('wholesale5Label') : type === 'atacado10' ? t('wholesale10Label') : t('retailLabel');
     return `<div class="co-item"><div class="co-thumb"><img src="${product.images[0]}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.style.visibility='hidden'"><span class="co-qty">${qty}</span></div><div><div class="co-item-name">${product.name}</div><div class="co-item-meta">${formatBrandLabel(product.badge)} · ${condition}</div></div><div class="co-item-price">${lineTotal}</div></div>`;
   }).join('');
-  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>${currentShippingFee() === null ? shipT('enterCep') : shipPriceText(currentShippingFee())}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
-  if (totalMobile) totalMobile.textContent = total;
+  const waIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Z"/></svg>';
+  const consultNote = consult.length ? `<div class="co-consult-note">${waIcon}<p>${consultT('note')(consult.length)}</p></div>` : '';
+  const consultRow = consult.length ? `<div class="co-row"><span>${consultT('row')}</span><span>${consultT('rowVal')(consult.reduce((n, i) => n + i.qty, 0))}</span></div>` : '';
+  checkoutSummary.innerHTML = `<div class="co-card"><div class="co-items">${lines}</div>${consultNote}<div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div>${consultRow}<div class="co-row"><span>${t('coShipping')}</span><span>${shipText}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span>${subtotal === null ? '' : '<small>BRL</small>'}${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p></div>`;
+  if (totalMobile) totalMobile.textContent = subtotal === null ? consultT('pill') : total;
+  updateCheckoutMode(true);
 }
 function showCheckout() {
+  coStepLabels();
+  coGoStep(1, { force: true, noScroll: true, noFocus: true });
   renderCheckoutSummary();
   refreshShippingQuote();
   updateCheckoutMode();
@@ -4874,6 +5062,7 @@ function closeCheckout() {
 
 function submitCheckout(event) {
   event.preventDefault();
+  if (coStep < 3) { coGoStep(coStep + 1); return; }
   const items = getCheckoutItems();
   if (!items.length || !checkoutForm) return;
   const formData = new FormData(checkoutForm);
@@ -4898,7 +5087,16 @@ function submitCheckout(event) {
     return;
   }
   if (order.phone.replace(/\D/g, '').length < 10) { showCheckoutError(t('phoneInvalid')); return; }
-  if (isMercadoPagoPayment(order.payment)) { startMercadoPagoPayment(items, order); return; }
+  if (!isValidCpf(order.cpf)) { coGoStep(2, { force: true }); showCheckoutError(CPF_ERR[currentLang] || CPF_ERR.pt); return; }
+  const { paid, consult } = splitCheckoutItems(items);
+  if (isMercadoPagoPayment(order.payment)) {
+    if (paid.length) { startMercadoPagoPayment(paid, order, consult); return; }
+    window.open(waLink(buildConsultWhatsAppMessage(consult, order, false), waPhoneFor(consult)), '_blank');
+    if (cartItems.length) { cartItems = []; persistCart(); updateCartBadge(); renderCart(); }
+    checkoutItems = [];
+    closeCheckout();
+    return;
+  }
   const orderMessage = buildCartWhatsAppMessage(items, order);
   const selectedPhone = items.some(item => item.type === 'atacado5' || item.type === 'atacado10') ? WA_PHONES[1] : WA_PHONES[0];
   window.open(waLink(orderMessage, selectedPhone), '_blank');
@@ -4921,19 +5119,21 @@ function showCheckoutError(message) {
   box.hidden = !message;
   if (message) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
-function updateCheckoutMode() {
+function updateCheckoutMode(keepError) {
   const selected = checkoutForm ? checkoutForm.querySelector('input[name="payment"]:checked') : null;
   const payment = selected ? selected.value : '';
-  const mp = isMercadoPagoPayment(payment);
+  const { paid, consult } = splitCheckoutItems(getCheckoutItems());
+  const onlyConsult = !paid.length && consult.length > 0;
+  const mp = isMercadoPagoPayment(payment) && !onlyConsult;
   const button = document.getElementById('checkout-submit');
   const label = document.getElementById('checkout-submit-label');
   const note = document.getElementById('checkout-mp-note');
   if (button) button.classList.toggle('is-mp', mp);
-  if (label && !(button && button.disabled)) label.textContent = t(mp ? 'payWithMp' : 'sendWhatsapp');
-  if (note) { note.hidden = !mp; note.textContent = mp ? t(payment === 'Pix' ? 'mpNotePix' : 'mpNoteCard') : ''; }
-  showCheckoutError('');
+  if (label && !(button && button.disabled)) label.textContent = onlyConsult ? consultT('ask') : t(mp ? 'payWithMp' : 'sendWhatsapp');
+  if (note) { note.hidden = !mp; note.textContent = mp ? (consult.length ? consultT('mpMixed') : t(payment === 'Pix' ? 'mpNotePix' : 'mpNoteCard')) : ''; }
+  if (!keepError) showCheckoutError('');
 }
-async function startMercadoPagoPayment(items, order) {
+async function startMercadoPagoPayment(items, order, consult = []) {
   for (const { product, type, qty } of items) {
     const min = WHOLESALE_MIN_QTY[type] || 1;
     if (getCartPriceValue(product, type) === null) { showCheckoutError(fillTemplate(t('mpConsult'), { name: product.name })); return; }
@@ -4941,6 +5141,8 @@ async function startMercadoPagoPayment(items, order) {
   }
   if (shipQuote.loading) { showCheckoutError(shipT('loading')); return; }
   if (shipQuote.enabled && !shipQuote.selected) { showCheckoutError(shipT('choose')); return; }
+  // ainda dentro do clique: abre o WhatsApp com os itens sob consulta antes de ir ao Mercado Pago
+  if (consult.length) window.open(waLink(buildConsultWhatsAppMessage(consult, order, true), waPhoneFor(consult)), '_blank');
   const button = document.getElementById('checkout-submit');
   const label = document.getElementById('checkout-submit-label');
   showCheckoutError('');
@@ -5446,6 +5648,93 @@ document.querySelectorAll('.nav-item[data-tab]').forEach(n=>n.addEventListener('
 document.getElementById('modal-close').addEventListener('click',closeModal);
 modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
 btnWa.addEventListener('click', e => { e.preventDefault(); addToCart(selectedProduct, modalPriceType); });
+/* ===== CHECKOUT EM 3 PASSOS (Contato → Entrega → Pagamento) ===== */
+const CO_STEP_T = {
+  pt: { labels: ['Contato', 'Entrega', 'Pagamento'], title1: 'Seus dados', next: 'Continuar', toPay: 'Ir para o pagamento', contact: 'Contato', ship: 'Entrega', edit: 'Alterar', wait: 'Aguarde o cálculo do frete.', steps: 'Etapa {n} de 3' },
+  en: { labels: ['Contact', 'Delivery', 'Payment'], title1: 'Your details', next: 'Continue', toPay: 'Continue to payment', contact: 'Contact', ship: 'Delivery', edit: 'Edit', wait: 'Please wait for the shipping quote.', steps: 'Step {n} of 3' },
+  es: { labels: ['Contacto', 'Entrega', 'Pago'], title1: 'Tus datos', next: 'Continuar', toPay: 'Ir al pago', contact: 'Contacto', ship: 'Entrega', edit: 'Cambiar', wait: 'Espera el cálculo del envío.', steps: 'Paso {n} de 3' }
+};
+function coStepT(k) { const d = CO_STEP_T[currentLang] || CO_STEP_T.pt; return d[k]; }
+let coStep = 1;
+function coStepLabels() {
+  coStepT('labels').forEach((txt, i) => { const el = document.querySelector(`[data-co-step-label="${i + 1}"]`); if (el) el.textContent = txt; });
+  const t1 = document.querySelector('[data-co-step-title="1"]'); if (t1) t1.textContent = coStepT('title1');
+  document.querySelectorAll('.co-next').forEach(btn => { const span = btn.querySelector('[data-co-next]'); if (span) span.textContent = btn.dataset.next === '3' ? coStepT('toPay') : coStepT('next'); });
+}
+function coField(name) { return checkoutForm ? checkoutForm.elements[name] : null; }
+function isValidCpf(value) {
+  const d = String(value || '').replace(/\D/g, '');
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const dv = len => { let sum = 0; for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i); const r = (sum * 10) % 11; return r === 10 ? 0 : r; };
+  return dv(9) === Number(d[9]) && dv(10) === Number(d[10]);
+}
+const CPF_ERR = { pt: 'Informe um CPF válido. A transportadora exige o documento do destinatário.', en: 'Enter a valid CPF. The carrier requires the recipient’s document.', es: 'Ingresa un CPF válido. La transportadora exige el documento del destinatario.' };
+function coValidateStep(n) {
+  showCheckoutError('');
+  const names = n === 1 ? ['recipient', 'phone', 'email'] : n === 2 ? ['cep', 'number', 'address', 'neighborhood', 'city', 'cpf'] : [];
+  for (const name of names) {
+    const el = coField(name);
+    if (!el) continue;
+    const empty = el.required && !String(el.value || '').trim();
+    if (empty || (el.type === 'email' && el.value && !el.checkValidity())) { coShake(el); el.focus({ preventScroll: false }); el.reportValidity && el.reportValidity(); return false; }
+  }
+  if (n === 1 && String(coField('phone').value || '').replace(/\D/g, '').length < 10) { coShake(coField('phone')); showCheckoutError(t('phoneInvalid')); return false; }
+  if (n === 2 && !isValidCpf(coField('cpf').value)) { coShake(coField('cpf')); coField('cpf').focus(); showCheckoutError(CPF_ERR[currentLang] || CPF_ERR.pt); return false; }
+  if (n === 2 && splitCheckoutItems(getCheckoutItems()).paid.length) {
+    if (shipQuote.loading) { showCheckoutError(coStepT('wait')); return false; }
+    if (shipQuote.enabled && !shipQuote.selected) { showCheckoutError(shipT('choose')); return false; }
+  }
+  return true;
+}
+function coShake(el) {
+  const box = el && el.closest('.checkout-field');
+  if (!box) return;
+  box.classList.remove('co-shake'); void box.offsetWidth; box.classList.add('co-shake');
+}
+function coReviewHtml() {
+  const v = name => String((coField(name) || {}).value || '').trim();
+  const esc = x => x.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const ship = shipQuote.enabled && shipQuote.selected ? ` · ${esc(shipOptionLabel(shipQuote.selected))}` : '';
+  return `<div class="co-review-row"><div><small>${coStepT('contact')}</small><p>${esc(v('recipient'))}<br>${esc(v('phone'))}${v('email') ? ` · ${esc(v('email'))}` : ''}</p></div><button type="button" data-go="1">${coStepT('edit')}</button></div>`
+    + `<div class="co-review-row"><div><small>${coStepT('ship')}</small><p>${esc(v('address'))}, ${esc(v('number'))}${v('complement') ? ` (${esc(v('complement'))})` : ''}<br>${esc(v('neighborhood'))} · ${esc(v('city'))} · ${esc(v('cep'))}${ship}</p></div><button type="button" data-go="2">${coStepT('edit')}</button></div>`;
+}
+function coGoStep(n, opts = {}) {
+  n = Math.max(1, Math.min(3, n));
+  const prev = coStep;
+  if (!opts.force && n > prev) { for (let k = prev; k < n; k++) if (!coValidateStep(k)) { coGoStep(k, { force: true, quiet: true }); return; } }
+  coStep = n;
+  const steps = document.querySelectorAll('#checkout-form .co-step');
+  steps.forEach(el => {
+    const k = Number(el.dataset.step);
+    el.classList.remove('is-active', 'from-left', 'from-right');
+    if (k === n) { el.classList.add('is-active', n >= prev ? 'from-right' : 'from-left'); }
+  });
+  document.querySelectorAll('#co-steps .co-step-dot').forEach(li => {
+    const k = Number(li.dataset.go);
+    li.classList.toggle('is-active', k === n);
+    li.classList.toggle('is-done', k < n);
+  });
+  const fill = document.getElementById('co-steps-fill');
+  if (fill) fill.style.transform = `scaleX(${(n - 1) / 2})`;
+  const err = document.getElementById('checkout-error');
+  const active = document.querySelector(`#checkout-form .co-step[data-step="${n}"]`);
+  if (err && active) { const anchor = n === 3 ? active.querySelector('.checkout-actions') : active.querySelector('.co-next'); if (anchor) anchor.before(err); }
+  if (!opts.quiet) showCheckoutError('');
+  if (n === 3) { const r = document.getElementById('co-review'); if (r) r.innerHTML = coReviewHtml(); updateCheckoutMode(); }
+  const shell = checkoutModal && checkoutModal.querySelector('.co-shell');
+  if (shell && prev !== n && !opts.noScroll) shell.scrollTo({ top: 0, behavior: 'smooth' });
+  if (prev !== n && !opts.noFocus) setTimeout(() => { const first = active && active.querySelector(n === 1 ? '#checkout-recipient' : n === 2 ? '#checkout-cep' : 'input[name="payment"]:checked, input[name="payment"]'); if (first && !first.value && window.matchMedia('(min-width: 900px)').matches) first.focus({ preventScroll: true }); }, 420);
+}
+document.addEventListener('click', e => {
+  const next = e.target.closest && e.target.closest('#checkout-form .co-next');
+  if (next) { e.preventDefault(); coGoStep(Number(next.dataset.next)); return; }
+  const go = e.target.closest && e.target.closest('#checkout-form [data-go]');
+  if (go) { const n = Number(go.dataset.go); if (n < coStep) coGoStep(n); else if (n > coStep) coGoStep(n); }
+});
+// voltar (seta do topo e "Voltar") anda uma etapa antes de fechar
+['checkout-close', 'checkout-cancel'].forEach(id => document.getElementById(id)?.addEventListener('click', e => {
+  if (coStep > 1 && checkoutModal && checkoutModal.classList.contains('active')) { e.stopImmediatePropagation(); coGoStep(coStep - 1); }
+}, true));
 document.getElementById('checkout-close').addEventListener('click',closeCheckout);
 document.getElementById('checkout-cancel').addEventListener('click',closeCheckout);
 checkoutModal.addEventListener('click',e=>{ if(e.target===checkoutModal) closeCheckout(); });
@@ -5453,8 +5742,9 @@ checkoutForm.addEventListener('submit',submitCheckout);
 checkoutForm.addEventListener('change', e => { if (e.target && e.target.name === 'payment') updateCheckoutMode(); });
 function updateCpfRequirement(cityValue) {
   const outsideCapital = cityValue && !/^s[aã]o paulo(\s*\/\s*sp)?$/i.test(cityValue.trim());
-  if (checkoutCpfField) checkoutCpfField.classList.toggle('visible', !!outsideCapital);
-  if (checkoutCpf) checkoutCpf.required = false;
+  // CPF obrigatório em todo o Brasil: a transportadora precisa do documento para a etiqueta
+  if (checkoutCpfField) checkoutCpfField.classList.add('visible');
+  if (checkoutCpf) checkoutCpf.required = true;
 }
 async function lookupCep() {
   const digits = checkoutCep.value.replace(/\D/g, '');
@@ -6059,9 +6349,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
    Usa as mesmas funções de carrinho/checkout do site (addToCart, renderCart, openCartCheckout). */
 (function () {
   const SHOP_T = {
-    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', policies: 'Políticas', terms: 'Termos de uso', returns: 'Trocas e devoluções', shipping: 'Frete e entrega', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Frete calculado pelo CEP no checkout (Correios, Jadlog ou Loggi). Grátis a partir de 3 produtos New Life.', shipNote: 'Frete calculado pelo CEP no checkout', freeShipOk: 'Frete grátis! Você tem 3 ou mais produtos New Life.', freeShipHint: 'Frete grátis a partir de {min} produtos New Life. Faltam: {n}.', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
-    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', policies: 'Policies', terms: 'Terms of use', returns: 'Returns & exchanges', shipping: 'Shipping & delivery', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'Shipping calculated by ZIP code at checkout (Correios, Jadlog or Loggi). Free from 3 New Life products.', shipNote: 'Shipping calculated by ZIP code at checkout', freeShipOk: 'Free shipping! You have 3 or more New Life products.', freeShipHint: 'Free shipping from {min} New Life products ({n} to go).', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
-    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', policies: 'Políticas', terms: 'Términos de uso', returns: 'Cambios y devoluciones', shipping: 'Envío y entrega', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Envío calculado por el CEP en el checkout (Correios, Jadlog o Loggi). Gratis desde 3 productos New Life.', shipNote: 'Envío calculado por el CEP en el checkout', freeShipOk: '¡Envío gratis! Tienes 3 o más productos New Life.', freeShipHint: 'Envío gratis desde {min} productos New Life (faltan {n}).', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
+    pt: { home: 'Início', brands: 'Marcas', brandsTitle: 'Compre por marca', chooseBrand: 'Escolher marca', policies: 'Políticas', terms: 'Termos de uso', returns: 'Trocas e devoluções', shipping: 'Frete e entrega', calc: 'Calculadora', info: 'Info', contact: 'Contato', search: 'Buscar produtos', searchHint: 'Digite o nome do produto ou da marca.', noResults: 'Nenhum produto encontrado.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destaques', sortPriceAsc: 'Menor preço', sortPriceDesc: 'Maior preço', sortName: 'Nome (A–Z)', consult: 'Consultar', support: 'Atendimento', payShip: 'Pagamento e entrega', card12: 'Cartão 12x', shipText: 'Capital de SP: entrega expressa em até 3 horas por R$ 50. Demais CEPs: frete calculado no checkout (Correios, Jadlog ou Loggi). Grátis a partir de 3 produtos New Life.', shipNote: 'Frete calculado pelo CEP no checkout', freeShipOk: 'Frete grátis! Você tem 3 ou mais produtos New Life.', freeShipHint: 'Frete grátis a partir de {min} produtos New Life. Faltam: {n}.', rights: 'Todos os direitos reservados.', footerTag: 'Qualidade e tecnologia em peptídeos.', footerAbout: 'Representantes oficiais New Life. Produtos originais, atendimento direto e pronta entrega em São Paulo.', close: 'Fechar', cart: 'Carrinho', menu: 'Menu' },
+    en: { home: 'Home', brands: 'Brands', brandsTitle: 'Shop by brand', chooseBrand: 'Choose brand', policies: 'Policies', terms: 'Terms of use', returns: 'Returns & exchanges', shipping: 'Shipping & delivery', calc: 'Calculator', info: 'Info', contact: 'Contact', search: 'Search products', searchHint: 'Type a product or brand name.', noResults: 'No products found.', results: 'results', sort: 'Sort by', sortFeatured: 'Featured', sortPriceAsc: 'Price: low to high', sortPriceDesc: 'Price: high to low', sortName: 'Name (A–Z)', consult: 'Ask', support: 'Support', payShip: 'Payment & shipping', card12: 'Card 12x', shipText: 'São Paulo city: express delivery within 3 hours for R$ 50. Other ZIP codes: shipping calculated at checkout (Correios, Jadlog or Loggi). Free from 3 New Life products.', shipNote: 'Shipping calculated by ZIP code at checkout', freeShipOk: 'Free shipping! You have 3 or more New Life products.', freeShipHint: 'Free shipping from {min} New Life products ({n} to go).', rights: 'All rights reserved.', footerTag: 'Quality and technology in peptides.', footerAbout: 'Official New Life representatives. Original products, direct support and ready stock in São Paulo.', close: 'Close', cart: 'Cart', menu: 'Menu' },
+    es: { home: 'Inicio', brands: 'Marcas', brandsTitle: 'Comprar por marca', chooseBrand: 'Elegir marca', policies: 'Políticas', terms: 'Términos de uso', returns: 'Cambios y devoluciones', shipping: 'Envío y entrega', calc: 'Calculadora', info: 'Info', contact: 'Contacto', search: 'Buscar productos', searchHint: 'Escribe el nombre del producto o de la marca.', noResults: 'No se encontraron productos.', results: 'resultados', sort: 'Ordenar por', sortFeatured: 'Destacados', sortPriceAsc: 'Menor precio', sortPriceDesc: 'Mayor precio', sortName: 'Nombre (A–Z)', consult: 'Consultar', support: 'Atención', payShip: 'Pago y envío', card12: 'Tarjeta 12x', shipText: 'Capital de SP: entrega exprés en hasta 3 horas por R$ 50. Demás CEP: envío calculado en el checkout (Correios, Jadlog o Loggi). Gratis desde 3 productos New Life.', shipNote: 'Envío calculado por el CEP en el checkout', freeShipOk: '¡Envío gratis! Tienes 3 o más productos New Life.', freeShipHint: 'Envío gratis desde {min} productos New Life (faltan {n}).', rights: 'Todos los derechos reservados.', footerTag: 'Calidad y tecnología en péptidos.', footerAbout: 'Representantes oficiales New Life. Productos originales, atención directa y entrega inmediata en São Paulo.', close: 'Cerrar', cart: 'Carrito', menu: 'Menú' }
   };
   const st = k => (SHOP_T[currentLang] || SHOP_T.pt)[k] || SHOP_T.pt[k] || k;
   const $ = id => document.getElementById(id);
@@ -6404,9 +6694,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 
 (function () {
   const PDP_T = {
-    pt: { home: 'Início', qty: 'Quantidade', add: 'Adicionar ao carrinho', buy: 'Comprar agora', desc: 'Descrição', ship: 'Envio e entrega', returns: 'Trocas e devoluções', shipText: 'Frete para todo o Brasil, calculado pelo CEP no checkout. Grátis a partir de 3 produtos New Life. Envio com código de rastreio pelo WhatsApp após a confirmação do pagamento.', returnsText: 'Você pode desistir da compra em até 7 dias após o recebimento, com o produto lacrado. Produtos com defeito são trocados.', readPolicy: 'Ler política completa', related: 'Você também pode gostar', back: 'Voltar' },
-    en: { home: 'Home', qty: 'Quantity', add: 'Add to cart', buy: 'Buy now', desc: 'Description', ship: 'Shipping & delivery', returns: 'Returns & exchanges', shipText: 'Shipping anywhere in Brazil, calculated by ZIP code at checkout. Free from 3 New Life products. Tracking code sent by WhatsApp once payment is confirmed.', returnsText: 'You can cancel within 7 days of delivery with the product sealed. Defective products are replaced.', readPolicy: 'Read full policy', related: 'You may also like', back: 'Back' },
-    es: { home: 'Inicio', qty: 'Cantidad', add: 'Agregar al carrito', buy: 'Comprar ahora', desc: 'Descripción', ship: 'Envío y entrega', returns: 'Cambios y devoluciones', shipText: 'Envío a todo Brasil, calculado por el CEP en el checkout. Gratis desde 3 productos New Life. Código de seguimiento por WhatsApp tras confirmar el pago.', returnsText: 'Puedes desistir de la compra hasta 7 días después de recibirla, con el producto sellado. Los productos defectuosos se cambian.', readPolicy: 'Leer política completa', related: 'También te puede gustar', back: 'Volver' }
+    pt: { home: 'Início', qty: 'Quantidade', add: 'Adicionar ao carrinho', buy: 'Comprar agora', desc: 'Descrição', ship: 'Envio e entrega', returns: 'Trocas e devoluções', shipText: 'Capital de SP: entrega expressa em até 3 horas por R$ 50. Demais regiões do Brasil: frete calculado pelo CEP no checkout. Grátis a partir de 3 produtos New Life. Envio com código de rastreio pelo WhatsApp após a confirmação do pagamento.', returnsText: 'Você pode desistir da compra em até 7 dias após o recebimento, com o produto lacrado. Produtos com defeito são trocados.', readPolicy: 'Ler política completa', related: 'Você também pode gostar', back: 'Voltar' },
+    en: { home: 'Home', qty: 'Quantity', add: 'Add to cart', buy: 'Buy now', desc: 'Description', ship: 'Shipping & delivery', returns: 'Returns & exchanges', shipText: 'São Paulo city: express delivery within 3 hours for R$ 50. Rest of Brazil: shipping calculated by ZIP code at checkout. Free from 3 New Life products. Tracking code sent by WhatsApp once payment is confirmed.', returnsText: 'You can cancel within 7 days of delivery with the product sealed. Defective products are replaced.', readPolicy: 'Read full policy', related: 'You may also like', back: 'Back' },
+    es: { home: 'Inicio', qty: 'Cantidad', add: 'Agregar al carrito', buy: 'Comprar ahora', desc: 'Descripción', ship: 'Envío y entrega', returns: 'Cambios y devoluciones', shipText: 'Capital de SP: entrega exprés en hasta 3 horas por R$ 50. Resto de Brasil: envío calculado por el CEP en el checkout. Gratis desde 3 productos New Life. Código de seguimiento por WhatsApp tras confirmar el pago.', returnsText: 'Puedes desistir de la compra hasta 7 días después de recibirla, con el producto sellado. Los productos defectuosos se cambian.', readPolicy: 'Leer política completa', related: 'También te puede gustar', back: 'Volver' }
   };
   const pt = k => (PDP_T[currentLang] || PDP_T.pt)[k] || PDP_T.pt[k];
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
