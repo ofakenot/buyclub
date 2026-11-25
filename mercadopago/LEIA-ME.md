@@ -92,6 +92,27 @@ const MP_API_URL = 'https://buyclub-pagamentos.SEU-USUARIO.workers.dev';
 
 Suba o `index.html` no GitHub. Em cerca de 1 minuto o site já mostra o botão azul **Pagar com Mercado Pago** quando o cliente escolhe Pix ou Cartão.
 
+## Passo 4b — Frete por CEP com o Melhor Envio (opcional)
+
+Sem isso, o frete continua fixo (`SHIPPING_FEE`). Com isso, o cliente digita o CEP no checkout e escolhe entre as opções (SEDEX, PAC etc.) com preço e prazo. O Worker recalcula o frete escolhido na hora de cobrar, então o valor não pode ser alterado no navegador.
+
+1. No Melhor Envio: **Integrações** → **Permissões de acesso** → **Gerar novo token**, com a permissão `shipping-calculate`. Copie o token.
+2. Cole o `worker.js` novo no Worker (**Edit code** → colar → **Deploy**).
+3. No Worker, **Settings** → **Variables and Secrets**:
+
+   | Nome | Tipo | Valor |
+   |---|---|---|
+   | `MELHOR_ENVIO_TOKEN` | Secret | o token do Melhor Envio |
+   | `ME_FROM_CEP` | Text | CEP de onde as encomendas saem, ex.: `80000000` |
+   | `ME_BOX_CM` | Text | medidas da caixa em cm "altura,largura,comprimento", ex.: `10,15,20` |
+   | `ME_BASE_WEIGHT_KG` | Text | peso da caixa vazia em kg, ex.: `0.2` |
+   | `ME_ITEM_WEIGHT_KG` | Text | peso de cada unidade em kg, ex.: `0.05` |
+   | `ME_SERVICES` | Text | (opcional) só alguns serviços, ex.: `1,2` = PAC e SEDEX dos Correios |
+   | `ME_EXTRA_FEE` | Text | (opcional) valor somado a cada frete, ex.: `5` para embalagem |
+   | `ME_CONTACT` | Text | (opcional) e-mail de contato técnico que o Melhor Envio pede |
+
+O frete só liga quando `MELHOR_ENVIO_TOKEN` e `ME_FROM_CEP` estão preenchidos. Para voltar ao frete fixo, basta apagar o token.
+
 ## Passo 5 — Testar
 
 Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado Pago, voltou ao site com "Pagamento aprovado" e recebeu o aviso no seu WhatsApp. Depois é só estornar pelo painel do Mercado Pago, se quiser.
@@ -102,5 +123,5 @@ Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado 
 
 - **Preços**: o Worker lê os preços direto do `index.html` do GitHub (atualiza a cada ~5 minutos). Mudou o preço no site, mudou no pagamento. Produtos com valor "sob consulta" não podem ser pagos pelo Mercado Pago (o site pede para finalizar pelo WhatsApp).
 - **Atacado**: o preço de 5 un / 10 un exige pelo menos 5 / 10 unidades daquele produto no carrinho.
-- **Frete**: fixo de R$ 50,00 para qualquer endereço, já somado no total. Para mudar, altere `SHIPPING_FEE` no `index.html` e crie a variável `SHIPPING_FEE` no Worker com o mesmo valor.
+- **Frete**: com o Melhor Envio ligado (passo 4b), é calculado pelo CEP. Sem ele, é fixo de R$ 50,00 para qualquer endereço, já somado no total. Para mudar, altere `SHIPPING_FEE` no `index.html` e crie a variável `SHIPPING_FEE` no Worker com o mesmo valor.
 - **Parcelamento**: até 12x; os juros das parcelas seguem a configuração da sua conta Mercado Pago.

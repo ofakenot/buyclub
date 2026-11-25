@@ -5,6 +5,9 @@
  *   POST /checkout  → recebe o carrinho + dados do cliente, recalcula o total com os
  *                     preços oficiais do site e cria uma preferência no Mercado Pago
  *                     (Checkout Pro com Pix ou cartão). Devolve o link de pagamento.
+ *   POST /frete     → recebe { cep, items } e devolve as opções de frete do Melhor Envio
+ *                     (SEDEX, PAC etc.) com preço e prazo. Sem token configurado, devolve
+ *                     { enabled: false } e o site usa o frete fixo.
  *   POST /webhook   → recebe a notificação do Mercado Pago, consulta o pagamento na API
  *                     e, quando aprovado, envia nome + endereço + itens para o seu WhatsApp.
  *   GET  /          → teste rápido ("ok").
@@ -15,7 +18,16 @@
  *   CATALOG_URL         (opcional)             de onde ler os preços; padrão: index.html do GitHub
  *   WHATSAPP_PHONE      (obrigatório p/ aviso) seu WhatsApp com DDI e DDD, ex.: 5541987439214
  *   CALLMEBOT_APIKEY    (secret, obrigatório p/ aviso) chave do CallMeBot que libera mensagens para esse número
- *   SHIPPING_FEE        (opcional)             frete fixo em reais; padrão 50
+ *   SHIPPING_FEE        (opcional)             frete fixo em reais; padrão 50 (usado quando não há Melhor Envio)
+ *   MELHOR_ENVIO_TOKEN  (secret, opcional)     token do Melhor Envio; liga o cálculo de frete por CEP
+ *   ME_FROM_CEP         (obrigatório c/ token) CEP de onde as encomendas saem
+ *   ME_BOX_CM           (opcional)             medidas da caixa em cm "altura,largura,comprimento"; padrão "10,15,20"
+ *   ME_BASE_WEIGHT_KG   (opcional)             peso da caixa vazia em kg; padrão 0.2
+ *   ME_ITEM_WEIGHT_KG   (opcional)             peso de cada unidade em kg; padrão 0.05
+ *   ME_SERVICES         (opcional)             IDs dos serviços do Melhor Envio, ex.: "1,2" (PAC e SEDEX dos Correios); padrão: todos
+ *   ME_EXTRA_FEE        (opcional)             valor somado a cada opção de frete (embalagem/manuseio); padrão 0
+ *   ME_CONTACT          (opcional)             contato técnico enviado no User-Agent, ex.: um e-mail seu
+ *   ME_SANDBOX          (opcional)             "1" para usar o ambiente de testes do Melhor Envio
  *   MP_WEBHOOK_SECRET   (secret, opcional)     "assinatura secreta" dos webhooks do Mercado Pago
  *   ORDERS              (KV, opcional)         evita aviso duplicado e guarda os pedidos pagos
  */
@@ -38,6 +50,9 @@ export default {
     try {
       if (url.pathname === '/checkout' && request.method === 'POST') {
         return json(await createCheckout(request, env), 200, cors);
+      }
+      if (url.pathname === '/frete' && request.method === 'POST') {
+        return json(await quoteShipping(request, env), 200, cors);
       }
       if (url.pathname === '/webhook' && request.method === 'POST') {
         await handleWebhook(request, env, url, ctx);
@@ -150,24 +165,10 @@ async function createCheckout(request, env) {
   if (missing.length) throw new UserError('Preencha nome, WhatsApp e endereço completo.');
   if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) throw new UserError('E-mail inválido.');
 
-  const catalog = await getCatalog(env);
-  const lines = [];
-  for (const raw of body.items) {
-    const id = Number(raw && raw.id);
-    const type = raw && raw.type;
-    const qty = Math.floor(Number(raw && raw.qty));
-    const product = catalog.get(id);
-    if (!product) throw new UserError('Um dos produtos não está mais disponível. Atualize a página.');
-    if (!['varejo', 'atacado5', 'atacado10'].includes(type)) throw new UserError('Condição de preço inválida.');
-    if (!Number.isFinite(qty) || qty < 1 || qty > 500) throw new UserError('Quantidade inválida.');
-    const min = WHOLESALE_MIN[type] || 1;
-    if (qty < min) throw new UserError(`${product.name}: atacado exige no mínimo ${min} unidades.`);
-    const unit = product[type];
-    if (typeof unit !== 'number' || unit <= 0) throw new UserError(`${product.name}: valor sob consulta. Finalize pelo WhatsApp.`);
-    lines.push({ product, type, qty, unit });
-  }
+  const lines = await buildLines(body.items, env);
   const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
-  const shipping = round2(Number(env.SHIPPING_FEE ?? DEFAULT_SHIPPING_FEE) || 0);
+  const ship = await resolveShipping(env, customer.cep, lines, subtotal, body.shipping && body.shipping.service);
+  const shipping = ship.price;
   const total = round2(subtotal + shipping);
 
   const orderId = `BC${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
@@ -216,6 +217,7 @@ async function createCheckout(request, env) {
       method,
       subtotal: String(subtotal),
       shipping: String(shipping),
+      shipping_label: ship.label,
       total: String(total),
       recipient: customer.recipient,
       phone: customer.phone,
@@ -246,6 +248,104 @@ async function createCheckout(request, env) {
     throw new Error('Falha ao criar preferência no Mercado Pago');
   }
   return { orderId, total, url: data.init_point };
+}
+
+
+async function buildLines(items, env) {
+  const catalog = await getCatalog(env);
+  const lines = [];
+  for (const raw of items) {
+    const id = Number(raw && raw.id);
+    const type = raw && raw.type;
+    const qty = Math.floor(Number(raw && raw.qty));
+    const product = catalog.get(id);
+    if (!product) throw new UserError('Um dos produtos não está mais disponível. Atualize a página.');
+    if (!['varejo', 'atacado5', 'atacado10'].includes(type)) throw new UserError('Condição de preço inválida.');
+    if (!Number.isFinite(qty) || qty < 1 || qty > 500) throw new UserError('Quantidade inválida.');
+    const min = WHOLESALE_MIN[type] || 1;
+    if (qty < min) throw new UserError(`${product.name}: atacado exige no mínimo ${min} unidades.`);
+    const unit = product[type];
+    if (typeof unit !== 'number' || unit <= 0) throw new UserError(`${product.name}: valor sob consulta. Finalize pelo WhatsApp.`);
+    lines.push({ product, type, qty, unit });
+  }
+  return lines;
+}
+
+/* ------------------------------------------------------------------ */
+/* Frete: Melhor Envio                                                  */
+/* ------------------------------------------------------------------ */
+
+function shippingEnabled(env) { return !!(env.MELHOR_ENVIO_TOKEN && digits(env.ME_FROM_CEP).length === 8); }
+function flatShipping(env) { return round2(Number(env.SHIPPING_FEE ?? DEFAULT_SHIPPING_FEE) || 0); }
+
+async function quoteShipping(request, env) {
+  if (!shippingEnabled(env)) return { enabled: false, flat: flatShipping(env) };
+  const body = await request.json().catch(() => null);
+  const cep = digits(body && body.cep).slice(0, 8);
+  if (cep.length !== 8) throw new UserError('CEP inválido.');
+  if (!body || !Array.isArray(body.items) || !body.items.length || body.items.length > 50) throw new UserError('Carrinho vazio.');
+  const lines = await buildLines(body.items, env);
+  const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
+  const options = await melhorEnvioQuote(env, cep, lines, subtotal);
+  if (!options.length) throw new UserError('Não encontramos frete para esse CEP. Fale com a gente pelo WhatsApp.');
+  return { enabled: true, options };
+}
+
+// No checkout o preço do frete é sempre recalculado aqui, nunca aceito do navegador.
+async function resolveShipping(env, cep, lines, subtotal, service) {
+  if (!shippingEnabled(env)) return { price: flatShipping(env), label: 'Frete fixo' };
+  if (!service) throw new UserError('Escolha uma opção de frete.');
+  const options = await melhorEnvioQuote(env, cep, lines, subtotal);
+  const chosen = options.find(o => String(o.id) === String(service));
+  if (!chosen) throw new UserError('Essa opção de frete não está disponível para o CEP. Escolha outra.');
+  return { price: chosen.price, label: `${chosen.company} ${chosen.name} (${chosen.days} dias úteis)` };
+}
+
+export function shippingPackage(env, lines) {
+  const [h, w, l] = String(env.ME_BOX_CM || '10,15,20').split(',').map(Number);
+  const units = lines.reduce((s, x) => s + x.qty, 0);
+  const weight = (Number(env.ME_BASE_WEIGHT_KG ?? 0.2) || 0) + units * (Number(env.ME_ITEM_WEIGHT_KG ?? 0.05) || 0);
+  return { height: h || 10, width: w || 15, length: l || 20, weight: Math.max(0.1, round2(weight)) };
+}
+
+async function melhorEnvioQuote(env, cep, lines, subtotal) {
+  const base = env.ME_SANDBOX === '1' ? 'https://sandbox.melhorenvio.com.br' : 'https://melhorenvio.com.br';
+  const payload = {
+    from: { postal_code: digits(env.ME_FROM_CEP) },
+    to: { postal_code: cep },
+    package: shippingPackage(env, lines),
+    options: { insurance_value: subtotal, receipt: false, own_hand: false },
+    ...(env.ME_SERVICES ? { services: String(env.ME_SERVICES) } : {})
+  };
+  const res = await fetch(`${base}/api/v2/me/shipment/calculate`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${env.MELHOR_ENVIO_TOKEN}`,
+      'User-Agent': `Buy Club (${env.ME_CONTACT || 'buyclub.us'})`
+    },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !Array.isArray(data)) {
+    console.error('Melhor Envio error', res.status, JSON.stringify(data));
+    throw new UserError('Não foi possível calcular o frete agora. Tente de novo em instantes.');
+  }
+  return parseQuotes(data, Number(env.ME_EXTRA_FEE) || 0);
+}
+
+export function parseQuotes(data, extra = 0) {
+  return data
+    .filter(o => o && !o.error && Number(o.custom_price ?? o.price) > 0)
+    .map(o => ({
+      id: o.id,
+      name: String(o.name || ''),
+      company: String((o.company && o.company.name) || ''),
+      price: round2(Number(o.custom_price ?? o.price) + extra),
+      days: Number(o.custom_delivery_time ?? o.delivery_time) || null
+    }))
+    .sort((a, b) => a.price - b.price);
 }
 
 /* ------------------------------------------------------------------ */
@@ -295,7 +395,8 @@ async function handleWebhook(request, env, url, ctx) {
     cep: m.cep || '',
     items: m.items || '',
     subtotal: m.subtotal || '',
-    shipping: m.shipping || ''
+    shipping: m.shipping || '',
+    shippingLabel: m.shipping_label || ''
   };
 
   if (env.ORDERS) {
@@ -321,6 +422,7 @@ export function buildOrderMessage(o) {
     `✅ *PAGAMENTO APROVADO* — pedido ${o.orderId}`,
     `Valor pago: R$ ${brl(o.amount)} (${o.method})`,
     o.subtotal ? `Produtos: R$ ${brl(o.subtotal)} + frete R$ ${brl(o.shipping || 0)}` : null,
+    o.shippingLabel ? `Envio: ${o.shippingLabel}` : null,
     `ID Mercado Pago: ${o.paymentId}`,
     '',
     '📦 *ENVIAR PARA*',

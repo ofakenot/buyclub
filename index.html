@@ -486,6 +486,16 @@ position: absolute; top: .65rem; left: .65rem;
     .checkout-inline-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: .7rem; width: 100%; }
     .checkout-lookup-status { min-height: 0; margin-top: -.35rem; color: #0b899d; font-size: .68rem; font-weight: 700; }
     .checkout-lookup-status:empty { display: none; }
+    .co-ship { display: grid; gap: .45rem; }
+    .co-ship-title { color: #0f172a; font-size: .78rem; font-weight: 800; }
+    .co-ship-msg { color: #64748b; font-size: .72rem; }
+    .co-ship-msg.is-error { color: #b91c1c; }
+    .co-ship-opt { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .65rem; padding: .7rem .85rem; border: 1px solid #e5e7eb; border-radius: .7rem; background: #fff; cursor: pointer; }
+    .co-ship-opt:has(input:checked) { border-color: #0f172a; box-shadow: 0 0 0 1px #0f172a; }
+    .co-ship-opt input { accent-color: #0f172a; margin: 0; }
+    .co-ship-opt b { display: block; color: #0f172a; font-size: .8rem; }
+    .co-ship-opt small { color: #64748b; font-size: .7rem; }
+    .co-ship-opt em { font-style: normal; color: #0f172a; font-size: .82rem; font-weight: 800; white-space: nowrap; }
     .checkout-shipping-notice { padding: .7rem .85rem; border-radius: .6rem; background: #f8fafc; border: 1px solid #e5e7eb; color: #475569; font-size: .7rem; line-height: 1.5; }
     .checkout-cpf-field { display: none; }
     .checkout-cpf-field.visible { display: flex; }
@@ -2992,6 +3002,7 @@ position: absolute; top: .65rem; left: .65rem;
                   </div>
                 </div>
                 <span class="checkout-lookup-status" id="checkout-lookup-status" aria-live="polite"></span>
+                <div class="co-ship" id="co-ship" hidden aria-live="polite"></div>
                 <div class="checkout-field co-float">
                   <input id="checkout-address" name="address" type="text" autocomplete="street-address" placeholder="Digite o CEP para preencher" data-i18n-placeholder="addressPlaceholder" readonly required>
                   <label for="checkout-address" data-i18n="fieldAddress">Endereço encontrado pelo CEP</label>
@@ -4528,7 +4539,7 @@ function buildCartWhatsAppMessage(items, order) {
   let message = `Olá! Gostaria de fazer um pedido.\n\n*PRODUTOS SELECIONADOS*\n${lines}`;
   const cpfLine = order.cpf ? `\nCPF: ${order.cpf}` : '';
   const orderSubtotal = checkoutSubtotalValue(items);
-  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos: R$ ${formatBRL(orderSubtotal)}\nFrete: R$ ${formatBRL(SHIPPING_FEE)}\nTotal: R$ ${formatBRL(orderSubtotal + SHIPPING_FEE)}`;
+  if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos: R$ ${formatBRL(orderSubtotal)}\nFrete${shipQuote.selected ? ` (${shipOptionLabel(shipQuote.selected)})` : ''}: R$ ${formatBRL(currentShippingFee())}\nTotal: R$ ${formatBRL(orderSubtotal + currentShippingFee())}`;
   message += `\n\n*DADOS DE ENTREGA*\nWhatsApp: ${order.phone || 'Não informado'}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nBloco/Apartamento: ${order.complement || 'Não informado'}\nCEP: ${order.cep}\nDestinatário: ${order.recipient}${cpfLine}\n\n*PAGAMENTO*\nForma de pagamento: ${order.payment}\n\nAguardo confirmação e instruções para finalizar.`;
   return message;
 }
@@ -4722,6 +4733,57 @@ document.querySelectorAll('[data-pre-enter], #pre-page-enter').forEach(button =>
 setDirectWhatsAppLinks();
 document.getElementById('cart-clear')?.addEventListener('click', clearCart);
 
+/* Frete por CEP (Melhor Envio via Worker). Sem token no Worker, fica o frete fixo. */
+const SHIP_T = {
+  pt: { title: 'Escolha o frete', loading: 'Calculando frete…', enterCep: 'Informe o CEP', days: n => `${n} ${n === 1 ? 'dia útil' : 'dias úteis'}`, error: 'Não foi possível calcular o frete. Tente de novo.', choose: 'Escolha uma opção de frete.' },
+  en: { title: 'Choose shipping', loading: 'Calculating shipping…', enterCep: 'Enter your ZIP', days: n => `${n} business ${n === 1 ? 'day' : 'days'}`, error: 'Could not calculate shipping. Please try again.', choose: 'Choose a shipping option.' },
+  es: { title: 'Elige el envío', loading: 'Calculando envío…', enterCep: 'Ingresa el CEP', days: n => `${n} ${n === 1 ? 'día hábil' : 'días hábiles'}`, error: 'No fue posible calcular el envío. Inténtalo de nuevo.', choose: 'Elige una opción de envío.' }
+};
+function shipT(key) { const d = SHIP_T[currentLang] || SHIP_T.pt; return d[key]; }
+let shipQuote = { enabled: null, key: '', options: [], selected: null, loading: false };
+function currentShippingFee() { return shipQuote.enabled && shipQuote.selected ? shipQuote.selected.price : SHIPPING_FEE; }
+function shipOptionLabel(o) { return [o.company, o.name].filter(Boolean).join(' '); }
+function escShip(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function renderShipOptions(message, isError) {
+  const box = document.getElementById('co-ship');
+  if (!box) return;
+  if (!shipQuote.enabled && !shipQuote.loading && !message) { box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  if (shipQuote.loading || message) { box.innerHTML = `<p class="co-ship-msg${isError ? ' is-error' : ''}">${escShip(message || shipT('loading'))}</p>`; return; }
+  box.innerHTML = `<p class="co-ship-title">${escShip(shipT('title'))}</p>` + shipQuote.options.map(o => `<label class="co-ship-opt"><input type="radio" name="co-ship" value="${escShip(o.id)}"${shipQuote.selected && String(shipQuote.selected.id) === String(o.id) ? ' checked' : ''}><span><b>${escShip(shipOptionLabel(o))}</b>${o.days ? `<small>${escShip(shipT('days')(o.days))}</small>` : ''}</span><em>R$ ${formatBRL(o.price)}</em></label>`).join('');
+}
+async function refreshShippingQuote() {
+  const cep = (checkoutCep && checkoutCep.value || '').replace(/\D/g, '');
+  const items = getCheckoutItems();
+  if (cep.length !== 8 || !items.length || shipQuote.enabled === false || !MP_API_URL) return;
+  const payloadItems = items.map(({ product, type, qty }) => ({ id: product.id, type, qty }));
+  const key = cep + JSON.stringify(payloadItems);
+  if (key === shipQuote.key && shipQuote.options.length) return;
+  const previous = shipQuote.selected;
+  shipQuote = { ...shipQuote, key, options: [], selected: null, loading: true };
+  renderShipOptions(); renderCheckoutSummary();
+  try {
+    const response = await fetch(`${MP_API_URL.replace(/\/+$/, '')}/frete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cep, items: payloadItems }) });
+    const data = await response.json().catch(() => ({}));
+    if (key !== shipQuote.key) return;
+    if (response.ok && data.enabled === false) { shipQuote = { enabled: false, key, options: [], selected: null, loading: false }; renderShipOptions(); renderCheckoutSummary(); return; }
+    if (!response.ok || !Array.isArray(data.options) || !data.options.length) throw new Error(data.error || '');
+    const options = data.options;
+    const keep = previous && options.find(o => String(o.id) === String(previous.id));
+    shipQuote = { enabled: true, key, options, selected: keep || options[0], loading: false };
+    renderShipOptions();
+  } catch (error) {
+    if (key !== shipQuote.key) return;
+    shipQuote = { ...shipQuote, enabled: shipQuote.enabled === null ? null : shipQuote.enabled, key: '', options: [], selected: null, loading: false };
+    renderShipOptions(error && error.message && error.message !== 'Failed to fetch' ? error.message : shipT('error'), true);
+  }
+  renderCheckoutSummary();
+}
+document.addEventListener('change', e => {
+  if (!e.target || e.target.name !== 'co-ship') return;
+  const chosen = shipQuote.options.find(o => String(o.id) === e.target.value);
+  if (chosen) { shipQuote.selected = chosen; renderCheckoutSummary(); }
+});
 function getCheckoutItems() {
   return checkoutItems.length ? checkoutItems : (selectedProduct ? [{ product: selectedProduct, type: modalPriceType, qty: WHOLESALE_MIN_QTY[modalPriceType] || 1 }] : []);
 }
@@ -4736,7 +4798,7 @@ function checkoutTotalText(items) {
 }
 function checkoutGrandTotalText(items) {
   const subtotal = checkoutSubtotalValue(items);
-  return subtotal === null ? t('cartConsult') : `R$ ${formatBRL(subtotal + SHIPPING_FEE)}`;
+  return subtotal === null ? t('cartConsult') : `R$ ${formatBRL(subtotal + currentShippingFee())}`;
 }
 function setCheckoutSummaryOpen(open) {
   const toggle = document.getElementById('co-summary-toggle');
@@ -4760,11 +4822,12 @@ function renderCheckoutSummary() {
     const condition = type === 'atacado5' ? t('wholesale5Label') : type === 'atacado10' ? t('wholesale10Label') : t('retailLabel');
     return `<div class="co-item"><div class="co-thumb"><img src="${product.images[0]}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.style.visibility='hidden'"><span class="co-qty">${qty}</span></div><div><div class="co-item-name">${product.name}</div><div class="co-item-meta">${formatBrandLabel(product.badge)} · ${condition}</div></div><div class="co-item-price">${lineTotal}</div></div>`;
   }).join('');
-  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>R$ ${formatBRL(SHIPPING_FEE)}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
+  checkoutSummary.innerHTML = `<div class="co-items">${lines}</div><div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div><div class="co-row"><span>${t('coShipping')}</span><span>${shipQuote.enabled && !shipQuote.selected ? shipT('enterCep') : `R$ ${formatBRL(currentShippingFee())}`}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span><small>BRL</small>${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p>`;
   if (totalMobile) totalMobile.textContent = total;
 }
 function showCheckout() {
   renderCheckoutSummary();
+  refreshShippingQuote();
   updateCheckoutMode();
   setCheckoutSummaryOpen(false);
   checkoutModal.classList.add('active');
@@ -4866,6 +4929,8 @@ async function startMercadoPagoPayment(items, order) {
     if (getCartPriceValue(product, type) === null) { showCheckoutError(fillTemplate(t('mpConsult'), { name: product.name })); return; }
     if (qty < min) { showCheckoutError(fillTemplate(t('mpWholesaleMin'), { name: product.name, min })); return; }
   }
+  if (shipQuote.loading) { showCheckoutError(shipT('loading')); return; }
+  if (shipQuote.enabled && !shipQuote.selected) { showCheckoutError(shipT('choose')); return; }
   const button = document.getElementById('checkout-submit');
   const label = document.getElementById('checkout-submit-label');
   showCheckoutError('');
@@ -4878,6 +4943,7 @@ async function startMercadoPagoPayment(items, order) {
       body: JSON.stringify({
         method: order.payment === 'Pix' ? 'pix' : 'card',
         items: items.map(({ product, type, qty }) => ({ id: product.id, type, qty })),
+        ...(shipQuote.enabled && shipQuote.selected ? { shipping: { service: shipQuote.selected.id } } : {}),
         customer: {
           recipient: order.recipient, phone: order.phone, email: order.email, cpf: order.cpf,
           cep: order.cep, address: order.address, number: order.number, complement: order.complement,
@@ -5393,6 +5459,7 @@ async function lookupCep() {
     checkoutCity.value = `${data.localidade || ''} / ${data.uf || ''}`.replace(/^ \/ | \/ $/g, '');
     updateCpfRequirement(data.localidade || '');
     if (checkoutLookupStatus) checkoutLookupStatus.textContent = t('lookupSuccess');
+    refreshShippingQuote();
   } catch (_) {
     checkoutAddress.value = ''; checkoutNeighborhood.value = ''; checkoutCity.value = '';
     updateCpfRequirement('');
