@@ -104,10 +104,10 @@ Sem isso, o frete continua fixo (`SHIPPING_FEE`). Com isso, o cliente digita o C
    |---|---|---|
    | `MELHOR_ENVIO_TOKEN` | Secret | o token do Melhor Envio |
    | `ME_FROM_CEP` | Text | CEP de onde as encomendas saem, ex.: `80000000` |
-   | `ME_BOX_CM` | Text | medidas da caixa em cm "altura,largura,comprimento", ex.: `10,15,20` |
+   | `ME_BOX_CM` | Text | (opcional) medidas da caixa em cm "altura,largura,comprimento"; padrão `4,12,17` |
    | `ME_BASE_WEIGHT_KG` | Text | peso da caixa vazia em kg, ex.: `0.2` |
    | `ME_ITEM_WEIGHT_KG` | Text | peso de cada unidade em kg, ex.: `0.05` |
-   | `ME_SERVICES` | Text | (opcional) só alguns serviços, ex.: `1,2` = PAC e SEDEX dos Correios |
+   | `ME_SERVICES` | Text | (opcional) serviços mostrados; padrão `1,2,3,31` (Correios PAC e SEDEX, Jadlog .Package, Loggi Express), `todos` mostra tudo |
    | `ME_EXTRA_FEE` | Text | (opcional) valor somado a cada frete, ex.: `5` para embalagem |
    | `ME_CONTACT` | Text | (opcional) e-mail de contato técnico que o Melhor Envio pede |
 
