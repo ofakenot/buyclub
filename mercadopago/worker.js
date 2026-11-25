@@ -583,10 +583,95 @@ function tgChats(env) {
   return groups.length ? groups : all;
 }
 
+// PDF simples (A4, Helvetica) com os dados do pagamento. Gerado aqui mesmo, sem biblioteca.
+export function receiptPdf(o, test) {
+  const r = o.receipt || {};
+  const clean = v => String(v == null ? '' : v).replace(/[—–]/g, '-').normalize('NFC').replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+  const esc = v => clean(v).replace(/[\\()]/g, m => '\\' + m);
+  const ops = [];
+  const text = (x, y, size, bold, str, gray) => ops.push(`${gray ? '0.45 g' : '0.1 g'} BT /${bold ? 'F2' : 'F1'} ${size} Tf ${x} ${y} Td (${esc(str)}) Tj ET`);
+  const when = d => d && !isNaN(new Date(d)) ? new Date(d).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  const money = n => n == null || n === '' ? '' : `R$ ${brl(n)}`;
+  let y = 0;
+  const rule = () => { ops.push(`0.85 G 0.8 w 40 ${y} m 555 ${y} l S`); y -= 22; };
+  const section = title => { y -= 6; text(40, y, 11, true, title.toUpperCase()); y -= 10; rule(); };
+  const row = (label, value) => { if (value == null || value === '') return; text(40, y, 9, false, label, true); text(190, y, 11, false, value); y -= 20; };
+  // cabeçalho
+  ops.push('0.07 g 0 772 595 70 re f');
+  ops.push('1 g BT /F2 22 Tf 40 806 Td (BUY CLUB) Tj ET');
+  ops.push(`1 g BT /F1 11 Tf 40 786 Td (${esc('Comprovante de pagamento' + (test ? ' (TESTE, sem cobrança)' : ''))}) Tj ET`);
+  y = 735;
+  ops.push('0.13 0.55 0.3 rg 40 ' + (y - 7) + ' 166 24 re f');
+  ops.push(`1 g BT /F2 11 Tf 50 ${y} Td (PAGAMENTO APROVADO) Tj ET`);
+  y -= 40;
+  section('Pagamento');
+  row('Pedido', o.orderId);
+  row('Valor pago', money(r.amount != null ? r.amount : o.amount));
+  row('Forma', r.method || o.method);
+  row('Data e hora', when(r.at || o.paidAt));
+  row('Taxa Mercado Pago', r.fees ? money(r.fees) : '');
+  row('Valor líquido', r.net != null ? money(r.net) : '');
+  row('ID do pagamento', r.id || o.paymentId);
+  section('Cliente');
+  row('Nome', o.recipient);
+  row('CPF', o.cpf);
+  row('Pagador', r.payer);
+  const items = String(o.items || '').split(' | ').filter(Boolean);
+  if (items.length) {
+    section('Itens');
+    for (const it of items.slice(0, 12)) { text(40, y, 10, false, clean(it).slice(0, 95)); y -= 17; }
+    y -= 6;
+  }
+  section('Valores');
+  row('Produtos', o.subtotal ? money(o.subtotal) : '');
+  row('Frete', o.subtotal ? money(o.shipping || 0) : '');
+  row('Cupom', o.coupon && Number(o.discount) > 0 ? `${o.coupon} (desconto de ${money(o.discount)})` : '');
+  row('Envio', o.shippingLabel);
+  row('Total', money(r.amount != null ? r.amount : o.amount));
+  text(40, 60, 8, false, 'Dados obtidos da API do Mercado Pago. Confira pelo ID do pagamento no painel do Mercado Pago.', true);
+  text(40, 48, 8, false, `Emitido em ${when(new Date().toISOString())} (horário de Brasília) · buyclub.us`, true);
+
+  const stream = ops.join('\n');
+  const objs = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
+    `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`
+  ];
+  let pdf = '%PDF-1.4\n%\xE2\xE3\xCF\xD3\n';
+  const offsets = [];
+  objs.forEach((body, i) => { offsets.push(pdf.length); pdf += `${i + 1} 0 obj\n${body}\nendobj\n`; });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n` + offsets.map(n => String(n).padStart(10, '0') + ' 00000 n \n').join('');
+  pdf += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Uint8Array.from(pdf, c => c.charCodeAt(0) & 0xFF);
+}
+
+async function tgSendDocument(env, chatId, bytes, filename, caption, replyTo) {
+  const fd = new FormData();
+  fd.append('chat_id', String(chatId));
+  fd.append('document', new Blob([bytes], { type: 'application/pdf' }), filename);
+  if (caption) fd.append('caption', caption);
+  if (replyTo) fd.append('reply_to_message_id', String(replyTo));
+  const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument`, { method: 'POST', body: fd });
+  if (!res.ok) console.error('telegram sendDocument', res.status, await res.text());
+}
+
+// Posta o pedido e, logo abaixo (como resposta), o PDF do comprovante
+async function postOrderWithReceipt(env, chat, o, test) {
+  const out = await tgSend(env, chat, tgOrderCard(o, test));
+  const sent = out && out.result;
+  try {
+    await tgSendDocument(env, (sent && sent.chat && sent.chat.id) || chat, receiptPdf(o, test), `comprovante-${o.orderId}.pdf`, `Comprovante do pedido ${o.orderId}`, sent && sent.message_id);
+  } catch (e) { console.error('comprovante pdf', e && e.stack || e); }
+}
+
 async function notifyTelegramOrder(env, o) {
   if (!env.TELEGRAM_BOT_TOKEN) return;
   for (const chat of tgChats(env)) {
-    try { await tgSend(env, chat, tgOrderCard(o)); } catch (e) { console.error('telegram pedido', e && e.message); }
+    try { await postOrderWithReceipt(env, chat, o); } catch (e) { console.error('telegram pedido', e && e.message); }
   }
 }
 
@@ -616,13 +701,14 @@ export async function handleTelegram(request, env, parsed) {
     const id = await createTestOrder(env, cpf, name);
     const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
     const cpfFmt = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    const card = tgOrderCard({ orderId: id, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1', shippingLabel: 'Correios PAC (teste)', cpf: cpfFmt,
-      receipt: { id: 'TESTE', method: 'Pix', at: new Date().toISOString(), amount: 0, net: 0, payer: name } }, true);
-    return tgSend(env, chatId, card + `\n\nNo site: ${h(site)}/?pedido=${h(id)} (CPF ${h(cpfFmt)}). Some em 7 dias.`);
+    const test = { orderId: id, recipient: name, city: 'São Paulo/SP', items: 'Produto de teste x1', shippingLabel: 'Correios PAC (teste)', cpf: cpfFmt,
+      receipt: { id: 'TESTE', method: 'Pix', at: new Date().toISOString(), amount: 0, net: 0, payer: name } };
+    await postOrderWithReceipt(env, chatId, test, true);
+    return tgSend(env, chatId, `No site: ${h(site)}/?pedido=${h(id)} (CPF ${h(cpfFmt)}). Some em 7 dias.`);
   }
   // resposta a um cartão de pedido do bot: basta o código (o número do pedido vem da mensagem respondida)
   const replied = msg.reply_to_message;
-  const replyOrder = !isCommand && replied && replied.from && replied.from.is_bot && String(replied.text || '').match(/\bBC[A-Z0-9]{6,22}\b/);
+  const replyOrder = !isCommand && replied && replied.from && replied.from.is_bot && String(replied.text || replied.caption || '').match(/\bBC[A-Z0-9]{6,22}\b/);
   // no grupo, conversa normal é ignorada: o bot só age em /rastreio, /apagar, numa resposta a um pedido ou numa mensagem que tenha código + CPF/pedido
   const cmd = replyOrder ? ['', 'rastreio'] : text.match(/^\/(rastreio|apagar|remover)\b\s*/i);
   if (isCommand && !cmd) return;
