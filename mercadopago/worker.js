@@ -168,6 +168,7 @@ async function createCheckout(request, env) {
   const missing = ['recipient', 'phone', 'cep', 'address', 'number', 'neighborhood', 'city'].filter(k => !customer[k]);
   if (missing.length) throw new UserError('Preencha nome, WhatsApp e endereço completo.');
   if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) throw new UserError('E-mail inválido.');
+  if (!isValidCpf(customer.cpf)) throw new UserError('Informe um CPF válido. A transportadora exige o documento do destinatário.');
 
   const lines = await buildLines(body.items, env);
   const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
@@ -514,7 +515,13 @@ function corsHeaders(request, env) {
   };
 }
 function json(data, status, headers) {
-  return new Response(JSON.stringify(data), { status, headers: { ...headers, 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify(data), { status, headers: { ...headers, 'Content-Type': 'application/json', 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-store' } });
+}
+export function isValidCpf(value) {
+  const d = digits(value);
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const dv = len => { let sum = 0; for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i); const r = (sum * 10) % 11; return r === 10 ? 0 : r; };
+  return dv(9) === Number(d[9]) && dv(10) === Number(d[10]);
 }
 function clean(v, max) { return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max); }
 function digits(v) { return String(v == null ? '' : v).replace(/\D/g, ''); }
