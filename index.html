@@ -6791,8 +6791,8 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   .bx-print i { font-style: normal; font-weight: 600; letter-spacing: .08em; }
   .bx-edge { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: repeating-linear-gradient(90deg, #b48a55 0 3px, #e8cfa6 3px 6px); }
   /* produto */
-  .bx-item { position: absolute; left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; display: grid; place-items: center; border-radius: 12px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.06); transform-style: preserve-3d; opacity: 0; transform: translate3d(var(--x, 0px), -260px, var(--z, 0px)) rotateX(35deg) rotateZ(-10deg); animation: bxDrop .75s cubic-bezier(.5,0,.6,1.35) var(--delay, .55s) forwards, bxHide .01s linear 3s forwards; }
-  .bx-item img { width: 86%; height: 86%; object-fit: contain; }
+  .bx-item { position: absolute; left: 50%; top: 50%; width: 104px; height: 64px; margin: -32px 0 0 -52px; display: block; border-radius: 3px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 3px 0 rgba(0,0,0,.10); transform-style: preserve-3d; opacity: 0; transform: translate3d(var(--x, 0px), -260px, var(--z, 0px)) rotateX(35deg) rotateZ(-10deg); animation: bxDrop .75s cubic-bezier(.5,0,.6,1.35) var(--delay, .55s) forwards, bxHide .01s linear 3s forwards; }
+  .bx-item svg { display: block; width: 100%; height: 100%; border-radius: 3px; }
   /* papel de seda */
   .bx-tissue { position: absolute; top: 50%; height: calc(var(--d) - 14px); margin-top: calc((var(--d) - 14px) / -2); width: calc(var(--w) / 2 + 6px); background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(246,243,237,.96)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
   .bx-tissue::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 14px, rgba(0,0,0,.025) 14px 15px); }
@@ -6831,7 +6831,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   @keyframes bxTape { to { transform: translateZ(.6px) scaleY(1); } }
   @keyframes bxStamp { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 1; transform: translateZ(1.2px) scale(.3333); } }
   @keyframes bxPopZ { to { transform: translateZ(.5px) scale(1); } }
-  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 136px; --h: 46px; width: 290px; height: 280px; } .bx-item { width: 96px; height: 96px; margin: -48px 0 0 -48px; } }
+  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 136px; --h: 46px; width: 290px; height: 280px; } .bx-item { width: 92px; height: 57px; margin: -28.5px 0 0 -46px; } }
 </style>
 <script>
 (function () {
@@ -6863,19 +6863,41 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       + '</svg>';
   }
 
-  // Até 2 produtos do carrinho caem dentro da caixa.
-  function itemsHtml() {
-    const list = [];
-    try {
-      (cartItems || []).forEach(ci => {
-        const p = (typeof getCartProduct === 'function' ? getCartProduct(ci) : null) || (products || []).find(x => x.id === ci.id);
-        if (p && p.images && p.images[0] && list.length < 2) list.push(p);
-      });
-    } catch (_) {}
-    const pos = list.length > 1
-      ? [{ x: '-44px', z: '-6px', rz: '-6deg', delay: '.5s', lift: '0px' }, { x: '46px', z: '8px', rz: '5deg', delay: '.8s', lift: '1px' }]
-      : [{ x: '0px', z: '0px', rz: '-4deg', delay: '.55s', lift: '0px' }];
-    return list.map((p, i) => `<div class="bx-item" style="--x:${pos[i].x};--z:${pos[i].z};--rz:${pos[i].rz};--delay:${pos[i].delay};--lift:${pos[i].lift}"><img src="${esc(p.images[0])}" alt=""></div>`).join('');
+  // Caixinhas de remédio genéricas (sem marca), sorteadas a cada abertura.
+  const MED = {
+    colors: [['#2563eb', '#dbeafe'], ['#059669', '#d1fae5'], ['#dc2626', '#fee2e2'], ['#7c3aed', '#ede9fe'], ['#ea580c', '#ffedd5'], ['#0891b2', '#cffafe'], ['#db2777', '#fce7f3']],
+    dose: ['5 mg', '10 mg', '20 mg', '25 mg', '50 mg', '100 mg', '250 mg', '500 mg', '2,5 mg'],
+    form: [['cápsulas', 'capsules', 'cápsulas'], ['comprimidos', 'tablets', 'comprimidos'], ['comprimidos rev.', 'coated tablets', 'comprimidos rec.']],
+    qty: [10, 14, 20, 28, 30, 60],
+    use: ['Uso oral · Adulto', 'Oral use · Adult', 'Uso oral · Adulto']
+  };
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  function medBox(li) {
+    const [c, soft] = pick(MED.colors), F = "'Plus Jakarta Sans',Arial,sans-serif";
+    const form = pick(MED.form)[li], dose = pick(MED.dose), qty = pick(MED.qty), style = Math.floor(Math.random() * 3);
+    const pill = Math.random() < .5
+      ? `<g transform="translate(144 ${style === 0 ? 30 : 20}) scale(.75) rotate(-35)"><rect x="-15" y="-7" width="30" height="14" rx="7" fill="#fff" stroke="${c}" stroke-width="2"/><path d="M0 -7h8a7 7 0 0 1 0 14H0z" fill="${c}"/></g>`
+      : `<g transform="translate(144 ${style === 0 ? 30 : 20}) scale(.75)"><circle r="13" fill="#fff" stroke="${c}" stroke-width="2"/><path d="M-9 0h18" stroke="${c}" stroke-width="2"/></g>`;
+    let deco = '';
+    if (style === 0) deco = `<rect width="160" height="14" fill="${c}"/><rect y="86" width="160" height="14" fill="${c}"/>`;
+    else if (style === 1) deco = `<path d="M0 0h52L30 100H0z" fill="${c}"/><path d="M52 0h10L40 100H30z" fill="${soft}"/>`;
+    else deco = `<rect width="160" height="100" fill="${soft}"/><path d="M0 100V68q80-26 160 0v32z" fill="${c}"/>`;
+    const tx = style === 1 ? 62 : 14, ty = style === 0 ? 40 : 30, light = style === 2 ? '#fff' : '#6b7280';
+    let bars = '';
+    for (let k = 0, x = 104; k < 18; k++) { const w = Math.random() < .4 ? 2 : 1; bars += `<rect x="${x}" y="${style === 0 ? 70 : 84}" width="${w}" height="10" fill="#111"/>`; x += w + 1 + (Math.random() < .5 ? 1 : 0); }
+    return `<svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="100" fill="#fff"/>${deco}`
+      + `<text x="${tx}" y="${ty}" font-family="${F}" font-size="${style === 1 ? 17 : 20}" font-weight="800" fill="#111827">${dose}</text>`
+      + `<text x="${tx}" y="${ty + 15}" font-family="${F}" font-size="10" font-weight="600" fill="#374151">${qty} ${form}</text>`
+      + `<text x="${tx}" y="${ty + 28}" font-family="${F}" font-size="7.5" font-weight="600" fill="#6b7280">${MED.use[li]}</text>`
+      + (style === 0 ? '' : `<text x="${style === 1 ? 62 : 14}" y="93" font-family="${F}" font-size="6.5" font-weight="700" fill="${light}" letter-spacing=".5">LOTE ${Math.floor(1000 + Math.random() * 8999)}</text>`)
+      + pill + bars + '</svg>';
+  }
+  function itemsHtml(li) {
+    const n = 1 + (Math.random() < .6 ? 1 : 0);
+    const pos = n > 1
+      ? [{ x: '-48px', z: '-14px', rz: (-4 - Math.random() * 8).toFixed(1) + 'deg', delay: '.5s', lift: '0px' }, { x: '46px', z: '16px', rz: (3 + Math.random() * 8).toFixed(1) + 'deg', delay: '.8s', lift: '1px' }]
+      : [{ x: '0px', z: '0px', rz: (-6 + Math.random() * 12).toFixed(1) + 'deg', delay: '.55s', lift: '0px' }];
+    return pos.map(q => `<div class="bx-item" style="--x:${q.x};--z:${q.z};--rz:${q.rz};--delay:${q.delay};--lift:${q.lift}">${medBox(li)}</div>`).join('');
   }
 
   function play(done) {
@@ -6889,7 +6911,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
         <div class="bx-face bx-bottom"></div><div class="bx-face bx-floor"></div>
         <div class="bx-face bx-back"><span class="bx-edge"></span></div>
         <div class="bx-face bx-left"><span class="bx-edge"></span></div><div class="bx-face bx-right"><span class="bx-edge"></span></div>
-        ${itemsHtml()}
+        ${itemsHtml(['pt', 'en', 'es'].indexOf(lang) < 0 ? 0 : ['pt', 'en', 'es'].indexOf(lang))}
         <div class="bx-face bx-tissue bx-tissue-l"></div>
         <div class="bx-face bx-tissue bx-tissue-r"><span class="bx-sticker">BC</span></div>
         <div class="bx-face bx-front"><span class="bx-edge"></span><span class="bx-print">BUY CLUB<i>buyclub.us</i></span></div>
