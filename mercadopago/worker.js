@@ -294,6 +294,30 @@ function applyFreeShipping(options) {
 function shippingEnabled(env) { return !!(env.MELHOR_ENVIO_TOKEN && digits(env.ME_FROM_CEP).length === 8); }
 function flatShipping(env) { return round2(Number(env.SHIPPING_FEE ?? DEFAULT_SHIPPING_FEE) || 0); }
 
+// Capital de São Paulo: entrega expressa própria (motoboy), valor fixo e até 3 horas.
+// Faixas de CEP do município de São Paulo: 01000-000 a 05999-999 e 08000-000 a 08499-999.
+export function isSpCapital(cep) {
+  const n = Number(digits(cep).slice(0, 8));
+  return (n >= 1000000 && n <= 5999999) || (n >= 8000000 && n <= 8499999);
+}
+function spExpressOption(env) {
+  return { id: 'sp3h', company: 'Buy Club', name: 'Entrega expressa SP', price: round2(Number(env.SP_EXPRESS_FEE ?? 50) || 0), express: true, eta: 'até 3 horas após o pedido', tracking: 'whatsapp' };
+}
+// Monta as opções para o CEP: transportadoras (Melhor Envio) + expressa na capital.
+async function shippingOptions(env, cep, lines, subtotal) {
+  const free = hasFreeShipping(env, lines);
+  let options = [];
+  try { options = await melhorEnvioQuote(env, cep, lines, subtotal); }
+  catch (err) { if (!isSpCapital(cep)) throw err; }
+  if (options.length && free) options = applyFreeShipping(options);
+  if (isSpCapital(cep)) {
+    const express = spExpressOption(env);
+    // padrão na capital é a expressa; com frete grátis, a opção grátis continua em primeiro
+    options = free && options.length ? [options[0], express, ...options.slice(1)] : [express, ...options];
+  }
+  return options;
+}
+
 async function quoteShipping(request, env) {
   if (!shippingEnabled(env)) return { enabled: false, flat: flatShipping(env) };
   const body = await request.json().catch(() => null);
@@ -302,8 +326,7 @@ async function quoteShipping(request, env) {
   if (!body || !Array.isArray(body.items) || !body.items.length || body.items.length > 50) throw new UserError('Carrinho vazio.');
   const lines = await buildLines(body.items, env);
   const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
-  let options = await melhorEnvioQuote(env, cep, lines, subtotal);
-  if (options.length && hasFreeShipping(env, lines)) options = applyFreeShipping(options);
+  const options = await shippingOptions(env, cep, lines, subtotal);
   if (!options.length) throw new UserError('Não encontramos frete para esse CEP. Fale com a gente pelo WhatsApp.');
   return { enabled: true, options };
 }
@@ -313,10 +336,10 @@ async function resolveShipping(env, cep, lines, subtotal, service) {
   const free = hasFreeShipping(env, lines);
   if (!shippingEnabled(env)) return free ? { price: 0, label: 'Frete grátis (New Life)' } : { price: flatShipping(env), label: 'Frete fixo' };
   if (!service) throw new UserError('Escolha uma opção de frete.');
-  let options = await melhorEnvioQuote(env, cep, lines, subtotal);
-  if (free) options = applyFreeShipping(options);
+  const options = await shippingOptions(env, cep, lines, subtotal);
   const chosen = options.find(o => String(o.id) === String(service));
   if (!chosen) throw new UserError('Essa opção de frete não está disponível para o CEP. Escolha outra.');
+  if (chosen.express) return { price: chosen.price, label: `${chosen.name} (${chosen.eta}, rastreio pelo WhatsApp)` };
   return { price: chosen.price, label: `${chosen.company} ${chosen.name} (${chosen.daysMin && chosen.daysMax && chosen.daysMin !== chosen.daysMax ? `${chosen.daysMin} a ${chosen.daysMax}` : chosen.days} dias úteis)${chosen.free ? ' — grátis' : ''}` };
 }
 

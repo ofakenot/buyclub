@@ -125,3 +125,7 @@ Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado 
 - **Atacado**: o preço de 5 un / 10 un exige pelo menos 5 / 10 unidades daquele produto no carrinho.
 - **Frete**: com o Melhor Envio ligado (passo 4b), é calculado pelo CEP. Sem ele, é fixo de R$ 50,00 para qualquer endereço, já somado no total. Para mudar, altere `SHIPPING_FEE` no `index.html` e crie a variável `SHIPPING_FEE` no Worker com o mesmo valor.
 - **Parcelamento**: até 12x; os juros das parcelas seguem a configuração da sua conta Mercado Pago.
+
+### Entrega expressa na capital de SP
+
+Para CEPs do município de São Paulo (01000-000 a 05999-999 e 08000-000 a 08499-999), o Worker acrescenta a opção "Entrega expressa SP": até 3 horas após o pedido, rastreio pelo WhatsApp, valor fixo de R$ 50 (mude com a variável `SP_EXPRESS_FEE`). Ela vem selecionada por padrão; com frete grátis New Life, a opção grátis fica em primeiro.
