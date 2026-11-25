@@ -6766,5 +6766,105 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   });
 })();
 </script>
+<!-- ===== ANIMAÇÃO: caixa sendo fechada e lacrada ao ir para o checkout ===== -->
+<style>
+  .bx-overlay { position: fixed; inset: 0; z-index: 3000; display: grid; place-items: center; background: rgba(244,244,245,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; transition: opacity .3s ease; cursor: pointer; }
+  .bx-overlay.is-on { opacity: 1; }
+  .bx-overlay.is-out { opacity: 0; }
+  .bx-wrap { display: grid; justify-items: center; gap: 2.2rem; }
+  .bx-scene { --w: 230px; --d: 158px; --h: 46px; width: var(--w); height: 200px; perspective: 1000px; display: grid; place-items: center; }
+  .bx { position: relative; width: var(--w); height: var(--h); transform-style: preserve-3d; transform: rotateX(-30deg) rotateY(-34deg); animation: bxTurn 2.3s cubic-bezier(.45,0,.2,1) forwards; }
+  .bx-face { position: absolute; left: 50%; top: 50%; backface-visibility: visible; background: linear-gradient(160deg, #d9b98a, #c79f68); box-shadow: inset 0 0 0 1px rgba(110,74,30,.18); }
+  .bx-front, .bx-back { width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2); }
+  .bx-left, .bx-right { width: var(--d); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--d) / -2); background: linear-gradient(160deg, #c9a571, #b88d55); }
+  .bx-bottom { width: var(--w); height: var(--d); margin: calc(var(--d) / -2) 0 0 calc(var(--w) / -2); background: #a87d48; }
+  .bx-front { transform: translateZ(calc(var(--d) / 2)); background: linear-gradient(180deg, #e2c497, #cfa872); }
+  .bx-back { transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: #b98e56; }
+  .bx-left { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); }
+  .bx-right { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); }
+  .bx-bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); }
+  .bx-hinge { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; transform: translateY(calc(var(--h) / -2)) translateZ(calc(var(--d) / -2)); }
+  .bx-lid { position: absolute; left: calc(var(--w) / -2); top: 0; width: var(--w); height: var(--d); transform-origin: 50% 0; transform-style: preserve-3d; transform: rotateX(205deg); animation: bxClose .75s cubic-bezier(.55,0,.25,1.15) .3s forwards; }
+  .bx-lid-in, .bx-lid-out { position: absolute; inset: 0; }
+  .bx-lid-in { background: linear-gradient(170deg, #b8925c, #9f7843); transform: rotateY(180deg); backface-visibility: hidden; }
+  .bx-lid-out { background: linear-gradient(200deg, #e6c99c, #d2ab74); box-shadow: inset 0 0 0 1px rgba(110,74,30,.2); backface-visibility: hidden; }
+  .bx-tape { position: absolute; left: 50%; top: 0; bottom: -1px; width: 54px; margin-left: -27px; background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.35) 50%, rgba(255,255,255,.08)), #f1e2c5; box-shadow: 0 0 0 1px rgba(0,0,0,.06); transform-origin: 50% 0; transform: scaleY(0); animation: bxTape .4s ease-out 1.08s forwards; }
+  .bx-tape-front { position: absolute; left: 50%; top: -1px; height: 60%; width: 54px; margin-left: -27px; background: inherit; background: #f1e2c5; box-shadow: 0 0 0 1px rgba(0,0,0,.06); transform-origin: 50% 0; transform: scaleY(0); animation: bxTape .25s ease-out 1.45s forwards; }
+  .bx-seal { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; width: 118px; height: 58px; margin: -29px 0 0 -59px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.18), inset 0 0 0 2px #09090b; opacity: 0; transform: scale(1.9) rotate(-8deg); animation: bxStamp .38s cubic-bezier(.3,1.4,.5,1) 1.5s forwards; }
+  .bx-seal .bc-logo { font-size: 1.25rem; color: #09090b; }
+  .bx-seal .bc-tag { animation: none; }
+  .bx-shadow { position: absolute; left: 50%; top: 50%; width: calc(var(--w) * 1.15); height: calc(var(--d) * 1.1); margin: calc(var(--d) * -.55) 0 0 calc(var(--w) * -.575); border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.22), transparent); transform: rotateX(90deg) translateZ(calc(var(--h) / -2 - 2px)); }
+  .bx-caption { margin: 0; color: #09090b; font-size: .95rem; font-weight: 800; letter-spacing: .02em; text-align: center; }
+  .bx-caption small { display: block; margin-top: .35rem; color: #71717a; font-size: .72rem; font-weight: 600; letter-spacing: 0; }
+  .bx-check { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-right: .35rem; border-radius: 50%; background: #16a34a; color: #fff; font-size: .75rem; vertical-align: -.2rem; transform: scale(0); animation: bxPop .3s cubic-bezier(.3,1.5,.5,1) 1.85s forwards; }
+  @keyframes bxClose { to { transform: rotateX(90deg); } }
+  @keyframes bxTape { to { transform: scaleY(1); } }
+  @keyframes bxStamp { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 1; transform: scale(1) rotate(-4deg); } }
+  @keyframes bxPop { to { transform: scale(1); } }
+  @keyframes bxTurn { 0% { transform: rotateX(-30deg) rotateY(-34deg); } 100% { transform: rotateX(-42deg) rotateY(-22deg) translateY(4px); } }
+  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 138px; --h: 40px; } }
+</style>
+<script>
+(function () {
+  if (typeof openCartCheckout !== 'function') return;
+  const TXT = {
+    pt: ['Embalando seu pedido…', 'Lacrado com o selo Buy Club'],
+    en: ['Packing your order…', 'Sealed with the Buy Club seal'],
+    es: ['Empacando tu pedido…', 'Sellado con el sello Buy Club']
+  };
+  const reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (_) { return false; } };
+  let running = false;
+
+  function logoHtml() {
+    const hero = document.querySelector('.bc-logo-hero');
+    if (!hero) return '<strong style="font-size:1rem;letter-spacing:.08em">BUY CLUB</strong>';
+    const clone = hero.cloneNode(true);
+    clone.classList.remove('bc-logo-hero');
+    clone.removeAttribute('style');
+    clone.querySelectorAll('animateTransform, .bc-verified').forEach(el => el.remove());
+    return clone.outerHTML;
+  }
+
+  function play(done) {
+    const lang = (typeof currentLang === 'string' && TXT[currentLang]) ? currentLang : 'pt';
+    const el = document.createElement('div');
+    el.className = 'bx-overlay';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.innerHTML = `<div class="bx-wrap"><div class="bx-scene" aria-hidden="true"><div class="bx">
+        <div class="bx-shadow"></div>
+        <div class="bx-face bx-bottom"></div><div class="bx-face bx-back"></div><div class="bx-face bx-left"></div><div class="bx-face bx-right"></div>
+        <div class="bx-face bx-front"><span class="bx-tape-front"></span></div>
+        <div class="bx-hinge"><div class="bx-lid"><div class="bx-lid-in"></div><div class="bx-lid-out"><span class="bx-tape"></span><span class="bx-seal">${logoHtml()}</span></div></div></div>
+      </div></div>
+      <p class="bx-caption"><span class="bx-check">✓</span>${TXT[lang][0]}<small>${TXT[lang][1]}</small></p></div>`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('is-on'));
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      try { done(); } finally {
+        el.classList.add('is-out');
+        setTimeout(() => { el.remove(); running = false; }, 320);
+      }
+    };
+    const timer = setTimeout(finish, 2350);
+    el.addEventListener('click', () => { clearTimeout(timer); finish(); });
+  }
+
+  const _open = openCartCheckout;
+  openCartCheckout = function () {
+    const args = arguments, self = this;
+    const hasItems = typeof cartItems !== 'undefined' && cartItems.length;
+    if (running) return;
+    if (!hasItems || reduce()) return _open.apply(self, args);
+    running = true;
+    play(() => _open.apply(self, args));
+  };
+  if (typeof renderCart === 'function') renderCart();
+})();
+</script>
+
 </body>
 </html>
