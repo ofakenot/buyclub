@@ -6791,8 +6791,14 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   .bx-print i { font-style: normal; font-weight: 600; letter-spacing: .08em; }
   .bx-edge { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: repeating-linear-gradient(90deg, #b48a55 0 3px, #e8cfa6 3px 6px); }
   /* produto */
-  .bx-item { position: absolute; left: 50%; top: 50%; width: 104px; height: 64px; margin: -32px 0 0 -52px; display: block; border-radius: 3px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 3px 0 rgba(0,0,0,.10); transform-style: preserve-3d; opacity: 0; transform: translate3d(var(--x, 0px), -260px, var(--z, 0px)) rotateX(35deg) rotateZ(-10deg); animation: bxDrop .75s cubic-bezier(.5,0,.6,1.35) var(--delay, .55s) forwards, bxHide .01s linear 3s forwards; }
-  .bx-item svg { display: block; width: 100%; height: 100%; border-radius: 3px; }
+  .bx-item { position: absolute; left: 50%; top: 50%; width: 104px; height: 64px; margin: -32px 0 0 -52px; display: block; --t: 22px; transform-style: preserve-3d; visibility: hidden; transform: translate3d(var(--x, 0px), -260px, var(--z, 0px)) rotateX(35deg) rotateZ(-10deg); animation: bxDrop .75s cubic-bezier(.5,0,.6,1.35) var(--delay, .55s) forwards, bxHide .01s linear 3s forwards; }
+  .bx-item svg { display: block; width: 100%; height: 100%; }
+  .bx-item > i { position: absolute; display: block; }
+  .bx-item .md-top { inset: 0; transform: translateZ(var(--t)); box-shadow: inset 0 0 0 .5px rgba(0,0,0,.18); }
+  .bx-item .md-s { left: 0; right: 0; height: var(--t); top: 100%; transform-origin: 50% 0; transform: rotateX(90deg); background: linear-gradient(0deg, var(--mc) 0 32%, #fff 32%); filter: brightness(.86); }
+  .bx-item .md-n { left: 0; right: 0; height: var(--t); bottom: 100%; transform-origin: 50% 100%; transform: rotateX(-90deg); background: linear-gradient(180deg, var(--mc) 0 32%, #f3f4f6 32%); filter: brightness(.8); }
+  .bx-item .md-w { top: 0; bottom: 0; width: var(--t); right: 100%; transform-origin: 100% 50%; transform: rotateY(90deg); background: var(--mc); filter: brightness(.72); }
+  .bx-item .md-e { top: 0; bottom: 0; width: var(--t); left: 100%; transform-origin: 0 50%; transform: rotateY(-90deg); background: linear-gradient(90deg, #fff 0 68%, var(--mc) 68%); filter: brightness(.92); }
   /* papel de seda */
   .bx-tissue { position: absolute; top: 50%; height: calc(var(--d) - 14px); margin-top: calc((var(--d) - 14px) / -2); width: calc(var(--w) / 2 + 6px); background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(246,243,237,.96)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
   .bx-tissue::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 14px, rgba(0,0,0,.025) 14px 15px); }
@@ -6822,7 +6828,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   .bx-check { display: inline-grid; place-items: center; width: 1.2rem; height: 1.2rem; margin-right: .35rem; border-radius: 50%; background: #16a34a; color: #fff; font-size: .72rem; vertical-align: -.18rem; }
   @keyframes bxIn { from { opacity: 0; transform: translateY(14px) scale(.92); } }
   @keyframes bxTurn { 0% { transform: rotateX(-32deg) rotateY(-30deg); } 55% { transform: rotateX(-40deg) rotateY(-24deg); } 100% { transform: rotateX(-44deg) rotateY(-16deg); } }
-  @keyframes bxDrop { 0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 1; transform: translate3d(var(--x, 0px), calc(var(--h) / 2 - 3px - var(--lift, 0px)), var(--z, 0px)) rotateX(90deg) rotateZ(var(--rz, -4deg)); } }
+  @keyframes bxDrop { 0% { visibility: visible; } 100% { visibility: visible; transform: translate3d(var(--x, 0px), calc(var(--h) / 2 - 3px - var(--lift, 0px)), var(--z, 0px)) rotateX(90deg) rotateZ(var(--rz, -4deg)); } }
   @keyframes bxTissueL { to { transform: translateY(calc(var(--h) / -2 + 10px)) rotateZ(-2deg) rotateX(90deg); } }
   @keyframes bxTissueR { to { transform: translateY(calc(var(--h) / -2 + 9px)) rotateZ(2deg) rotateX(90deg); } }
   @keyframes bxHide { to { visibility: hidden; } }
@@ -6831,7 +6837,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   @keyframes bxTape { to { transform: translateZ(.6px) scaleY(1); } }
   @keyframes bxStamp { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 1; transform: translateZ(1.2px) scale(.3333); } }
   @keyframes bxPopZ { to { transform: translateZ(.5px) scale(1); } }
-  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 136px; --h: 46px; width: 290px; height: 280px; } .bx-item { width: 92px; height: 57px; margin: -28.5px 0 0 -46px; } }
+  @media (max-width: 480px) { .bx-scene { --w: 200px; --d: 136px; --h: 46px; width: 290px; height: 280px; } .bx-item { width: 92px; height: 57px; margin: -28.5px 0 0 -46px; --t: 19px; } }
 </style>
 <script>
 (function () {
@@ -6885,12 +6891,13 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     const tx = style === 1 ? 62 : 14, ty = style === 0 ? 40 : 30, light = style === 2 ? '#fff' : '#6b7280';
     let bars = '';
     for (let k = 0, x = 104; k < 18; k++) { const w = Math.random() < .4 ? 2 : 1; bars += `<rect x="${x}" y="${style === 0 ? 70 : 84}" width="${w}" height="10" fill="#111"/>`; x += w + 1 + (Math.random() < .5 ? 1 : 0); }
-    return `<svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="100" fill="#fff"/>${deco}`
+    const st = ` style="--mc:${c}"`;
+    return `<i class="md-n"${st}></i><i class="md-w"${st}></i><i class="md-e"${st}></i><i class="md-s"${st}></i><i class="md-top"><svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="160" height="100" fill="#fff"/>${deco}`
       + `<text x="${tx}" y="${ty}" font-family="${F}" font-size="${style === 1 ? 17 : 20}" font-weight="800" fill="#111827">${dose}</text>`
       + `<text x="${tx}" y="${ty + 15}" font-family="${F}" font-size="10" font-weight="600" fill="#374151">${qty} ${form}</text>`
       + `<text x="${tx}" y="${ty + 28}" font-family="${F}" font-size="7.5" font-weight="600" fill="#6b7280">${MED.use[li]}</text>`
       + (style === 0 ? '' : `<text x="${style === 1 ? 62 : 14}" y="93" font-family="${F}" font-size="6.5" font-weight="700" fill="${light}" letter-spacing=".5">LOTE ${Math.floor(1000 + Math.random() * 8999)}</text>`)
-      + pill + bars + '</svg>';
+      + pill + bars + '</svg></i>';
   }
   function itemsHtml(li) {
     const n = 1 + (Math.random() < .6 ? 1 : 0);
