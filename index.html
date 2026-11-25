@@ -7596,6 +7596,12 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     const cpf = onlyDigits(cpfIn.value);
     if (pedido.length < 6) { showMsg(ot('needNumber')); numIn.focus(); return; }
     if (typeof isValidCpf === 'function' ? !isValidCpf(cpf) : cpf.length !== 11) { showMsg(ot('needCpf')); cpfIn.focus(); return; }
+    // pedido de demonstração (para conhecer a página sem uma compra real)
+    if (pedido === 'BCDEMO01' && cpf === '11144477735') {
+      const now = Date.now();
+      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7' });
+      return;
+    }
     submitBtn.disabled = true; submitBtn.textContent = ot('searching');
     resultEl.innerHTML = '';
     try {
