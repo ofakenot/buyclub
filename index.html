@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https://videos.pexels.com; connect-src 'self' https://buyclub-pagamentos.charleswilly-digital.workers.dev https://viacep.com.br https://api.frankfurter.app https://api.frankfurter.dev https://unpkg.com https://cdn.jsdelivr.net https://assets.codepen.io; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -2650,7 +2652,7 @@ position: absolute; top: .65rem; left: .65rem;
       .pdp-rel { flex: 0 0 44%; scroll-snap-align: start; }
     }
   </style>
-<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.35.0" integrity="sha384-E9ylNAzqPaRpswEL31OsE9uwKhnOstW021FIU+Op/W4E34+8Qfa5plvJxxjw38YQ" crossorigin="anonymous"></script>
 <style id="checkout-apple">
 /* ===== CHECKOUT estilo Apple: fundo cinza claro, cartões brancos, tipografia do sistema, botão azul em pílula ===== */
 #checkout-modal { --ap-bg: #f5f5f7; --ap-card: #fff; --ap-text: #1d1d1f; --ap-muted: #6e6e73; --ap-line: #d2d2d7; --ap-blue: #0071e3; --ap-blue-h: #0077ed; }
@@ -2993,11 +2995,11 @@ position: absolute; top: .65rem; left: .65rem;
       <p class="profile-sec-title" data-i18n="contactTitle">Contato</p>
       <p class="contact-intro" data-i18n="contactIntro">Fale com a Buy Club US para consultar disponibilidade, lote, documentação e condições de envio. Nossa equipe responde com agilidade e orienta cada etapa do pedido.</p>
       <div class="profile-card">
-        <a href="#" target="_blank" class="profile-row" id="contact-wa-row-1">
+        <a href="#" target="_blank" rel="noopener noreferrer" class="profile-row" id="contact-wa-row-1">
           <div class="profile-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.5 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 1 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
           <div class="flex-1"><div class="profile-row-label" data-i18n="whatsappSupport">WhatsApp Suporte</div><div class="profile-row-val">+44 0790 2868914</div></div>
         </a>
-        <a href="#" target="_blank" class="profile-row" id="contact-wa-row-2">
+        <a href="#" target="_blank" rel="noopener noreferrer" class="profile-row" id="contact-wa-row-2">
           <div class="profile-row-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.5 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.5 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 1 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 1 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
           <div class="flex-1"><div class="profile-row-label" data-i18n="whatsappSupport">WhatsApp Suporte</div><div class="profile-row-val">+55 41 98743-9214</div></div>
         </a>
@@ -3079,7 +3081,7 @@ position: absolute; top: .65rem; left: .65rem;
       </div>
       <div class="modal-body" id="modal-body"></div>
       <div class="modal-foot">
-        <a href="#" id="btn-wa" class="modal-wa" target="_blank">
+        <a href="#" id="btn-wa" class="modal-wa" target="_blank" rel="noopener noreferrer">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .004 5.412.001 12.048c0 2.12.554 4.189 1.605 6.03l-1.706 6.23 6.376-1.673a11.83 11.83 0 005.772 1.493h.005c6.634 0 12.045-5.412 12.048-12.048a11.82 11.82 0 00-3.483-8.497z"/></svg>
           <span data-i18n="addToCartBtn">Adicionar ao carrinho</span>
         </a>

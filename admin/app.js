@@ -31,9 +31,10 @@ const icons = {
 };
 
 const supervisors = [
-  { user: 'CW', password: 'cwhacker2026@', name: 'Charles', initials: 'CH', role: 'SUPERVISOR' },
-  { user: 'KMR', password: 'kmradm2026@', name: 'KMR', initials: 'KM', role: 'SUPERVISOR' },
-  { user: 'FR', password: 'fradm2026@', name: 'Fernando', initials: 'FE', role: 'SUPERVISOR' }
+  // Senhas guardadas só como hash PBKDF2-SHA256 (salt próprio, 150 mil iterações): o código público não revela a senha.
+  { user: 'CW', salt: 'a82632e43838df2c8fc7785cdc124e29', passwordHash: '9003405d0c1be0ee352cdd96c2ff25a9078d70fb7b8aa559b3d3356d85b29af3', name: 'Charles', initials: 'CH', role: 'SUPERVISOR' },
+  { user: 'KMR', salt: '2760ec983da55a6898987d902ca5962d', passwordHash: '67552836a153f2055065d0828da79223b8d0e3a3788a6c285a77923889cd8ba1', name: 'KMR', initials: 'KM', role: 'SUPERVISOR' },
+  { user: 'FR', salt: '74905368e6051b03ad06a8fe4e301579', passwordHash: '9fa12b26c67ffb62e12d56477ac354c9d447aac479a38dad356ab84b8cd70392', name: 'Fernando', initials: 'FE', role: 'SUPERVISOR' }
 ];
 
 const catalog = [
@@ -69,7 +70,35 @@ const paraguay = {
 };
 
 const countryNames = { BR: 'Brasil', PY: 'Paraguai' };
-const generalAdmin = { user: 'adm', password: 'acessdenied', name: 'Administrador geral', initials: 'AD', role: 'ADMIN' };
+const generalAdmin = { user: 'adm', salt: '6b580da12486f04a624c886fe47e7312', passwordHash: '97e64a0d4c9b980c2e00ec8b68874763460d1912b16c0802b0300be370344693', name: 'Administrador geral', initials: 'AD', role: 'ADMIN' };
+
+// Confere a senha: contas criadas neste navegador (senha local) ou contas fixas (hash PBKDF2).
+async function pbkdf2Hex(password, saltHex) {
+  const enc = new TextEncoder();
+  const salt = new Uint8Array(saltHex.match(/../g).map(h => parseInt(h, 16)));
+  const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 150000 }, key, 256);
+  return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function checkPassword(account, password) {
+  if (!account || !password) return false;
+  if (typeof account.password === 'string' && account.password) return account.password === password;
+  if (account.passwordHash && account.salt) return (await pbkdf2Hex(password, account.salt)) === account.passwordHash;
+  return false;
+}
+// Bloqueio simples contra tentativas seguidas no login (por navegador)
+const LOGIN_LOCK_KEY = 'atlasLoginLock';
+function loginLockedFor() {
+  try { const l = JSON.parse(localStorage.getItem(LOGIN_LOCK_KEY) || '{}'); return l.until && l.until > Date.now() ? Math.ceil((l.until - Date.now()) / 1000) : 0; } catch (_) { return 0; }
+}
+function registerLoginFailure() {
+  try {
+    const l = JSON.parse(localStorage.getItem(LOGIN_LOCK_KEY) || '{}');
+    const fails = (l.fails || 0) + 1;
+    localStorage.setItem(LOGIN_LOCK_KEY, JSON.stringify({ fails, until: fails >= 5 ? Date.now() + Math.min(15, fails - 4) * 60000 : 0 }));
+  } catch (_) {}
+}
+function clearLoginFailures() { try { localStorage.removeItem(LOGIN_LOCK_KEY); } catch (_) {} }
 
 // Cache para evitar requisições repetidas à API do IBGE
 const ibgeCitiesCache = {};
@@ -2782,10 +2811,12 @@ function emergencyWipe() {
   `);
 
   m.querySelector('.cancel-wipe').onclick = () => m.remove();
-  m.querySelector('form').onsubmit = e => {
+  m.querySelector('form').onsubmit = async e => {
     e.preventDefault();
     const pass = new FormData(e.target).get('password');
-    if (!supervisors.some(s => s.password === pass)) {
+    let ok = false;
+    for (const s of allSupervisors()) { if (await checkPassword(s, pass)) { ok = true; break; } }
+    if (!ok) {
       m.querySelector('#wipeError').textContent = 'Senha de supervisor incorreta.';
       return;
     }
@@ -2803,19 +2834,26 @@ function emergencyWipe() {
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
-    loginForm.onsubmit = e => {
+    loginForm.onsubmit = async e => {
       e.preventDefault();
+      const errorEl = document.getElementById('loginError');
+      const wait = loginLockedFor();
+      if (wait) { errorEl.textContent = `Muitas tentativas. Tente de novo em ${Math.ceil(wait / 60)} min.`; return; }
       const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPassword').value;
-      const adminGeneral = (read('atlasGeneralAdmin', [generalAdmin])[0] || generalAdmin);
+      const adminGeneral = { ...generalAdmin, ...(read('atlasGeneralAdmin', [generalAdmin])[0] || {}) };
       const allUsers = [adminGeneral, ...allSupervisors(), ...read('atlasSellerAccounts')];
-      
-      const account = allUsers.find(x => x.user.toLowerCase() === u.toLowerCase() && x.password === p);
+
+      const candidates = allUsers.filter(x => x.user && x.user.toLowerCase() === u.toLowerCase());
+      let account = null;
+      for (const c of candidates) { if (await checkPassword(c, p)) { account = c; break; } }
 
       if (!account) {
-        document.getElementById('loginError').textContent = 'Usuário ou senha inválidos.';
+        registerLoginFailure();
+        errorEl.textContent = 'Usuário ou senha inválidos.';
         return;
       }
+      clearLoginFailures();
       login(account);
     };
   }
