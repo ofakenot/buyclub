@@ -2904,6 +2904,7 @@ position: absolute; top: .65rem; left: .65rem;
       <button class="shop-nav-link" type="button" id="shop-brands-btn" aria-expanded="false" aria-controls="shop-mega"><span data-shop-t="brands">Marcas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
       <button class="shop-nav-link" type="button" data-shop-tab="calc" data-shop-t="calc">Calculadora</button>
       <button class="shop-nav-link" type="button" data-shop-tab="info" data-shop-t="info">Info</button>
+      <button class="shop-nav-link" type="button" data-shop-tab="pedido" data-ord-t="nav">Meu pedido</button>
       <button class="shop-nav-link" type="button" data-shop-tab="profile" data-shop-t="contact">Contato</button>
     </nav>
     <div class="shop-actions">
@@ -3182,6 +3183,16 @@ position: absolute; top: .65rem; left: .65rem;
               </div>
               <div class="co-step" data-step="3">
               <div class="co-review" id="co-review"></div>
+              <section class="co-section co-coupon" id="co-coupon">
+                <div class="co-coupon-row">
+                  <div class="checkout-field co-float">
+                    <input id="checkout-coupon" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30" placeholder="Ex.: BEMVINDO10">
+                    <label for="checkout-coupon" data-ord-t="couponLabel">Cupom de desconto</label>
+                  </div>
+                  <button type="button" class="co-coupon-btn" id="co-coupon-apply" data-ord-t="couponApply">Aplicar</button>
+                </div>
+                <p class="co-coupon-msg" id="co-coupon-msg" hidden></p>
+              </section>
               <section class="co-section">
                 <h3 class="co-section-title checkout-payment-title" data-i18n="paymentTitle">Forma de pagamento</h3>
                 <div class="checkout-payment" role="radiogroup">
@@ -3294,6 +3305,11 @@ position: absolute; top: .65rem; left: .65rem;
 
   </div>
 
+  <section class="faq-wrap" id="faq" aria-labelledby="faq-title">
+    <div class="faq-head"><span class="faq-kicker" data-ord-t="faqKicker">Dúvidas</span><h2 id="faq-title" data-ord-t="faqTitle">Perguntas frequentes</h2><p data-ord-t="faqLead">Envio, prazos e pagamento, sem complicação.</p></div>
+    <div class="faq-list" id="faq-list"></div>
+  </section>
+
   <footer class="footer">
     <div class="footer-brand">BUY CLUB US</div>
     <p class="footer-text" data-i18n="footerTagline">Qualidade e tecnologia em peptídeos.</p>
@@ -3308,6 +3324,26 @@ position: absolute; top: .65rem; left: .65rem;
     <p id="calc-sub">Escolha o peptídeo, a quantidade de água bacteriostática e a dose. A calculadora mostra quantas unidades puxar na seringa de 50 UI. Você também pode arrastar o êmbolo.</p>
   </div>
   <div class="pcalc" id="pep-calc"></div>
+</section>
+
+<!-- MEU PEDIDO -->
+<section id="order-section" class="ord-sec" style="display:none;" aria-labelledby="ord-title">
+  <div class="ord-head">
+    <span class="ord-kicker" data-ord-t="kicker">Acompanhe sua compra</span>
+    <h2 id="ord-title" data-ord-t="title">Meu pedido</h2>
+    <p data-ord-t="lead">Digite o número do pedido e o CPF usado na compra para ver o status.</p>
+  </div>
+  <div class="ord-card">
+    <div class="ord-recent" id="ord-recent" hidden></div>
+    <form class="ord-form" id="ord-form" novalidate autocomplete="off">
+      <label class="ord-field"><span data-ord-t="number">Número do pedido</span><input id="ord-number" name="pedido" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="BC…" required></label>
+      <label class="ord-field"><span data-ord-t="cpf">CPF</span><input id="ord-cpf" name="cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required></label>
+      <button type="submit" class="ord-submit" id="ord-submit" data-ord-t="search">Consultar pedido</button>
+    </form>
+    <p class="ord-msg" id="ord-msg" role="alert" hidden></p>
+    <p class="ord-help" data-ord-t="help">O número do pedido aparece na tela de confirmação do pagamento e no comprovante do Mercado Pago.</p>
+  </div>
+  <div class="ord-result" id="ord-result" aria-live="polite"></div>
 </section>
 
 <!-- LOJA: rodapé, busca, menu e carrinho lateral (estilo Shopify) -->
@@ -3329,6 +3365,8 @@ position: absolute; top: .65rem; left: .65rem;
     <div>
       <h4 data-shop-t="support">Atendimento</h4>
       <ul>
+        <li><button type="button" data-shop-tab="pedido" data-ord-t="nav">Meu pedido</button></li>
+        <li><button type="button" data-faq-link data-ord-t="faq">Perguntas frequentes</button></li>
         <li><button type="button" data-shop-tab="info" data-shop-t="info">Info</button></li>
         <li><button type="button" data-shop-tab="calc" data-shop-t="calc">Calculadora</button></li>
         <li><button type="button" data-shop-tab="profile" data-shop-t="contact">Contato</button></li>
@@ -3374,6 +3412,8 @@ position: absolute; top: .65rem; left: .65rem;
       <button type="button" data-shop-tab="home" data-shop-t="home">Início</button>
       <button type="button" data-shop-tab="calc" data-shop-t="calc">Calculadora</button>
       <button type="button" data-shop-tab="info" data-shop-t="info">Info</button>
+      <button type="button" data-shop-tab="pedido" data-ord-t="nav">Meu pedido</button>
+      <button type="button" data-faq-link data-ord-t="faq">Perguntas frequentes</button>
       <button type="button" data-shop-tab="profile" data-shop-t="contact">Contato</button>
     </div>
     <div class="shop-menu-section">
@@ -4703,6 +4743,7 @@ function buildCartWhatsAppMessage(items, order) {
   const orderSubtotal = checkoutSubtotalValue(items);
   const consultCount = splitCheckoutItems(items).consult.length;
   if (orderSubtotal !== null) message += `\n\n*VALORES*\nProdutos${consultCount ? ' com preço' : ''}: R$ ${formatBRL(orderSubtotal)}${consultCount ? `\nItens sob consulta: ${consultCount} (preciso saber o valor)` : ''}\nFrete${shipQuote.selected ? ` (${shipQuote.selected.express ? 'Entrega expressa SP, até 3 horas, rastreio pelo WhatsApp' : shipOptionLabel(shipQuote.selected)})` : ''}: ${currentShippingFee() === null ? 'a calcular' : `R$ ${formatBRL(currentShippingFee())}`}\nTotal: R$ ${formatBRL(orderSubtotal + (currentShippingFee() || 0))}`;
+  if (coCoupon && orderSubtotal !== null && couponDiscountValue(orderSubtotal) > 0) message += `\nCupom: ${coCoupon.code} (− R$ ${formatBRL(couponDiscountValue(orderSubtotal))})`;
   message += `\n\n*DADOS DE ENTREGA*\nWhatsApp: ${order.phone || 'Não informado'}${order.email ? `\nE-mail: ${order.email}` : ''}\nEndereço: ${order.address}, nº ${order.number}\nBairro: ${order.neighborhood}\nCidade/UF: ${order.city}\nBloco/Apartamento: ${order.complement || 'Não informado'}\nCEP: ${order.cep}\nDestinatário: ${order.recipient}${cpfLine}\n\n*PAGAMENTO*\nForma de pagamento: ${order.payment}\n\nAguardo confirmação e instruções para finalizar.`;
   return message;
 }
@@ -4980,6 +5021,14 @@ function buildConsultWhatsAppMessage(consult, order, payingRest) {
   return message;
 }
 function waPhoneFor(items) { return items.some(item => item.type === 'atacado5' || item.type === 'atacado10') ? WA_PHONES[1] : WA_PHONES[0]; }
+// Cupom aplicado no checkout (o Worker confere de novo antes de cobrar)
+let coCoupon = null;
+function couponDiscountValue(subtotal) {
+  if (!coCoupon || !(subtotal > 0)) return 0;
+  if (coCoupon.min && subtotal < coCoupon.min) return 0;
+  const raw = coCoupon.pct ? subtotal * coCoupon.pct / 100 : (coCoupon.value || 0);
+  return Math.round(Math.max(0, Math.min(raw, subtotal)) * 100) / 100;
+}
 function checkoutSubtotalValue(items) {
   const { paid } = splitCheckoutItems(items);
   if (!paid.length) return null;
@@ -4991,7 +5040,7 @@ function checkoutTotalText(items) {
 }
 function checkoutGrandTotalText(items) {
   const subtotal = checkoutSubtotalValue(items);
-  return subtotal === null ? t('cartConsult') : `R$ ${formatBRL(subtotal + (currentShippingFee() || 0))}`;
+  return subtotal === null ? t('cartConsult') : `R$ ${formatBRL(subtotal - couponDiscountValue(subtotal) + (currentShippingFee() || 0))}`;
 }
 function setCheckoutSummaryOpen(open) {
   const toggle = document.getElementById('co-summary-toggle');
@@ -5010,7 +5059,9 @@ function renderCheckoutSummary() {
   const { paid, consult } = splitCheckoutItems(items);
   const subtotal = checkoutSubtotalValue(items);
   const subtotalText = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal)}`;
-  const total = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal + (currentShippingFee() || 0))}`;
+  const discount = subtotal === null ? 0 : couponDiscountValue(subtotal);
+  const total = subtotal === null ? consultT('none') : `R$ ${formatBRL(subtotal - discount + (currentShippingFee() || 0))}`;
+  const discountRow = discount > 0 ? `<div class="co-row co-discount"><span>${(window.ordT ? window.ordT('couponRow') : 'Cupom')} ${coCoupon.code}</span><span>− R$ ${formatBRL(discount)}</span></div>` : '';
   const shipText = !paid.length ? consultT('shipRow') : currentShippingFee() === null ? shipT('enterCep') : shipPriceText(currentShippingFee());
   const lines = items.map(({product, type, qty}) => {
     const unit = getCartPriceValue(product, type);
@@ -5021,11 +5072,12 @@ function renderCheckoutSummary() {
   const waIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Z"/></svg>';
   const consultNote = consult.length ? `<div class="co-consult-note">${waIcon}<p>${consultT('note')(consult.length)}</p></div>` : '';
   const consultRow = consult.length ? `<div class="co-row"><span>${consultT('row')}</span><span>${consultT('rowVal')(consult.reduce((n, i) => n + i.qty, 0))}</span></div>` : '';
-  checkoutSummary.innerHTML = `<div class="co-card"><div class="co-items">${lines}</div>${consultNote}<div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div>${consultRow}<div class="co-row"><span>${t('coShipping')}</span><span>${shipText}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span>${subtotal === null ? '' : '<small>BRL</small>'}${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p></div>`;
+  checkoutSummary.innerHTML = `<div class="co-card"><div class="co-items">${lines}</div>${consultNote}<div class="co-totals"><div class="co-row"><span>${t('cartSubtotal')}</span><span>${subtotalText}</span></div>${discountRow}${consultRow}<div class="co-row"><span>${t('coShipping')}</span><span>${shipText}</span></div><div class="co-row co-total"><span>${t('totalLabel')}</span><span>${subtotal === null ? '' : '<small>BRL</small>'}${total}</span></div></div><p class="co-total-note">${t('coTotalNote')}</p></div>`;
   if (totalMobile) totalMobile.textContent = subtotal === null ? consultT('pill') : total;
   updateCheckoutMode(true);
 }
 function showCheckout() {
+  if (typeof window.resetCheckoutCoupon === 'function') window.resetCheckoutCoupon();
   coStepLabels();
   coGoStep(1, { force: true, noScroll: true, noFocus: true });
   renderCheckoutSummary();
@@ -5160,6 +5212,7 @@ async function startMercadoPagoPayment(items, order, consult = []) {
         method: order.payment === 'Pix' ? 'pix' : 'card',
         items: items.map(({ product, type, qty }) => ({ id: product.id, type, qty })),
         ...(shipQuote.enabled && shipQuote.selected ? { shipping: { service: shipQuote.selected.id } } : {}),
+        ...(coCoupon ? { coupon: coCoupon.code } : {}),
         customer: {
           recipient: order.recipient, phone: order.phone, email: order.email, cpf: order.cpf,
           cep: order.cep, address: order.address, number: order.number, complement: order.complement,
@@ -5169,6 +5222,11 @@ async function startMercadoPagoPayment(items, order, consult = []) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.url) throw new Error(data.error || t('mpErrorGeneric'));
+    try {
+      const mine = JSON.parse(localStorage.getItem('buyclub-my-orders') || '[]').filter(o => o && o.id !== data.orderId);
+      mine.unshift({ id: data.orderId, at: Date.now(), total: data.total });
+      localStorage.setItem('buyclub-my-orders', JSON.stringify(mine.slice(0, 5)));
+    } catch (_) {}
     try { localStorage.setItem('buyclub-mp-last-order', JSON.stringify({ id: data.orderId, at: Date.now(), total: data.total, message: buildCartWhatsAppMessage(items, order), phone: items.some(item => item.type !== 'varejo') ? WA_PHONES[1] : WA_PHONES[0] })); } catch (_) {}
     window.location.href = data.url;
   } catch (error) {
@@ -5213,6 +5271,14 @@ function handlePaymentReturn() {
     wa.href = waLink(header + saved.message.replace(/\n\nAguardo confirmação e instruções para finalizar\.$/, ''), saved.phone || WA_PHONE);
     wa.textContent = t('mpSendWhatsapp');
     card.appendChild(wa);
+  }
+  if (orderId && status !== 'falhou') {
+    const track = document.createElement('button');
+    track.type = 'button';
+    track.className = 'mp-return-track';
+    track.textContent = window.ordT ? window.ordT('trackBtn') : 'Acompanhar pedido';
+    track.addEventListener('click', () => { overlay.remove(); if (window.openMyOrder) window.openMyOrder(orderId); });
+    card.appendChild(track);
   }
   card.appendChild(ok);
   overlay.appendChild(card);
@@ -5521,6 +5587,16 @@ function getSharedProductId() {
   const id = Number(raw);
   return Number.isInteger(id) && products.some(p => p.id === id) ? id : 0;
 }
+// link direto para a página "Meu pedido": ?meu-pedido ou ?pedido=BC... (sem ?pagamento=)
+function getOrderLinkId() {
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.has('pagamento')) return null;
+    if (q.has('pedido')) return String(q.get('pedido') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 24);
+    if (q.has('meu-pedido') || location.hash === '#meu-pedido') return '';
+  } catch (_) {}
+  return null;
+}
 function openSharedProduct(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
@@ -5817,6 +5893,14 @@ renderPreFeatured();
     if (intro) intro.remove();
     document.body.classList.remove('nl-intro-open');
     closePrePage();
+    return;
+  }
+  const orderLinkId = getOrderLinkId();
+  if (orderLinkId !== null) {
+    if (intro) intro.remove();
+    document.body.classList.remove('nl-intro-open');
+    closePrePage();
+    window.__openOrderOnLoad = orderLinkId;
     return;
   }
   const sharedProductId = getSharedProductId();
@@ -6950,7 +7034,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     { id: 'atacado', label: 'Preço de atacado', keys: ['atacado', 'revenda', 'revender', 'quantidade', '5 un', '10 un', 'desconto', 'lote'],
       text: 'Temos preço especial a partir de <b>5 e 10 unidades</b>. No card ou na página do produto, escolha <b>5 UN</b> ou <b>10 UN</b> para ver o valor. Para quantidades maiores, fale com a gente no WhatsApp.' },
     { id: 'rastreio', label: 'Onde está meu pedido?', keys: ['rastreio', 'rastrear', 'rastreamento', 'meu pedido', 'onde esta', 'codigo', 'status'],
-      text: 'O código de rastreio é enviado pelo WhatsApp informado na compra assim que o pedido sai. Para saber o status agora, fale com um atendente com o seu nome ou número do pedido.', wa: 'Quero saber o status do meu pedido.' },
+      text: 'Veja o status na página <b>Meu pedido</b> (no menu), com o número do pedido (começa com BC) e o seu CPF. O código de rastreio é enviado pelo WhatsApp informado na compra assim que o pedido sai.', wa: 'Quero saber o status do meu pedido.' },
+    { id: 'cupom', label: 'Cupom de desconto', keys: ['cupom', 'voucher', 'codigo promocional', 'primeira compra', 'bemvindo'],
+      text: 'Na última etapa do checkout (Pagamento), digite o cupom no campo <b>Cupom de desconto</b> e toque em <b>Aplicar</b>. O desconto vale sobre os produtos, não sobre o frete.' },
     { id: 'produto', label: 'Não achei um produto', keys: ['nao achei', 'nao encontrei', 'tem ', 'voces tem', 'disponivel', 'estoque', 'cotacao', 'outro produto'],
       text: 'Se o produto não está no catálogo, podemos fazer uma cotação. Use a busca (lupa no topo) para conferir e, se não encontrar, mande o nome do produto para um atendente.', wa: 'Gostaria de uma cotação de um produto que não encontrei no site.' }
   ];
@@ -7259,5 +7345,535 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
 })();
 </script>
 
+<style id="extras-pedido">
+/* ===== MEU PEDIDO ===== */
+.ord-sec { max-width: 760px; margin: 0 auto; padding: 2.4rem 1.1rem 9rem; }
+.ord-head { text-align: center; margin-bottom: 1.4rem; }
+.ord-kicker, .faq-kicker { display: inline-block; margin-bottom: .45rem; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.ord-head h2, .faq-head h2 { margin: 0 0 .4rem; color: var(--text); font-size: clamp(1.7rem, 4.6vw, 2.3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+.ord-head p, .faq-head p { margin: 0 auto; max-width: 30rem; color: var(--muted); font-size: .92rem; }
+.ord-card { padding: 1.25rem; border: 1px solid var(--border); border-radius: 1.25rem; background: #fff; box-shadow: 0 14px 40px rgba(15,23,42,.06); }
+.ord-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: .7rem; align-items: end; }
+.ord-field { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.ord-field span { color: var(--muted-dark); font-size: .75rem; font-weight: 700; }
+.ord-field input { height: 3rem; padding: 0 .95rem; border: 1px solid var(--border-light); border-radius: .8rem; background: #fff; color: var(--text); font: inherit; font-size: 16px; letter-spacing: .02em; outline: none; transition: border-color .2s, box-shadow .2s; }
+.ord-field input:focus { border-color: #0071e3; box-shadow: 0 0 0 4px rgba(0,113,227,.14); }
+.ord-submit { height: 3rem; padding: 0 1.3rem; border: 0; border-radius: .8rem; background: var(--text); color: #fff; font: inherit; font-size: .9rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform .15s, opacity .2s; }
+.ord-submit:active { transform: scale(.98); }
+.ord-submit[disabled] { opacity: .6; cursor: progress; }
+.ord-msg { margin: .85rem 0 0; padding: .75rem .9rem; border-radius: .75rem; background: #fff4f2; color: #b42318; font-size: .84rem; line-height: 1.5; }
+.ord-help { margin: .85rem 0 0; color: var(--muted); font-size: .76rem; line-height: 1.5; }
+.ord-recent { margin-bottom: 1rem; }
+.ord-recent small { display: block; margin-bottom: .45rem; color: var(--muted); font-size: .72rem; font-weight: 700; }
+.ord-recent-list { display: flex; flex-wrap: wrap; gap: .45rem; }
+.ord-recent-list button { display: inline-flex; flex-direction: column; align-items: flex-start; gap: .1rem; padding: .5rem .8rem; border: 1px solid var(--border-light); border-radius: .75rem; background: #f8fafc; color: var(--text); font: inherit; font-size: .8rem; font-weight: 800; cursor: pointer; }
+.ord-recent-list button span { color: var(--muted); font-size: .68rem; font-weight: 600; }
+.ord-result:empty { display: none; }
+.ord-result { margin-top: 1rem; padding: 1.3rem; border: 1px solid var(--border); border-radius: 1.25rem; background: #fff; box-shadow: 0 14px 40px rgba(15,23,42,.06); animation: ordIn .45s cubic-bezier(.16,1,.3,1); }
+@keyframes ordIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.ord-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: 1.1rem; }
+.ord-top h3 { margin: 0; color: var(--text); font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; }
+.ord-top h3 small { display: block; color: var(--muted); font-size: .74rem; font-weight: 600; letter-spacing: 0; }
+.ord-pill { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .75rem; border-radius: 999px; font-size: .76rem; font-weight: 800; }
+.ord-pill.ok { background: #e7f8ee; color: #067647; }
+.ord-pill.wait { background: #fff6e0; color: #93600a; }
+.ord-pill.bad { background: #fdecea; color: #b42318; }
+.ord-steps { position: relative; display: grid; gap: 0; margin: 0 0 1.1rem; padding: 0; list-style: none; }
+.ord-step { position: relative; display: grid; grid-template-columns: 2rem 1fr; gap: .75rem; padding-bottom: 1rem; }
+.ord-step:last-child { padding-bottom: 0; }
+.ord-step::before { content: ""; position: absolute; left: calc(1rem - 1px); top: 2rem; bottom: 0; width: 2px; background: #e5e7eb; }
+.ord-step:last-child::before { display: none; }
+.ord-step.done::before { background: #12b76a; }
+.ord-dot { position: relative; z-index: 1; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: #f1f5f9; color: #94a3b8; font-size: .8rem; font-weight: 800; }
+.ord-step.done .ord-dot { background: #12b76a; color: #fff; }
+.ord-step.now .ord-dot { background: #0071e3; color: #fff; box-shadow: 0 0 0 6px rgba(0,113,227,.14); animation: ordPulse 1.8s ease-in-out infinite; }
+.ord-step.bad .ord-dot { background: #f04438; color: #fff; }
+@keyframes ordPulse { 50% { box-shadow: 0 0 0 10px rgba(0,113,227,.06); } }
+.ord-step strong { display: block; color: var(--text); font-size: .9rem; line-height: 2rem; }
+.ord-step p { margin: -.2rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+.ord-note { margin: 0 0 1rem; padding: .75rem .9rem; border-radius: .75rem; background: #f8fafc; color: var(--muted-dark); font-size: .82rem; line-height: 1.5; }
+.ord-details { display: grid; gap: .5rem; margin: 0; padding: 1rem 0 0; border-top: 1px solid #eef0f3; }
+.ord-details div { display: flex; justify-content: space-between; gap: 1rem; font-size: .84rem; }
+.ord-details dt { color: var(--muted); }
+.ord-details dd { margin: 0; color: var(--text); font-weight: 700; text-align: right; }
+.ord-items { margin: .25rem 0 0; padding: 0; list-style: none; }
+.ord-items li { padding: .35rem 0; color: var(--muted-dark); font-size: .82rem; border-bottom: 1px dashed #eef0f3; }
+.ord-items li:last-child { border-bottom: 0; }
+.ord-wa { display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 2.9rem; margin-top: 1rem; border-radius: .8rem; background: #25D366; color: #fff; font-weight: 800; font-size: .88rem; text-decoration: none; }
+.ord-wa svg { width: 18px; height: 18px; }
+.mp-return-card .mp-return-track { margin-bottom: .55rem; background: #0071e3; }
+@media (max-width: 640px) {
+  .ord-sec { padding: 1.4rem .85rem 8rem; }
+  .ord-form { grid-template-columns: 1fr; }
+  .ord-card, .ord-result { padding: 1.05rem; }
+}
+
+/* ===== FAQ ===== */
+.faq-wrap { margin: 2.2rem 0 1rem; }
+.faq-head { text-align: center; margin-bottom: 1.2rem; }
+.faq-list { display: grid; gap: .55rem; max-width: 820px; margin: 0 auto; }
+.faq-item { border: 1px solid var(--border); border-radius: 1rem; background: #fff; overflow: hidden; transition: box-shadow .25s, border-color .25s; }
+.faq-item[open] { border-color: var(--border-light); box-shadow: 0 10px 30px rgba(15,23,42,.06); }
+.faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.1rem; color: var(--text); font-size: .93rem; font-weight: 700; cursor: pointer; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-ico { position: relative; flex: 0 0 auto; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #f1f5f9; transition: transform .3s cubic-bezier(.16,1,.3,1), background .2s; }
+.faq-ico::before, .faq-ico::after { content: ""; position: absolute; left: 50%; top: 50%; width: .7rem; height: 2px; margin: -1px 0 0 -.35rem; border-radius: 2px; background: var(--text); }
+.faq-ico::after { transform: rotate(90deg); transition: transform .3s; }
+.faq-item[open] .faq-ico { transform: rotate(180deg); background: var(--text); }
+.faq-item[open] .faq-ico::before, .faq-item[open] .faq-ico::after { background: #fff; }
+.faq-item[open] .faq-ico::after { transform: rotate(0deg); }
+.faq-a { padding: 0 1.1rem 1.1rem; color: var(--muted-dark); font-size: .87rem; line-height: 1.65; animation: ordIn .35s ease; }
+.faq-a p { margin: 0 0 .5rem; }
+.faq-a p:last-child { margin: 0; }
+.faq-link { padding: 0; border: 0; background: none; color: #0071e3; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+/* ===== FILTROS (catálogo + busca) ===== */
+.shop-toolbar { flex-wrap: wrap; justify-content: space-between; }
+.flt-chips { display: flex; gap: .4rem; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 2px; }
+.flt-chips::-webkit-scrollbar { display: none; }
+.flt-chips[hidden] { display: none; }
+.flt-chip { flex: 0 0 auto; height: 2.2rem; padding: 0 .9rem; border: 1px solid var(--border-light); border-radius: 999px; background: var(--bg-card); color: var(--muted-dark); font: inherit; font-size: .74rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.flt-chip b { margin-left: .3rem; color: var(--muted); font-weight: 600; }
+.flt-chip.is-active { background: var(--text); border-color: var(--text); color: #fff; }
+.flt-chip.is-active b { color: rgba(255,255,255,.7); }
+.srch-filters { width: 100%; max-width: 860px; margin: 0 auto; padding: 0 1.1rem .7rem; display: grid; gap: .45rem; }
+.srch-row { display: flex; align-items: center; gap: .4rem; overflow-x: auto; scrollbar-width: none; }
+.srch-row::-webkit-scrollbar { display: none; }
+.srch-row > small { flex: 0 0 auto; min-width: 4.6rem; color: var(--muted); font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+@media (max-width: 760px) { .shop-toolbar { gap: .5rem; } .flt-chips { flex-basis: 100%; order: -1; } }
+
+/* ===== CUPOM NO CHECKOUT ===== */
+#checkout-modal .co-coupon-row { display: grid; grid-template-columns: 1fr auto; gap: .55rem; align-items: stretch; }
+#checkout-modal .co-coupon-row .checkout-field { margin: 0; }
+#checkout-modal #checkout-coupon { text-transform: uppercase; letter-spacing: .04em; }
+#checkout-modal .co-coupon-btn { min-width: 6.2rem; padding: 0 1rem; border: 1px solid var(--ap-line, #d2d2d7); border-radius: 12px; background: #fff; color: var(--ap-blue, #0071e3); font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; transition: background .2s, transform .15s; }
+#checkout-modal .co-coupon-btn:hover { background: #f5f5f7; }
+#checkout-modal .co-coupon-btn:active { transform: scale(.97); }
+#checkout-modal .co-coupon-btn[disabled] { opacity: .6; cursor: progress; }
+#checkout-modal .co-coupon-msg { margin: .5rem 0 0; font-size: .82rem; line-height: 1.45; color: #b42318; }
+#checkout-modal .co-coupon-msg.ok { color: #067647; font-weight: 600; }
+#checkout-modal .co-row.co-discount { color: #067647; font-weight: 600; }
+#checkout-modal .co-coupon.is-applied .co-float input { border-color: #12b76a; background: #f3fbf6; }
+</style>
+<script>
+/* ===== MEU PEDIDO · CUPOM · FILTROS · FAQ ===== */
+(function () {
+  const ORD_T = {
+    pt: {
+      nav: 'Meu pedido', faq: 'Perguntas frequentes', kicker: 'Acompanhe sua compra', title: 'Meu pedido',
+      lead: 'Digite o número do pedido e o CPF usado na compra para ver o status.',
+      number: 'Número do pedido', cpf: 'CPF', search: 'Consultar pedido', searching: 'Consultando…',
+      help: 'O número do pedido começa com BC e aparece na tela de confirmação do pagamento e no comprovante do Mercado Pago.',
+      recent: 'Pedidos feitos neste aparelho', needNumber: 'Digite o número do pedido (começa com BC).', needCpf: 'Digite o CPF usado na compra.',
+      notFound: 'Não encontramos um pagamento com esse número e CPF. Confira os dados. Se você acabou de pagar, aguarde alguns minutos e tente de novo.',
+      error: 'Não foi possível consultar agora. Tente de novo em instantes ou fale com a gente no WhatsApp.',
+      order: 'Pedido', placed: 'Feito em {d}',
+      st_approved: 'Pagamento aprovado', st_pending: 'Aguardando pagamento', st_rejected: 'Pagamento não aprovado', st_refunded: 'Pagamento devolvido', st_cancelled: 'Pagamento cancelado',
+      step1: 'Pedido recebido', step2: 'Pagamento', step3: 'Separação e envio', step4: 'Rastreio',
+      s2ok: 'Aprovado em {d}.', s2wait: 'Ainda não identificamos o pagamento.', s2bad: 'O pagamento não foi aprovado.',
+      s3wait: 'Começa depois da aprovação do pagamento.', s3exp: 'Entrega expressa em até 3 horas após a aprovação.', s3std: 'Enviamos em até 2 dias úteis após a aprovação.',
+      s4: 'O código de rastreio é enviado pelo WhatsApp informado na compra.',
+      pendingNote: 'O Pix costuma ser confirmado em poucos minutos. Se você já pagou, aguarde e consulte de novo.',
+      badNote: 'Você pode fazer o pedido de novo ou falar com a gente pelo WhatsApp.',
+      items: 'Itens', paid: 'Valor', method: 'Pagamento', ship: 'Entrega', couponRow: 'Cupom',
+      wa: 'Falar sobre este pedido', waMsg: 'Olá! Quero falar sobre o meu pedido {id}.', waHelp: 'Olá! Preciso de ajuda para encontrar o meu pedido.',
+      trackBtn: 'Acompanhar pedido',
+      couponLabel: 'Cupom de desconto', couponApply: 'Aplicar', couponRemove: 'Remover', couponOk: 'Cupom {code} aplicado: − R$ {v}{p}.',
+      couponEmpty: 'Digite o cupom.', couponNoItems: 'O cupom vale só para itens com preço.', couponError: 'Não foi possível conferir o cupom agora. Tente de novo.',
+      faqKicker: 'Dúvidas', faqTitle: 'Perguntas frequentes', faqLead: 'Envio, prazos e pagamento, sem complicação.',
+      fAll: 'Todos', fCat: 'Categoria', fBrand: 'Marca', fAllBrands: 'Todas', results: 'resultados', consult: 'Sob consulta', noResults: 'Nenhum produto encontrado com esses filtros.',
+      cats: { emagrecimento: 'Emagrecimento', recuperacao: 'Recuperação', pele: 'Pele e beleza', gh: 'GH e performance', longevidade: 'Longevidade e foco' }
+    },
+    en: {
+      nav: 'My order', faq: 'FAQ', kicker: 'Track your purchase', title: 'My order',
+      lead: 'Enter your order number and the CPF used at checkout to see the status.',
+      number: 'Order number', cpf: 'CPF', search: 'Check order', searching: 'Checking…',
+      help: 'The order number starts with BC and is shown on the payment confirmation screen and on the Mercado Pago receipt.',
+      recent: 'Orders placed on this device', needNumber: 'Enter the order number (starts with BC).', needCpf: 'Enter the CPF used at checkout.',
+      notFound: 'We couldn’t find a payment with this number and CPF. Please check the details. If you just paid, wait a few minutes and try again.',
+      error: 'We couldn’t check right now. Try again shortly or talk to us on WhatsApp.',
+      order: 'Order', placed: 'Placed on {d}',
+      st_approved: 'Payment approved', st_pending: 'Awaiting payment', st_rejected: 'Payment declined', st_refunded: 'Payment refunded', st_cancelled: 'Payment cancelled',
+      step1: 'Order received', step2: 'Payment', step3: 'Packing and shipping', step4: 'Tracking',
+      s2ok: 'Approved on {d}.', s2wait: 'We haven’t identified the payment yet.', s2bad: 'The payment was not approved.',
+      s3wait: 'Starts once the payment is approved.', s3exp: 'Express delivery within 3 hours after approval.', s3std: 'We ship within 2 business days after approval.',
+      s4: 'The tracking code is sent to the WhatsApp number used at checkout.',
+      pendingNote: 'Pix is usually confirmed within minutes. If you already paid, wait and check again.',
+      badNote: 'You can place the order again or talk to us on WhatsApp.',
+      items: 'Items', paid: 'Amount', method: 'Payment', ship: 'Delivery', couponRow: 'Coupon',
+      wa: 'Talk about this order', waMsg: 'Hi! I’d like to talk about my order {id}.', waHelp: 'Hi! I need help finding my order.',
+      trackBtn: 'Track order',
+      couponLabel: 'Discount code', couponApply: 'Apply', couponRemove: 'Remove', couponOk: 'Code {code} applied: − R$ {v}{p}.',
+      couponEmpty: 'Enter the code.', couponNoItems: 'The code applies only to priced items.', couponError: 'We couldn’t check the code right now. Try again.',
+      faqKicker: 'Questions', faqTitle: 'Frequently asked questions', faqLead: 'Shipping, delivery times and payment, made simple.',
+      fAll: 'All', fCat: 'Category', fBrand: 'Brand', fAllBrands: 'All', results: 'results', consult: 'On request', noResults: 'No products match these filters.',
+      cats: { emagrecimento: 'Weight loss', recuperacao: 'Recovery', pele: 'Skin & beauty', gh: 'GH & performance', longevidade: 'Longevity & focus' }
+    },
+    es: {
+      nav: 'Mi pedido', faq: 'Preguntas frecuentes', kicker: 'Sigue tu compra', title: 'Mi pedido',
+      lead: 'Ingresa el número de pedido y el CPF usado en la compra para ver el estado.',
+      number: 'Número de pedido', cpf: 'CPF', search: 'Consultar pedido', searching: 'Consultando…',
+      help: 'El número de pedido empieza con BC y aparece en la pantalla de confirmación del pago y en el comprobante de Mercado Pago.',
+      recent: 'Pedidos hechos en este dispositivo', needNumber: 'Ingresa el número de pedido (empieza con BC).', needCpf: 'Ingresa el CPF usado en la compra.',
+      notFound: 'No encontramos un pago con ese número y CPF. Revisa los datos. Si acabas de pagar, espera unos minutos e inténtalo de nuevo.',
+      error: 'No fue posible consultar ahora. Inténtalo en unos instantes o háblanos por WhatsApp.',
+      order: 'Pedido', placed: 'Hecho el {d}',
+      st_approved: 'Pago aprobado', st_pending: 'Esperando el pago', st_rejected: 'Pago no aprobado', st_refunded: 'Pago devuelto', st_cancelled: 'Pago cancelado',
+      step1: 'Pedido recibido', step2: 'Pago', step3: 'Preparación y envío', step4: 'Seguimiento',
+      s2ok: 'Aprobado el {d}.', s2wait: 'Aún no identificamos el pago.', s2bad: 'El pago no fue aprobado.',
+      s3wait: 'Empieza después de la aprobación del pago.', s3exp: 'Entrega exprés en hasta 3 horas tras la aprobación.', s3std: 'Enviamos en hasta 2 días hábiles tras la aprobación.',
+      s4: 'El código de seguimiento se envía al WhatsApp informado en la compra.',
+      pendingNote: 'El Pix suele confirmarse en pocos minutos. Si ya pagaste, espera y vuelve a consultar.',
+      badNote: 'Puedes hacer el pedido de nuevo o hablar con nosotros por WhatsApp.',
+      items: 'Ítems', paid: 'Valor', method: 'Pago', ship: 'Entrega', couponRow: 'Cupón',
+      wa: 'Hablar sobre este pedido', waMsg: '¡Hola! Quiero hablar sobre mi pedido {id}.', waHelp: '¡Hola! Necesito ayuda para encontrar mi pedido.',
+      trackBtn: 'Seguir pedido',
+      couponLabel: 'Cupón de descuento', couponApply: 'Aplicar', couponRemove: 'Quitar', couponOk: 'Cupón {code} aplicado: − R$ {v}{p}.',
+      couponEmpty: 'Ingresa el cupón.', couponNoItems: 'El cupón vale solo para ítems con precio.', couponError: 'No fue posible validar el cupón ahora. Inténtalo de nuevo.',
+      faqKicker: 'Dudas', faqTitle: 'Preguntas frecuentes', faqLead: 'Envío, plazos y pago, sin complicaciones.',
+      fAll: 'Todos', fCat: 'Categoría', fBrand: 'Marca', fAllBrands: 'Todas', results: 'resultados', consult: 'Bajo consulta', noResults: 'Ningún producto coincide con estos filtros.',
+      cats: { emagrecimento: 'Adelgazamiento', recuperacao: 'Recuperación', pele: 'Piel y belleza', gh: 'GH y rendimiento', longevidade: 'Longevidad y enfoque' }
+    }
+  };
+  const ot = k => { const d = ORD_T[currentLang] || ORD_T.pt; return d[k] !== undefined ? d[k] : ORD_T.pt[k] !== undefined ? ORD_T.pt[k] : k; };
+  window.ordT = ot;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const fill = (txt, v) => String(txt).replace(/\{(\w+)\}/g, (_, k) => v[k] == null ? '' : v[k]);
+  const onlyDigits = v => String(v || '').replace(/\D/g, '');
+  const API = (typeof MP_API_URL === 'string' ? MP_API_URL : '').replace(/\/+$/, '');
+  const locale = () => currentLang === 'en' ? 'en-US' : currentLang === 'es' ? 'es-ES' : 'pt-BR';
+  const fmtDate = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); };
+  const maskCpf = v => { const d = onlyDigits(v).slice(0, 11); return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2'); };
+  const WA_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Z"/></svg>';
+  const wa = msg => (typeof waLink === 'function' ? waLink(msg, WA_PHONE) : '#');
+
+  /* ---------------- MEU PEDIDO ---------------- */
+  const sec = $('order-section');
+  const form = $('ord-form');
+  const numIn = $('ord-number');
+  const cpfIn = $('ord-cpf');
+  const msgEl = $('ord-msg');
+  const resultEl = $('ord-result');
+  const submitBtn = $('ord-submit');
+
+  const _switchTab = switchTab;
+  switchTab = function (tab) {
+    _switchTab.apply(this, arguments);
+    if (sec) sec.style.display = tab === 'pedido' ? 'block' : 'none';
+    if (tab === 'pedido') renderRecent();
+  };
+
+  function myOrders() {
+    const list = [];
+    try { (JSON.parse(localStorage.getItem('buyclub-my-orders') || '[]') || []).forEach(o => { if (o && o.id) list.push(o); }); } catch (_) {}
+    try { const last = JSON.parse(localStorage.getItem('buyclub-mp-last-order') || 'null'); if (last && last.id && !list.some(o => o.id === last.id)) list.push({ id: last.id, at: last.at, total: last.total }); } catch (_) {}
+    return list.filter(o => /^[A-Z0-9]{6,24}$/.test(String(o.id))).slice(0, 5);
+  }
+  function renderRecent() {
+    const box = $('ord-recent');
+    if (!box) return;
+    const list = myOrders();
+    box.hidden = !list.length;
+    box.innerHTML = list.length ? `<small>${esc(ot('recent'))}</small><div class="ord-recent-list">${list.map(o => `<button type="button" data-ord-pick="${esc(o.id)}">${esc(o.id)}<span>${esc(o.at ? new Date(o.at).toLocaleDateString(locale()) : '')}${typeof o.total === 'number' ? ` · R$ ${esc(formatBRL(o.total))}` : ''}</span></button>`).join('')}</div>` : '';
+  }
+  document.addEventListener('click', e => {
+    const pick = e.target.closest && e.target.closest('[data-ord-pick]');
+    if (!pick) return;
+    numIn.value = pick.dataset.ordPick;
+    if (onlyDigits(cpfIn.value).length === 11) form.requestSubmit ? form.requestSubmit() : submit(new Event('submit'));
+    else cpfIn.focus();
+  });
+  cpfIn.addEventListener('input', () => { const pos = cpfIn.value.length; cpfIn.value = maskCpf(cpfIn.value); if (pos === cpfIn.value.length) cpfIn.setSelectionRange(pos, pos); });
+  numIn.addEventListener('input', () => { numIn.value = numIn.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+
+  function showMsg(text) { msgEl.textContent = text || ''; msgEl.hidden = !text; }
+  async function submit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    showMsg('');
+    const pedido = numIn.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const cpf = onlyDigits(cpfIn.value);
+    if (pedido.length < 6) { showMsg(ot('needNumber')); numIn.focus(); return; }
+    if (typeof isValidCpf === 'function' ? !isValidCpf(cpf) : cpf.length !== 11) { showMsg(ot('needCpf')); cpfIn.focus(); return; }
+    submitBtn.disabled = true; submitBtn.textContent = ot('searching');
+    resultEl.innerHTML = '';
+    try {
+      const res = await fetch(`${API}/pedido`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pedido, cpf }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ot('error'));
+      if (!data.found) { renderNotFound(); return; }
+      renderOrder(data);
+    } catch (err) {
+      showMsg(err && err.message && err.message !== 'Failed to fetch' ? err.message : ot('error'));
+    } finally {
+      submitBtn.disabled = false; submitBtn.textContent = ot('search');
+    }
+  }
+  form.addEventListener('submit', submit);
+
+  function renderNotFound() {
+    resultEl.innerHTML = `<p class="ord-note">${esc(ot('notFound'))}</p><a class="ord-wa" href="${esc(wa(ot('waHelp')))}" target="_blank" rel="noopener noreferrer">${WA_SVG}${esc(ot('wa'))}</a>`;
+  }
+  function renderOrder(o) {
+    const st = String(o.status || '');
+    const ok = st === 'approved' || st === 'authorized';
+    const wait = st === 'pending' || st === 'in_process' || st === 'in_mediation';
+    const kind = ok ? 'ok' : wait ? 'wait' : 'bad';
+    const label = ok ? ot('st_approved') : wait ? ot('st_pending') : st === 'refunded' || st === 'charged_back' ? ot('st_refunded') : st === 'cancelled' ? ot('st_cancelled') : ot('st_rejected');
+    const steps = [
+      { cls: 'done', icon: '✓', title: ot('step1'), text: o.createdAt ? fmtDate(o.createdAt) : '' },
+      { cls: ok ? 'done' : wait ? 'now' : 'bad', icon: ok ? '✓' : wait ? '2' : '!', title: ot('step2'), text: ok ? fill(ot('s2ok'), { d: fmtDate(o.paidAt) }) : wait ? ot('s2wait') : ot('s2bad') },
+      { cls: ok ? 'now' : '', icon: '3', title: ot('step3'), text: ok ? (o.express ? ot('s3exp') : ot('s3std')) : ot('s3wait') },
+      { cls: '', icon: '4', title: ot('step4'), text: ot('s4') }
+    ];
+    const discount = Number(o.discount) || 0;
+    const rows = [
+      [ot('paid'), typeof o.amount === 'number' ? `R$ ${formatBRL(o.amount)}` : ''],
+      [ot('method'), o.method || ''],
+      [ot('ship'), o.shippingLabel || ''],
+      o.coupon && discount > 0 ? [ot('couponRow'), `${o.coupon} (− R$ ${formatBRL(discount)})`] : null
+    ].filter(r => r && r[1]);
+    resultEl.innerHTML = `
+      <div class="ord-top"><h3>${esc(ot('order'))} ${esc(o.orderId)}<small>${o.name ? esc(o.name) + ' · ' : ''}${esc(o.city || '')}</small></h3><span class="ord-pill ${kind}">${esc(label)}</span></div>
+      <ol class="ord-steps">${steps.map(s => `<li class="ord-step ${s.cls}"><span class="ord-dot">${s.icon}</span><div><strong>${esc(s.title)}</strong>${s.text ? `<p>${esc(s.text)}</p>` : ''}</div></li>`).join('')}</ol>
+      ${wait ? `<p class="ord-note">${esc(ot('pendingNote'))}</p>` : ''}${kind === 'bad' ? `<p class="ord-note">${esc(ot('badNote'))}</p>` : ''}
+      <dl class="ord-details">${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}
+        ${o.items && o.items.length ? `<div style="display:block"><dt>${esc(ot('items'))}</dt><dd style="text-align:left;font-weight:500"><ul class="ord-items">${o.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></dd></div>` : ''}
+      </dl>
+      <a class="ord-wa" href="${esc(wa(fill(ot('waMsg'), { id: o.orderId })))}" target="_blank" rel="noopener noreferrer">${WA_SVG}${esc(ot('wa'))}</a>`;
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  window.openMyOrder = function (id) {
+    switchTab('pedido');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id) numIn.value = String(id).toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setTimeout(() => (id ? cpfIn : numIn).focus({ preventScroll: true }), 250);
+  };
+
+  /* ---------------- FAQ ---------------- */
+  const FAQ = {
+    pt: [
+      ['Quanto tempo demora para chegar?', '<p><b>Capital de São Paulo:</b> entrega expressa em até <b>3 horas</b> após a aprovação do pagamento.</p><p><b>Demais regiões:</b> enviamos em até <b>2 dias úteis</b> após a aprovação. O prazo de cada transportadora aparece no checkout, ao lado do preço do frete.</p>'],
+      ['Quanto custa o frete?', '<p>O frete é calculado pelo seu CEP no checkout, com Correios (PAC e SEDEX), Jadlog e Loggi. A opção mais barata já vem marcada.</p><p>Na capital de SP, a entrega expressa custa <b>R$ 50</b>. Comprando <b>3 ou mais produtos New Life</b>, a opção de frete mais barata sai <b>grátis</b>.</p>'],
+      ['Como acompanho meu pedido?', '<p>Acesse <button type="button" class="faq-link" data-shop-tab="pedido">Meu pedido</button> e digite o número do pedido (começa com BC) e o seu CPF para ver o status do pagamento e do envio.</p><p>O código de rastreio é enviado pelo WhatsApp informado na compra.</p>'],
+      ['Por que vocês pedem o CPF?', '<p>A transportadora exige o CPF do destinatário para emitir a etiqueta e o código de rastreio. Ele também é usado para você consultar o pedido.</p>'],
+      ['Quais são as formas de pagamento?', '<p><b>Pix</b> e <b>cartão de crédito em até 12x</b>, pelo ambiente seguro do Mercado Pago. Também aceitamos <b>USDT</b> e outras <b>criptomoedas</b>, combinadas pelo WhatsApp.</p>'],
+      ['O parcelamento tem juros?', '<p>Em 1x não há acréscimo. A partir de 2x, o Mercado Pago aplica os juros do parcelamento e mostra o valor de cada parcela antes de você confirmar.</p>'],
+      ['Como uso um cupom de desconto?', '<p>Na última etapa do checkout (Pagamento), digite o cupom no campo <b>Cupom de desconto</b> e toque em <b>Aplicar</b>. O desconto vale sobre os produtos, não sobre o frete. Cupons de primeira compra valem uma vez por CPF.</p>'],
+      ['E os produtos com valor sob consulta?', '<p>Você paga normalmente os produtos que têm preço. Os itens sob consulta são enviados para o nosso WhatsApp, e a equipe responde com o valor.</p>']
+    ],
+    en: [
+      ['How long does delivery take?', '<p><b>São Paulo city:</b> express delivery within <b>3 hours</b> after the payment is approved.</p><p><b>Other regions:</b> we ship within <b>2 business days</b> after approval. Each carrier’s delivery time is shown at checkout next to the shipping price.</p>'],
+      ['How much is shipping?', '<p>Shipping is calculated from your CEP at checkout, with Correios (PAC and SEDEX), Jadlog and Loggi. The cheapest option is preselected.</p><p>In São Paulo city, express delivery costs <b>R$ 50</b>. With <b>3 or more New Life products</b>, the cheapest shipping option is <b>free</b>.</p>'],
+      ['How do I track my order?', '<p>Open <button type="button" class="faq-link" data-shop-tab="pedido">My order</button> and enter your order number (starts with BC) and your CPF to see the payment and shipping status.</p><p>The tracking code is sent to the WhatsApp number used at checkout.</p>'],
+      ['Why do you ask for a CPF?', '<p>The carrier requires the recipient’s CPF to issue the label and tracking code. It is also used to look up your order.</p>'],
+      ['Which payment methods do you accept?', '<p><b>Pix</b> and <b>credit card in up to 12 installments</b>, through Mercado Pago’s secure checkout. We also accept <b>USDT</b> and other <b>cryptocurrencies</b>, arranged via WhatsApp.</p>'],
+      ['Do installments have interest?', '<p>Paying in full has no extra charge. From 2 installments, Mercado Pago applies its installment interest and shows each installment before you confirm.</p>'],
+      ['How do I use a discount code?', '<p>On the last checkout step (Payment), type the code in <b>Discount code</b> and tap <b>Apply</b>. The discount applies to products, not shipping. First-purchase codes work once per CPF.</p>'],
+      ['What about price-on-request products?', '<p>You pay the priced products as usual. Price-on-request items are sent to our WhatsApp and the team replies with the price.</p>']
+    ],
+    es: [
+      ['¿Cuánto tarda en llegar?', '<p><b>Capital de São Paulo:</b> entrega exprés en hasta <b>3 horas</b> después de aprobado el pago.</p><p><b>Otras regiones:</b> enviamos en hasta <b>2 días hábiles</b> tras la aprobación. El plazo de cada transportadora aparece en el checkout, junto al precio del envío.</p>'],
+      ['¿Cuánto cuesta el envío?', '<p>El envío se calcula por tu CEP en el checkout, con Correios (PAC y SEDEX), Jadlog y Loggi. La opción más barata ya viene marcada.</p><p>En la capital de SP, la entrega exprés cuesta <b>R$ 50</b>. Comprando <b>3 o más productos New Life</b>, la opción de envío más barata es <b>gratis</b>.</p>'],
+      ['¿Cómo sigo mi pedido?', '<p>Entra en <button type="button" class="faq-link" data-shop-tab="pedido">Mi pedido</button> e ingresa el número de pedido (empieza con BC) y tu CPF para ver el estado del pago y del envío.</p><p>El código de seguimiento se envía al WhatsApp informado en la compra.</p>'],
+      ['¿Por qué piden el CPF?', '<p>La transportadora exige el CPF del destinatario para emitir la etiqueta y el código de seguimiento. También se usa para consultar tu pedido.</p>'],
+      ['¿Qué formas de pago aceptan?', '<p><b>Pix</b> y <b>tarjeta de crédito en hasta 12 cuotas</b>, por el entorno seguro de Mercado Pago. También aceptamos <b>USDT</b> y otras <b>criptomonedas</b>, coordinadas por WhatsApp.</p>'],
+      ['¿Las cuotas tienen interés?', '<p>En 1 pago no hay recargo. Desde 2 cuotas, Mercado Pago aplica el interés de las cuotas y muestra el valor de cada una antes de confirmar.</p>'],
+      ['¿Cómo uso un cupón de descuento?', '<p>En el último paso del checkout (Pago), escribe el cupón en <b>Cupón de descuento</b> y toca <b>Aplicar</b>. El descuento vale sobre los productos, no sobre el envío. Los cupones de primera compra valen una vez por CPF.</p>'],
+      ['¿Y los productos con precio bajo consulta?', '<p>Pagas normalmente los productos que tienen precio. Los ítems bajo consulta se envían a nuestro WhatsApp y el equipo responde con el valor.</p>']
+    ]
+  };
+  function renderFaq() {
+    const list = $('faq-list');
+    if (!list) return;
+    const open = [...list.querySelectorAll('details')].map(d => d.open);
+    list.innerHTML = (FAQ[currentLang] || FAQ.pt).map(([q, a], i) => `<details class="faq-item"${open[i] ? ' open' : ''}><summary>${esc(q)}<span class="faq-ico" aria-hidden="true"></span></summary><div class="faq-a">${a}</div></details>`).join('');
+  }
+  document.addEventListener('click', e => {
+    const el = e.target.closest && e.target.closest('[data-faq-link]');
+    if (!el) return;
+    e.preventDefault();
+    switchTab('info');
+    setTimeout(() => { const f = $('faq'); if (f) { const head = ($('shop-header')?.offsetHeight || 60) + 12; window.scrollTo({ top: f.getBoundingClientRect().top + window.scrollY - head, behavior: 'smooth' }); } }, 80);
+  });
+
+  /* ---------------- FILTROS ---------------- */
+  const CATS = [
+    { id: 'emagrecimento', re: /retatrut|tirzepat|semaglut|cagril|mounjaro|lipoless|gluconex|tirzec|slu-?pp|aod|frag|cbl-?514|cyt-?3/, brands: ['mounjaro', 'tirzec', 'lipoless', 'gluconex', 'tg', 'synedica', 'alluvi', 'elevia'] },
+    { id: 'recuperacao', re: /bpc|tb-?500|klow|glow|kpv|bb-?20/ },
+    { id: 'pele', re: /ghk|glow|beauty|mt-?2\b|melanotan|pt-?141|hialur|serum|cream|sunscreen|mask|ampoule|booster/, brands: ['cosmeticos', 'estetica'] },
+    { id: 'gh', re: /cjc|ipamorelin|tesamorelin|somatrop|zptrop|\bhgh\b(?!.*frag)|trestolone|igf|sermorelin|ghrp/ },
+    { id: 'longevidade', re: /\bnad\b|nad\+|epit|ss-?31|semax|selank|mots/ }
+  ];
+  function catsOf(p) {
+    const hay = norm([p.name, p.badge].join(' '));
+    return CATS.filter(c => c.re.test(hay) || (c.brands && c.brands.includes(p.category))).map(c => c.id);
+  }
+  window.productFilterCats = catsOf;
+  const catLabel = id => (ot('cats') || {})[id] || id;
+  let gridCat = '';
+  const toolbar = document.querySelector('.shop-toolbar');
+  const chips = document.createElement('div');
+  chips.className = 'flt-chips';
+  chips.setAttribute('role', 'toolbar');
+  if (toolbar) toolbar.prepend(chips);
+
+  function renderGridChips(list) {
+    const counts = {};
+    list.forEach(p => catsOf(p).forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
+    const present = CATS.filter(c => counts[c.id]);
+    if (gridCat && !counts[gridCat]) gridCat = '';
+    chips.hidden = present.length < 2;
+    chips.innerHTML = `<button type="button" class="flt-chip${gridCat ? '' : ' is-active'}" data-flt="">${esc(ot('fAll'))}<b>${list.length}</b></button>` +
+      present.map(c => `<button type="button" class="flt-chip${gridCat === c.id ? ' is-active' : ''}" data-flt="${c.id}">${esc(catLabel(c.id))}<b>${counts[c.id]}</b></button>`).join('');
+  }
+  chips.addEventListener('click', e => {
+    const b = e.target.closest('[data-flt]');
+    if (!b) return;
+    gridCat = b.dataset.flt;
+    renderProducts();
+  });
+  let lastCat = typeof currentCat !== 'undefined' ? currentCat : '';
+  const _renderProducts = renderProducts;
+  renderProducts = function () {
+    if (currentCat !== lastCat) { gridCat = ''; lastCat = currentCat; }
+    _renderProducts.apply(this, arguments);
+    const list = products.filter(p => p.category === currentCat);
+    renderGridChips(list);
+    if (!gridCat || !gridEl) return;
+    let shown = 0;
+    gridEl.querySelectorAll('.card').forEach(card => {
+      const p = products.find(x => x.id === Number(card.dataset.id));
+      const ok = p && catsOf(p).includes(gridCat);
+      card.style.display = ok ? '' : 'none';
+      if (ok) shown++;
+    });
+    if (secCount) secCount.textContent = `${shown} ${shown === 1 ? t('productCountSuffix') : t('productCountSuffixPlural')}`;
+  };
+
+  // filtros na busca
+  const searchPanel = document.querySelector('#shop-search .shop-search-panel');
+  const searchInput = $('shop-search-input');
+  const searchResults = $('shop-search-results');
+  const sf = document.createElement('div');
+  sf.className = 'srch-filters';
+  if (searchPanel && searchResults) searchPanel.insertBefore(sf, searchResults);
+  let sCat = '', sBrand = '';
+  function renderSearchFilters() {
+    const cats = getCategories();
+    sf.innerHTML = `<div class="srch-row"><small>${esc(ot('fCat'))}</small><button type="button" class="flt-chip${sCat ? '' : ' is-active'}" data-scat="">${esc(ot('fAll'))}</button>${CATS.map(c => `<button type="button" class="flt-chip${sCat === c.id ? ' is-active' : ''}" data-scat="${c.id}">${esc(catLabel(c.id))}</button>`).join('')}</div>` +
+      `<div class="srch-row"><small>${esc(ot('fBrand'))}</small><button type="button" class="flt-chip${sBrand ? '' : ' is-active'}" data-sbrand="">${esc(ot('fAllBrands'))}</button>${cats.map(c => `<button type="button" class="flt-chip${sBrand === c.id ? ' is-active' : ''}" data-sbrand="${esc(c.id)}">${esc(getCategoryLabel(c))}</button>`).join('')}</div>`;
+  }
+  function renderFilteredSearch() {
+    if (!searchResults) return;
+    const q = norm(searchInput ? searchInput.value.trim() : '');
+    if (!sCat && !sBrand) return; // sem filtro: a busca normal do site já mostrou o resultado
+    const cats = getCategories();
+    const ids = new Set(cats.map(c => c.id));
+    const words = q ? q.split(/\s+/) : [];
+    const found = products.filter(p => ids.has(p.category))
+      .filter(p => !sBrand || p.category === sBrand)
+      .filter(p => !sCat || catsOf(p).includes(sCat))
+      .filter(p => { if (!words.length) return true; const cat = cats.find(c => c.id === p.category); const hay = norm([p.name, p.badge, cat ? getCategoryLabel(cat) : '', p.category].join(' ')); return words.every(w => hay.includes(w)); })
+      .slice(0, 60);
+    if (!found.length) { searchResults.innerHTML = `<p class="shop-search-hint">${esc(ot('noResults'))}</p>`; return; }
+    searchResults.innerHTML = `<p class="shop-search-hint">${found.length} ${esc(ot('results'))}</p><div class="shop-search-list">` + found.map(p => {
+      const cat = cats.find(c => c.id === p.category);
+      const img = p.images && p.images[0] ? `<img src="${esc(p.images[0])}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : '';
+      const price = typeof p.priceVarejo === 'number' ? `R$ ${formatBRL(p.priceVarejo)}` : ot('consult');
+      return `<button type="button" class="shop-result" data-shop-product="${p.id}"><span class="shop-result-img">${img}</span><span><strong>${esc(p.name)}</strong><span>${esc(cat ? getCategoryLabel(cat) : '')}</span><em>${esc(price)}</em></span></button>`;
+    }).join('') + '</div>';
+  }
+  sf.addEventListener('click', e => {
+    const c = e.target.closest('[data-scat]'); const b = e.target.closest('[data-sbrand]');
+    if (c) sCat = c.dataset.scat;
+    else if (b) sBrand = b.dataset.sbrand;
+    else return;
+    renderSearchFilters();
+    if (sCat || sBrand) renderFilteredSearch();
+    else if (searchInput) searchInput.dispatchEvent(new Event('input'));
+  });
+  if (searchInput) searchInput.addEventListener('input', renderFilteredSearch);
+  $('shop-search-btn')?.addEventListener('click', () => setTimeout(() => { renderSearchFilters(); renderFilteredSearch(); }, 0));
+
+  /* ---------------- CUPOM ---------------- */
+  const cIn = $('checkout-coupon');
+  const cBtn = $('co-coupon-apply');
+  const cMsg = $('co-coupon-msg');
+  const cBox = $('co-coupon');
+  let pendingCode = '';
+  try { const qc = new URLSearchParams(location.search).get('cupom'); if (qc) { pendingCode = qc.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 30); sessionStorage.setItem('buyclub-coupon', pendingCode); } else pendingCode = sessionStorage.getItem('buyclub-coupon') || ''; } catch (_) {}
+
+  function couponMsg(text, ok) { cMsg.textContent = text || ''; cMsg.hidden = !text; cMsg.classList.toggle('ok', !!ok); }
+  function setApplied(on) {
+    cBox.classList.toggle('is-applied', on);
+    cIn.readOnly = on;
+    cBtn.textContent = ot(on ? 'couponRemove' : 'couponApply');
+    cBtn.dataset.mode = on ? 'remove' : 'apply';
+  }
+  function okText() {
+    const sub = checkoutSubtotalValue(getCheckoutItems()) || 0;
+    return fill(ot('couponOk'), { code: coCoupon.code, v: formatBRL(couponDiscountValue(sub)), p: coCoupon.pct ? ` (${coCoupon.pct}%)` : '' });
+  }
+  async function applyCoupon(silent) {
+    const code = cIn.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+    cIn.value = code;
+    if (!code) { if (!silent) couponMsg(ot('couponEmpty')); return; }
+    const paid = splitCheckoutItems(getCheckoutItems()).paid;
+    if (!paid.length) { if (!silent) couponMsg(ot('couponNoItems')); return; }
+    cBtn.disabled = true;
+    try {
+      const res = await fetch(`${API}/cupom`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, cpf: onlyDigits((coField('cpf') || {}).value), items: paid.map(({ product, type, qty }) => ({ id: product.id, type, qty })) }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) throw new Error(data.error || ot('couponError'));
+      coCoupon = { code: data.code, pct: data.pct || null, value: data.value || null, min: data.min || null, label: data.label || '' };
+      setApplied(true);
+      couponMsg(okText(), true);
+      try { sessionStorage.setItem('buyclub-coupon', data.code); } catch (_) {}
+    } catch (err) {
+      coCoupon = null;
+      setApplied(false);
+      couponMsg(err && err.message && err.message !== 'Failed to fetch' ? err.message : ot('couponError'));
+    } finally {
+      cBtn.disabled = false;
+      renderCheckoutSummary();
+    }
+  }
+  function removeCoupon() {
+    coCoupon = null; setApplied(false); couponMsg(''); cIn.value = '';
+    try { sessionStorage.removeItem('buyclub-coupon'); } catch (_) {}
+    pendingCode = '';
+    renderCheckoutSummary(); cIn.focus();
+  }
+  cBtn.addEventListener('click', () => (cBtn.dataset.mode === 'remove' ? removeCoupon() : applyCoupon(false)));
+  cIn.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (cBtn.dataset.mode !== 'remove') applyCoupon(false); } });
+  window.resetCheckoutCoupon = function () {
+    coCoupon = null; setApplied(false); couponMsg('');
+    try { pendingCode = sessionStorage.getItem('buyclub-coupon') || pendingCode; } catch (_) {}
+    cIn.value = pendingCode || '';
+  };
+  const _coGoStep = coGoStep;
+  coGoStep = function (n) {
+    _coGoStep.apply(this, arguments);
+    if (coStep === 3 && !coCoupon && cIn.value.trim() && pendingCode && cIn.value.trim().toUpperCase() === pendingCode) applyCoupon(true);
+  };
+
+  /* ---------------- textos / idioma ---------------- */
+  function applyOrdText() {
+    document.querySelectorAll('[data-ord-t]').forEach(el => { el.textContent = ot(el.dataset.ordT); });
+    if (cBtn) cBtn.textContent = ot(cBtn.dataset.mode === 'remove' ? 'couponRemove' : 'couponApply');
+    if (coCoupon && !cMsg.hidden) couponMsg(okText(), true);
+    renderFaq(); renderRecent(); renderSearchFilters();
+  }
+  const _setLang = setLang;
+  setLang = function () { _setLang.apply(this, arguments); applyOrdText(); };
+
+  applyOrdText();
+  renderProducts();
+  if (window.__openOrderOnLoad != null) { const id = window.__openOrderOnLoad; window.__openOrderOnLoad = null; setTimeout(() => window.openMyOrder(id), 50); }
+})();
+</script>
 </body>
 </html>

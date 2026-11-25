@@ -129,3 +129,22 @@ Faça uma compra real pequena com Pix e confira se: você foi levado ao Mercado 
 ### Entrega expressa na capital de SP
 
 Para CEPs do município de São Paulo (01000-000 a 05999-999 e 08000-000 a 08499-999), o Worker acrescenta a opção "Entrega expressa SP": até 3 horas após o pedido, rastreio pelo WhatsApp, valor fixo de R$ 50 (mude com a variável `SP_EXPRESS_FEE`). Ela vem selecionada por padrão; com frete grátis New Life, a opção grátis fica em primeiro.
+
+## Cupons de desconto
+
+O desconto vale sobre os produtos (o frete não muda) e o Worker confere o cupom de novo antes de cobrar.
+
+- Cupom padrão: `BEMVINDO10`, 10% na primeira compra. Com o KV `ORDERS` ligado, cada CPF só usa uma vez. Sem o KV, não há como saber se o CPF já comprou.
+- Para criar cupons (influenciadores, promoções), crie a variável `COUPONS` no Worker com um JSON:
+
+```json
+{"JOAO10": {"pct": 10}, "VIP50": {"value": 50, "min": 300}, "BLACK15": {"pct": 15, "until": "2026-11-30"}}
+```
+
+Campos: `pct` (porcentagem) ou `value` (reais), `min` (pedido mínimo em produtos), `until` (último dia, AAAA-MM-DD), `first` (só primeira compra), `active: false` (desliga).
+Link de influenciador: `https://buyclub.us/?cupom=JOAO10` já deixa o cupom preenchido no checkout.
+
+## Página "Meu pedido"
+
+`POST /pedido` com `{ pedido, cpf }` consulta o pagamento no Mercado Pago pelo número do pedido e só responde quando o CPF bate.
+Link direto: `https://buyclub.us/?meu-pedido` ou `https://buyclub.us/?pedido=BC...`.

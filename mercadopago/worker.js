@@ -8,6 +8,9 @@
  *   POST /frete     → recebe { cep, items } e devolve as opções de frete do Melhor Envio
  *                     (SEDEX, PAC etc.) com preço e prazo. Sem token configurado, devolve
  *                     { enabled: false } e o site usa o frete fixo.
+ *   POST /cupom     → recebe { code, cpf, items } e diz se o cupom vale e quanto desconta.
+ *   POST /pedido    → recebe { pedido, cpf } e devolve o status do pedido (página "Meu pedido").
+ *                     Consulta o Mercado Pago; só responde se o CPF bater com o do pedido.
  *   POST /webhook   → recebe a notificação do Mercado Pago, consulta o pagamento na API
  *                     e, quando aprovado, envia nome + endereço + itens para o seu WhatsApp.
  *   GET  /          → teste rápido ("ok").
@@ -31,7 +34,10 @@
  *   FREE_SHIP_CATEGORY  (opcional)             marca com frete grátis; padrão "newlife"
  *   FREE_SHIP_MIN_UNITS (opcional)             unidades dessa marca para ganhar frete grátis; padrão 3 (0 desliga)
  *   MP_WEBHOOK_SECRET   (secret, opcional)     "assinatura secreta" dos webhooks do Mercado Pago
- *   ORDERS              (KV, opcional)         evita aviso duplicado e guarda os pedidos pagos
+ *   ORDERS              (KV, opcional)         evita aviso duplicado, guarda os pedidos pagos e os CPFs que já compraram
+ *   COUPONS             (opcional)             cupons extras em JSON, ex.: {"JOAO10":{"pct":10},"VIP50":{"value":50,"min":300}}
+ *                                              campos: pct (porcentagem) ou value (reais), min (pedido mínimo),
+ *                                              until ("AAAA-MM-DD"), first (só primeira compra), active (false desliga)
  */
 
 const DEFAULT_CATALOG_URL = 'https://raw.githubusercontent.com/ofakenot/buyclub/main/index.html';
@@ -41,6 +47,12 @@ const CATALOG_TTL_MS = 5 * 60 * 1000;
 const DEFAULT_SHIPPING_FEE = 50;
 const DEFAULT_ME_SERVICES = '1,2,3,31'; // Correios PAC, Correios SEDEX, Jadlog .Package, Loggi Express
 const DEFAULT_BOX_CM = '4,12,17';      // caixa de envio (altura, largura, comprimento)
+
+// Cupons padrão. O desconto vale sobre os produtos (não sobre o frete).
+// Para criar cupons de influenciador sem mexer no código, use a variável COUPONS.
+const DEFAULT_COUPONS = {
+  BEMVINDO10: { pct: 10, first: true, label: 'Primeira compra' }
+};
 
 let catalogCache = { at: 0, url: '', products: null };
 
@@ -57,6 +69,12 @@ export default {
       }
       if (url.pathname === '/frete' && request.method === 'POST') {
         return json(await quoteShipping(request, env), 200, cors);
+      }
+      if (url.pathname === '/cupom' && request.method === 'POST') {
+        return json(await checkCoupon(request, env), 200, cors);
+      }
+      if (url.pathname === '/pedido' && request.method === 'POST') {
+        return json(await lookupOrder(request, env), 200, cors);
       }
       if (url.pathname === '/webhook' && request.method === 'POST') {
         await handleWebhook(request, env, url, ctx);
@@ -174,7 +192,9 @@ async function createCheckout(request, env) {
   const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
   const ship = await resolveShipping(env, customer.cep, lines, subtotal, body.shipping && body.shipping.service);
   const shipping = ship.price;
-  const total = round2(subtotal + shipping);
+  const coupon = body.coupon ? await evaluateCoupon(env, body.coupon, customer.cpf, subtotal) : null;
+  const discount = coupon ? coupon.discount : 0;
+  const total = round2(subtotal - discount + shipping);
 
   const orderId = `BC${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const site = (env.SITE_URL || 'https://buyclub.us').replace(/\/+$/, '');
@@ -223,6 +243,8 @@ async function createCheckout(request, env) {
       subtotal: String(subtotal),
       shipping: String(shipping),
       shipping_label: ship.label,
+      coupon: coupon ? coupon.code : '',
+      discount: String(discount),
       total: String(total),
       recipient: customer.recipient,
       phone: customer.phone,
@@ -252,7 +274,116 @@ async function createCheckout(request, env) {
     console.error('Mercado Pago preference error', res.status, JSON.stringify(data));
     throw new Error('Falha ao criar preferência no Mercado Pago');
   }
-  return { orderId, total, url: data.init_point };
+  return { orderId, total, discount, coupon: coupon ? coupon.code : null, url: data.init_point };
+}
+
+/* ------------------------------------------------------------------ */
+/* Cupons de desconto                                                   */
+/* ------------------------------------------------------------------ */
+
+export function couponTable(env) {
+  const table = {};
+  const add = (code, rule) => {
+    const key = String(code || '').trim().toUpperCase();
+    if (key && rule && typeof rule === 'object') table[key] = rule;
+  };
+  Object.entries(DEFAULT_COUPONS).forEach(([k, v]) => add(k, v));
+  if (env.COUPONS) {
+    try { Object.entries(JSON.parse(env.COUPONS)).forEach(([k, v]) => add(k, v)); }
+    catch (e) { console.error('COUPONS inválido (JSON)', e && e.message); }
+  }
+  return table;
+}
+
+export function couponDiscount(rule, subtotal) {
+  const pct = Number(rule.pct) || 0;
+  const value = Number(rule.value) || 0;
+  const raw = pct > 0 ? subtotal * Math.min(pct, 90) / 100 : value;
+  return round2(Math.max(0, Math.min(raw, subtotal)));
+}
+
+async function evaluateCoupon(env, rawCode, cpf, subtotal, now = new Date()) {
+  const code = String(rawCode || '').trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 30);
+  if (!code) throw new UserError('Digite o cupom.');
+  const rule = couponTable(env)[code];
+  if (!rule || rule.active === false) throw new UserError('Cupom inválido ou expirado.');
+  if (rule.until && now.toISOString().slice(0, 10) > String(rule.until)) throw new UserError('Cupom inválido ou expirado.');
+  const min = Number(rule.min) || 0;
+  if (min && subtotal < min) throw new UserError(`Este cupom vale para pedidos a partir de R$ ${brl(min)} em produtos.`);
+  if (rule.first && env.ORDERS && cpf && await env.ORDERS.get(`cliente:${cpf}`)) {
+    throw new UserError('Este cupom vale só na primeira compra.');
+  }
+  const discount = couponDiscount(rule, subtotal);
+  if (!(discount > 0)) throw new UserError('Cupom inválido ou expirado.');
+  return {
+    code,
+    label: clean(rule.label, 60),
+    pct: Number(rule.pct) > 0 ? Math.min(Number(rule.pct), 90) : null,
+    value: Number(rule.pct) > 0 ? null : Number(rule.value) || null,
+    min: min || null,
+    discount
+  };
+}
+
+async function checkCoupon(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !Array.isArray(body.items) || !body.items.length) throw new UserError('Carrinho vazio.');
+  if (body.items.length > 50) throw new UserError('Carrinho grande demais.');
+  const cpf = digits(body.cpf).slice(0, 11);
+  const lines = await buildLines(body.items, env);
+  const subtotal = round2(lines.reduce((s, l) => s + l.unit * l.qty, 0));
+  const coupon = await evaluateCoupon(env, body.code, cpf, subtotal);
+  return { ok: true, ...coupon, subtotal };
+}
+
+/* ------------------------------------------------------------------ */
+/* POST /pedido — página "Meu pedido"                                   */
+/* ------------------------------------------------------------------ */
+
+const PAYMENT_RANK = { approved: 6, authorized: 5, in_process: 4, in_mediation: 4, pending: 3, refunded: 2, charged_back: 2, cancelled: 1, rejected: 1 };
+
+async function lookupOrder(request, env) {
+  if (!env.MP_ACCESS_TOKEN) throw new Error('MP_ACCESS_TOKEN não configurado');
+  const body = await request.json().catch(() => null) || {};
+  const orderId = String(body.pedido || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 24);
+  const cpf = digits(body.cpf).slice(0, 11);
+  if (orderId.length < 6) throw new UserError('Digite o número do pedido (começa com BC).');
+  if (!isValidCpf(cpf)) throw new UserError('Digite o CPF usado na compra.');
+
+  const res = await fetch(`https://api.mercadopago.com/v1/payments/search?external_reference=${encodeURIComponent(orderId)}&sort=date_created&criteria=desc&limit=20`, {
+    headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` }
+  });
+  if (!res.ok) { console.error('payment search failed', res.status); throw new Error('Falha ao consultar o Mercado Pago'); }
+  const data = await res.json().catch(() => ({}));
+  const results = (Array.isArray(data.results) ? data.results : []).filter(p => {
+    const m = p.metadata || {};
+    const owner = digits(m.cpf || (p.payer && p.payer.identification && p.payer.identification.number));
+    return p.external_reference === orderId && owner === cpf;
+  });
+  // A mesma resposta para "não existe" e "CPF não bate": não revela se o número existe.
+  if (!results.length) return { found: false };
+
+  results.sort((a, b) => (PAYMENT_RANK[b.status] || 0) - (PAYMENT_RANK[a.status] || 0) || String(b.date_created).localeCompare(String(a.date_created)));
+  const p = results[0];
+  const m = p.metadata || {};
+  return {
+    found: true,
+    orderId,
+    status: p.status,
+    createdAt: p.date_created || null,
+    paidAt: p.date_approved || null,
+    amount: p.transaction_amount,
+    method: p.payment_type_id === 'bank_transfer' ? 'Pix' : `Cartão${p.installments > 1 ? ` ${p.installments}x` : ''}`,
+    name: String(m.recipient || '').split(/\s+/)[0] || '',
+    city: m.city || '',
+    items: String(m.items || '').split(' | ').filter(Boolean),
+    subtotal: m.subtotal || null,
+    shipping: m.shipping || null,
+    shippingLabel: m.shipping_label || '',
+    express: /expressa/i.test(String(m.shipping_label || '')),
+    coupon: m.coupon || '',
+    discount: m.discount || null
+  };
 }
 
 
@@ -446,11 +577,15 @@ async function handleWebhook(request, env, url, ctx) {
     items: m.items || '',
     subtotal: m.subtotal || '',
     shipping: m.shipping || '',
-    shippingLabel: m.shipping_label || ''
+    shippingLabel: m.shipping_label || '',
+    coupon: m.coupon || '',
+    discount: m.discount || ''
   };
 
   if (env.ORDERS) {
     await env.ORDERS.put(key, JSON.stringify(order), { expirationTtl: 60 * 60 * 24 * 365 });
+    // marca o CPF como cliente (cupons de primeira compra deixam de valer para ele)
+    if (digits(order.cpf).length === 11) await env.ORDERS.put(`cliente:${digits(order.cpf)}`, String(order.orderId || payment.id));
   }
   await notifyWhatsApp(env, order);
 }
@@ -472,6 +607,7 @@ export function buildOrderMessage(o) {
     `✅ *PAGAMENTO APROVADO* — pedido ${o.orderId}`,
     `Valor pago: R$ ${brl(o.amount)} (${o.method})`,
     o.subtotal ? `Produtos: R$ ${brl(o.subtotal)} + frete R$ ${brl(o.shipping || 0)}` : null,
+    o.coupon && Number(o.discount) > 0 ? `Cupom: ${o.coupon} (− R$ ${brl(o.discount)})` : null,
     o.shippingLabel ? `Envio: ${o.shippingLabel}` : null,
     `ID Mercado Pago: ${o.paymentId}`,
     '',
