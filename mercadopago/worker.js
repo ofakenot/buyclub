@@ -85,8 +85,11 @@ export default {
         return json(await setupTelegram(env, url.origin), 200, cors);
       }
       if (url.pathname === '/telegram' && request.method === 'POST') {
-        if (ctx && ctx.waitUntil) ctx.waitUntil(handleTelegram(request, env).catch(e => console.error('telegram', e && e.stack || e)));
-        else await handleTelegram(request, env);
+        // Lê o corpo ANTES de responder: depois que a resposta sai, o corpo pode não estar mais disponível.
+        const tgUpdate = await request.json().catch(() => null);
+        const tgJob = handleTelegram(request, env, tgUpdate).catch(e => console.error('telegram', e && e.stack || e));
+        if (ctx && ctx.waitUntil) ctx.waitUntil(tgJob);
+        else await tgJob;
         return new Response('ok', { status: 200 });
       }
       if (url.pathname === '/webhook' && request.method === 'POST') {
@@ -496,10 +499,10 @@ async function setupTelegram(env, origin) {
   };
 }
 
-export async function handleTelegram(request, env) {
+export async function handleTelegram(request, env, parsed) {
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_SECRET) return;
   if (!sameKey(request.headers.get('X-Telegram-Bot-Api-Secret-Token'), env.TELEGRAM_SECRET)) { console.warn('telegram: secret inválido'); return; }
-  const update = await request.json().catch(() => null);
+  const update = parsed !== undefined ? parsed : await request.json().catch(() => null);
   const msg = update && (update.message || update.edited_message);
   console.log('telegram update', JSON.stringify({ chat: msg && msg.chat && { id: msg.chat.id, type: msg.chat.type }, hasText: !!(msg && msg.text), keys: update ? Object.keys(update) : [] }));
   if (!msg || !msg.chat || typeof msg.text !== 'string') return;
