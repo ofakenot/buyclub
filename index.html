@@ -7017,6 +7017,10 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   .bc-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: .2rem 0 .7rem; }
   .bc-chip { padding: .5rem .75rem; border: 1px solid var(--border-light); border-radius: 999px; background: var(--bg-card); color: var(--text); font: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; transition: background .2s; }
   .bc-chip:hover { background: #fff; }
+  .bc-menu { flex-direction: column; align-items: flex-start; }
+  .bc-menu .bc-chip { border-color: #cfe0fb; color: #1d4ed8; background: #fff; }
+  .bc-menu .bc-chip-more { border-style: dashed; color: var(--muted-dark); }
+  .bc-follow .bc-chip:first-child { background: var(--text); border-color: var(--text); color: #fff; }
   .bc-msg-actions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .55rem; }
   .bc-msg-actions a, .bc-msg-actions button { display: inline-flex; align-items: center; gap: .35rem; padding: .45rem .7rem; border: 0; border-radius: .6rem; background: var(--text); color: #fff; font: inherit; font-size: .7rem; font-weight: 800; text-decoration: none; cursor: pointer; }
   .bc-msg-actions .wa { background: #16a34a; }
@@ -7089,8 +7093,13 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     { id: 'produto', label: 'Não achei um produto', keys: ['nao achei', 'nao encontrei', 'tem ', 'voces tem', 'disponivel', 'estoque', 'cotacao', 'outro produto'],
       text: 'Se o produto não está no catálogo, podemos fazer uma cotação. Use a busca (lupa no topo) para conferir e, se não encontrar, mande o nome do produto para um atendente.', wa: 'Gostaria de uma cotação de um produto que não encontrei no site.' }
   ];
-  const MAIN = ['frete', 'pagamento', 'parcelas', 'seguro', 'original', 'comprar', 'trocas', 'atacado', 'rastreio', 'produto'];
-  const CHECKOUT = ['pagamento', 'parcelas', 'seguro', 'frete', 'cep', 'trocas'];
+  // menu curto (os mais procurados) + "Mais assuntos" para o resto
+  const MAIN = ['frete', 'pagamento', 'comprar', 'rastreio', 'original'];
+  const MAIN_MORE = ['parcelas', 'seguro', 'trocas', 'cupom', 'atacado', 'produto'];
+  const CHECKOUT = ['pagamento', 'frete', 'cep', 'cupom'];
+  const CHECKOUT_MORE = ['parcelas', 'seguro', 'trocas'];
+  // depois de cada resposta, no máximo uma sugestão relacionada
+  const RELATED = { frete: 'rastreio', pagamento: 'parcelas', parcelas: 'seguro', seguro: 'original', original: 'comprar', comprar: 'cupom', cep: 'frete', trocas: 'rastreio', atacado: 'pagamento', rastreio: 'frete', cupom: 'comprar', produto: 'atacado' };
   const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   let started = false;
 
@@ -7105,12 +7114,24 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     body.appendChild(m);
     scroll();
   }
-  function chips(ids) {
+  const asked = new Set();
+  // só um grupo de botões aparece por vez: sempre apaga o anterior
+  function clearChips() { body.querySelectorAll('.bc-chips').forEach(x => x.remove()); }
+  function chips(list, cls) {
+    clearChips();
     const c = document.createElement('div');
-    c.className = 'bc-chips';
-    c.innerHTML = ids.map(id => { const f = FAQ.find(x => x.id === id); return `<button type="button" class="bc-chip" data-faq="${id}">${f.label}</button>`; }).join('') + '<button type="button" class="bc-chip" data-faq="__wa">Falar com atendente</button>';
+    c.className = 'bc-chips' + (cls ? ' ' + cls : '');
+    c.innerHTML = list.map(([id, label]) => `<button type="button" class="bc-chip${id === '__more' ? ' bc-chip-more' : ''}" data-faq="${id}">${label}</button>`).join('');
     body.appendChild(c);
     scroll();
+  }
+  function menu(full) {
+    const checkout = inCheckout();
+    const base = checkout ? CHECKOUT : MAIN, more = checkout ? CHECKOUT_MORE : MAIN_MORE;
+    const ids = (full ? base.concat(more) : base).filter(id => !asked.has(id));
+    const list = ids.map(id => [id, FAQ.find(x => x.id === id).label]);
+    if (!full) list.push(['__more', 'Mais assuntos']);
+    chips(list, 'bc-menu');
   }
   function typing(cb) {
     const t = document.createElement('div');
@@ -7125,7 +7146,12 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
       if (f.policy) act += `<button type="button" data-shop-policy="${f.policy}">Ver política completa</button>`;
       if (f.wa) act += `<a class="wa" href="${wa(f.wa)}" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>`;
       add(f.text, 'bot', act);
-      setTimeout(() => { add('Posso ajudar com mais alguma coisa?', 'bot'); chips(inCheckout() ? CHECKOUT : MAIN); }, 350);
+      asked.add(f.id);
+      const rel = RELATED[f.id] && !asked.has(RELATED[f.id]) ? FAQ.find(x => x.id === RELATED[f.id]) : null;
+      const list = [['__ok', 'Resolveu, obrigado']];
+      if (rel) list.push([rel.id, rel.label]);
+      list.push(['__menu', 'Outra dúvida']);
+      setTimeout(() => chips(list, 'bc-follow'), 300);
     });
   }
   function toHuman(q) {
@@ -7145,9 +7171,9 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   function start() {
     body.innerHTML = '';
     const checkout = inCheckout();
-    add(checkout ? 'Olá! 👋 Precisa de ajuda para finalizar seu pedido?' : 'Olá! 👋 Sou o assistente da Buy Club.', 'bot');
-    add('Escolha uma pergunta abaixo ou digite sua dúvida. Se preferir, fale direto com um atendente no WhatsApp.', 'bot');
-    chips(checkout ? CHECKOUT : MAIN);
+    asked.clear();
+    add(checkout ? 'Olá! 👋 Precisa de ajuda para finalizar seu pedido?\nEscolha um assunto ou escreva sua dúvida.' : 'Olá! 👋 Sou o assistente da Buy Club.\nEscolha um assunto ou escreva sua dúvida.', 'bot');
+    menu(false);
     started = checkout ? 'checkout' : 'site';
   }
   function open() {
@@ -7171,8 +7197,10 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     const c = e.target.closest('[data-faq]');
     if (!c) return;
     const id = c.dataset.faq;
-    c.parentElement.remove();
-    if (id === '__wa') { add('Quero falar com um atendente', 'me'); toHuman(''); return; }
+    clearChips();
+    if (id === '__more') { menu(true); return; }
+    if (id === '__menu') { add('Outra dúvida', 'me'); typing(() => { add('Claro! Sobre o que você quer saber?', 'bot'); menu(false); }); return; }
+    if (id === '__ok') { add('Resolveu, obrigado', 'me'); typing(() => add('Que bom! Se precisar de mais alguma coisa, é só escrever aqui.', 'bot')); return; }
     const f = FAQ.find(x => x.id === id);
     add(f.label, 'me');
     answer(f);
@@ -7182,17 +7210,17 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     const q = input.value.trim();
     if (!q) return;
     input.value = '';
-    body.querySelectorAll('.bc-chips').forEach(x => x.remove());
+    clearChips();
     add(q, 'me');
     const n = norm(q);
     if (/atendente|humano|pessoa|whats|falar com|contato|telefone/.test(n)) { toHuman(q); return; }
     if (/^(oi|ola|bom dia|boa tarde|boa noite|hey|eae|opa)\b/.test(n) && n.length < 20) {
-      typing(() => { add('Olá! Como posso ajudar? Escolha um assunto ou escreva sua dúvida.', 'bot'); chips(inCheckout() ? CHECKOUT : MAIN); });
+      typing(() => { add('Olá! Como posso ajudar? Escolha um assunto ou escreva sua dúvida.', 'bot'); menu(false); });
       return;
     }
     const f = match(q);
     if (f) answer(f);
-    else typing(() => { add('Não tenho certeza sobre isso. Um atendente da nossa equipe pode te responder pelo WhatsApp.', 'bot', `<a class="wa" href="${wa('Minha dúvida: ' + q)}" target="_blank" rel="noopener noreferrer">Perguntar no WhatsApp</a>`); chips(inCheckout() ? CHECKOUT : MAIN); });
+    else typing(() => { add('Não tenho certeza sobre isso. Um atendente da nossa equipe pode te responder pelo WhatsApp.', 'bot', `<a class="wa" href="${wa('Minha dúvida: ' + q)}" target="_blank" rel="noopener noreferrer">Perguntar no WhatsApp</a>`); chips([['__menu', 'Ver assuntos']], 'bc-follow'); });
   });
 })();
 </script>
