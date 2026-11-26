@@ -6979,13 +6979,24 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   .bc-chat-fab { position: fixed; right: 18px; bottom: 18px; z-index: 2300; display: inline-flex; align-items: center; gap: .5rem; height: 3.4rem; padding: 0 1.2rem 0 1rem; border: 0; border-radius: 999px; background: var(--text); color: #fff; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; box-shadow: 0 12px 30px rgba(9,9,11,.28); transition: transform .2s, opacity .2s; }
   .bc-chat-fab:hover { transform: translateY(-2px); }
   .bc-chat-fab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-  .bc-chat-fab .bc-dot { position: absolute; top: .5rem; left: 2.1rem; width: .55rem; height: .55rem; border: 2px solid var(--text); border-radius: 50%; background: #22c55e; }
+  .bc-chat-fab { padding-left: .4rem; }
+  .bc-bot { display: grid; place-items: center; width: 2.7rem; height: 2.7rem; flex: 0 0 auto; border-radius: 50%; background: linear-gradient(145deg, #2f74ff, #1238a8); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+  .bc-chat-fab .bc-bot svg { width: 34px; height: 34px; fill: initial; stroke: none; animation: bcBotFloat 3s ease-in-out infinite; }
+  #bc-bot .bcb-eyes { transform-box: fill-box; transform-origin: center; animation: bcBotBlink 4.5s infinite; }
+  #bc-bot .bcb-tip { animation: bcBotTip 2s ease-in-out infinite; }
+  @keyframes bcBotFloat { 0%, 100% { transform: translateY(1px); } 50% { transform: translateY(-2px); } }
+  @keyframes bcBotBlink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.15); } }
+  @keyframes bcBotTip { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+  @media (prefers-reduced-motion: reduce) { .bc-chat-fab .bc-bot svg, #bc-bot .bcb-eyes, #bc-bot .bcb-tip { animation: none; } }
+  .bc-chat-fab .bc-dot { position: absolute; top: .45rem; left: 2.45rem; width: .55rem; height: .55rem; border: 2px solid var(--text); border-radius: 50%; background: #22c55e; }
   body.bc-chat-open .bc-chat-fab { opacity: 0; pointer-events: none; }
   .bc-chat { position: fixed; right: 18px; bottom: 18px; z-index: 2310; display: flex; flex-direction: column; width: 370px; height: min(600px, calc(100dvh - 36px)); overflow: hidden; border: 1px solid var(--border-light); border-radius: 1.4rem; background: var(--bg); box-shadow: 0 24px 60px rgba(9,9,11,.28); transform-origin: bottom right; animation: bcChatIn .28s cubic-bezier(.16,1,.3,1); }
   .bc-chat[hidden] { display: none; }
   @keyframes bcChatIn { from { opacity: 0; transform: translateY(14px) scale(.96); } to { opacity: 1; transform: none; } }
   .bc-chat-head { display: flex; align-items: center; gap: .7rem; padding: .9rem 1rem; background: var(--text); color: #fff; }
   .bc-chat-avatar { position: relative; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: 0 0 auto; border-radius: 50%; background: rgba(255,255,255,.14); font-family: var(--font-display); font-size: 1.05rem; letter-spacing: .06em; }
+  .bc-chat-avatar { background: linear-gradient(145deg, #2f74ff, #1238a8); }
+  .bc-chat-avatar svg { width: 1.95rem; height: 1.95rem; }
   .bc-chat-avatar::after { content: ""; position: absolute; right: 0; bottom: 1px; width: .6rem; height: .6rem; border: 2px solid var(--text); border-radius: 50%; background: #22c55e; }
   .bc-chat-title { flex: 1; min-width: 0; }
   .bc-chat-title strong { display: block; font-size: .9rem; }
@@ -7018,15 +7029,18 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
   .bc-chat-wa { display: flex; align-items: center; justify-content: center; gap: .45rem; width: 100%; height: 2.6rem; margin-top: .5rem; border-radius: .8rem; background: #16a34a; color: #fff; font-size: .76rem; font-weight: 800; text-decoration: none; }
   .bc-chat-wa svg { width: 17px; height: 17px; }
   @media (max-width: 620px) {
-    .bc-chat-fab { right: 12px; bottom: 12px; height: 3.1rem; padding: 0 1rem 0 .85rem; }
+    .bc-chat-fab { right: 12px; bottom: 12px; height: 3.1rem; padding: 0 1rem 0 .35rem; }
+    .bc-bot { width: 2.45rem; height: 2.45rem; }
+    .bc-chat-fab .bc-bot svg { width: 31px; height: 31px; }
     .bc-chat { right: 0; bottom: 0; left: 0; width: 100%; height: 88dvh; border-radius: 1.4rem 1.4rem 0 0; }
     body.shop-layout .cart-toast { bottom: 4.6rem; }
   }
 </style>
-<button class="bc-chat-fab" id="bc-chat-fab" type="button" aria-controls="bc-chat" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></svg><span class="bc-dot"></span><span>Ajuda</span></button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="bcbShell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9e2ee"/></linearGradient><linearGradient id="bcbVisor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2540"/><stop offset="1" stop-color="#060a14"/></linearGradient><linearGradient id="bcbBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient><radialGradient id="bcbGlow"><stop offset="0" stop-color="#7dd3fc"/><stop offset="1" stop-color="#38bdf8" stop-opacity="0"/></radialGradient><symbol id="bc-bot" viewBox="0 0 64 64"><line x1="32" y1="9" x2="32" y2="4.5" stroke="#9fb0c6" stroke-width="2.4" stroke-linecap="round"/><circle class="bcb-tip" cx="32" cy="4" r="3.4" fill="url(#bcbBlue)"/><rect x="5" y="22" width="8" height="18" rx="4" fill="url(#bcbBlue)"/><rect x="51" y="22" width="8" height="18" rx="4" fill="url(#bcbBlue)"/><rect x="21" y="47" width="22" height="15" rx="7" fill="url(#bcbShell)" stroke="#c3cfdf" stroke-width="1"/><rect x="27" y="51.5" width="10" height="5" rx="2.5" fill="url(#bcbBlue)"/><rect x="9" y="8" width="46" height="41" rx="17" fill="url(#bcbShell)" stroke="#c3cfdf" stroke-width="1"/><path d="M17 12.5c5-2.6 11-3.3 16-3.3" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".9"/><rect x="14" y="16" width="36" height="26" rx="11" fill="url(#bcbVisor)"/><ellipse cx="32" cy="29" rx="15" ry="9" fill="url(#bcbGlow)" opacity=".28"/><g class="bcb-eyes" fill="#5fd4ff"><rect x="21.5" y="22.5" width="6" height="7.5" rx="3"/><rect x="36.5" y="22.5" width="6" height="7.5" rx="3"/></g><path d="M26 34.2q6 4.6 12 0" stroke="#5fd4ff" stroke-width="2.6" stroke-linecap="round" fill="none"/></symbol></defs></svg>
+<button class="bc-chat-fab" id="bc-chat-fab" type="button" aria-controls="bc-chat" aria-expanded="false"><span class="bc-bot" aria-hidden="true"><svg><use href="#bc-bot"/></svg></span><span class="bc-dot"></span><span>Ajuda</span></button>
 <section class="bc-chat" id="bc-chat" role="dialog" aria-label="Suporte Buy Club" hidden>
   <header class="bc-chat-head">
-    <span class="bc-chat-avatar" aria-hidden="true">BC</span>
+    <span class="bc-chat-avatar" aria-hidden="true"><svg><use href="#bc-bot"/></svg></span>
     <div class="bc-chat-title"><strong>Assistente Buy Club</strong><span>Online · respostas na hora</span></div>
     <button class="bc-chat-x" id="bc-chat-x" type="button" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </header>
