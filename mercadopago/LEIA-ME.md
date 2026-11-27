@@ -134,7 +134,7 @@ Para CEPs do município de São Paulo (01000-000 a 05999-999 e 08000-000 a 08499
 
 O desconto vale sobre os produtos (o frete não muda) e o Worker confere o cupom de novo antes de cobrar.
 
-- Cupom padrão: `BEMVINDO10`, 10% na primeira compra. Com o KV `ORDERS` ligado, cada CPF só usa uma vez. Sem o KV, não há como saber se o CPF já comprou.
+- Cupom padrão: `BEMVINDO5`, 5% na primeira compra (substituiu o BEMVINDO10 em 27/11/2026). Com o KV `ORDERS` ligado, cada CPF só usa uma vez. Sem o KV, não há como saber se o CPF já comprou.
 - Para criar cupons (influenciadores, promoções), crie a variável `COUPONS` no Worker com um JSON:
 
 ```json
