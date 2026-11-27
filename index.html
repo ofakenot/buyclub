@@ -3186,7 +3186,7 @@ position: absolute; top: .65rem; left: .65rem;
               <section class="co-section co-coupon" id="co-coupon">
                 <div class="co-coupon-row">
                   <div class="checkout-field co-float">
-                    <input id="checkout-coupon" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30" placeholder="Ex.: BEMVINDO10">
+                    <input id="checkout-coupon" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30" placeholder="Ex.: BEMVINDO5">
                     <label for="checkout-coupon" data-ord-t="couponLabel">Cupom de desconto</label>
                   </div>
                   <button type="button" class="co-coupon-btn" id="co-coupon-apply" data-ord-t="couponApply">Aplicar</button>
@@ -7697,7 +7697,7 @@ applyI18n(); renderCatBar(); renderProducts(); if (catsListEl) renderCatsView();
     // pedido de demonstração (para conhecer a página sem uma compra real)
     if (pedido === 'BCDEMO01' && cpf === '11144477735') {
       const now = Date.now();
-      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 677.3, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO10', discount: '69.7', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() }, referral: 'CLIENTE7K2', referralPct: 10, referralCount: 2, prizes: [{ code: 'PREMIOK8Q2M', until: '2027-02-23' }, { code: 'PREMIO4TX9P', until: '2027-02-25' }] });
+      renderOrder({ found: true, orderId: 'BCDEMO01', status: 'approved', createdAt: new Date(now - 36e5).toISOString(), paidAt: new Date(now - 33e5).toISOString(), amount: 712.15, method: 'Pix', name: 'Cliente', city: 'São Paulo/SP', items: ['1x New Life — Retatrutide 60mg (Varejo) R$ 697,00'], shippingLabel: 'Entrega expressa SP — até 3 horas', express: true, coupon: 'BEMVINDO5', discount: '34.85', tracking: { code: 'AB123456789BR', carrier: 'correios', name: 'Correios', url: 'https://rastreamento.correios.com.br/app/index.php?objetos=AB123456789BR', at: new Date(now - 6e5).toISOString() }, referral: 'CLIENTE7K2', referralPct: 10, referralCount: 2, prizes: [{ code: 'PREMIOK8Q2M', until: '2027-02-23' }, { code: 'PREMIO4TX9P', until: '2027-02-25' }] });
       return;
     }
     submitBtn.disabled = true; submitBtn.textContent = ot('searching');

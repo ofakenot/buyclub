@@ -56,7 +56,7 @@ const DEFAULT_BOX_CM = '4,12,17';      // caixa de envio (altura, largura, compr
 // Cupons padrão. O desconto vale sobre os produtos (não sobre o frete).
 // Para criar cupons de influenciador sem mexer no código, use a variável COUPONS.
 const DEFAULT_COUPONS = {
-  BEMVINDO10: { pct: 10, first: true, label: 'Primeira compra' }
+  BEMVINDO5: { pct: 5, first: true, label: 'Primeira compra' }
 };
 
 let catalogCache = { at: 0, url: '', products: null };
